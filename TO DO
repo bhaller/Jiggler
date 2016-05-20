@@ -1,0 +1,66 @@
+1.3:
+x	Add the ability to jiggle whenever iTunes is playing
+x	Decrease CPU usage
+x	Add time settings at the low end of things: 20 seconds, 40 seconds
+x	make Universal
+x	increment version to 1.3, copyright date to 2006
+
+1.4:
+x	fix idle time call on 10.6
+x	increment version number
+x	update copyright date
+x	change read me file (new version #, etc.)
+x	By Ben Haller text/link is off the top of the about panel
+x	allow jiggle times down to 5 seconds and up to 24 hours; make the slider non-linear
+
+1.5:
+x   fix version number and copyright date
+x   fix deprecated calls
+x   update project, add code signing, etc.
+x   fix occasional hang!
+x   check all functionality, clean up logic
+x       floating window does not stay up during jiggling
+x   add a slider to choose threshold CPU usage to trigger jiggle
+x   add ability to choose app vs. process for criterion
+x   add deactive when on battery
+x   add deactivate when a given app is frontmost
+
+1.6:
+x	fix version and copyright
+x	build against 10.9 SDK
+x	make sure debugging symbols are turned on
+x	update readme file
+x	deal with app nap and timer tolerance in 10.9; disabled app nap altogether with defaults write, added a bit of timer tolerance for the jiggleTimer
+x	fixed CPU load pref to read in and set up UI properly
+
+1.7:
+x	Advance version number & copyright
+x	build for 10.10 and later, fix deprecated APIs
+x	set up for open-sourcing on GitHub
+x	convert to status bar item
+x	add a "master switch" menu item
+x	tint the status item icon: red when timed quit is active, green when jiggling is active
+x	add a "launch Jiggler at startup" checkbox to toggle that in the system preferences
+x	add "Zen jiggle" checkbox that resets system timers without actually jiggling the cursor
+x	update the Read Me to describe the new functionality, mention open-sourcing and GitHub, etc.
+	add GitHub link to readme files and about window
+
+
+Suggestions:
+
+add warning if jiggle time is >= sleep time or screensaver time?
+	screensaver time: defaults -currentHost write com.apple.screensaver idleTime 180
+	sleep time: not sure how to get this
+
+detect network activity and stay awake on it (looks complicated in practice, because of multiple network interfaces, etc.; see source at http://www.ragingmenace.com/software/menumeters/)
+
+Add to Timed Quit the option to quit at a specified date/time, rather than after a specified number of minutes
+
+add an option such that the screensaver runs while Jiggler is active; i.e. keep the machine from sleeping, but run the screensaver.
+	similarly, it would be good to have a setting whereby Jiggler allows the display to sleep, but prevents the system from sleeping
+	this would entail shifting from IOPMAssertionDeclareUserActivity() to creating an assertion with kIOPMAssertPreventUserIdleSystemSleep
+	but without kIOPMAssertPreventUserIdleDisplaySleep, using IOPMAssertionCreateWithDescription().  The drawback to this is that we
+	have to declare when the assertion is over, too, rather than just tweaking the system periodically.  Should be doable, though.
+
+when a chosen app (set in jigger preferences) is in the foreground .. . jigger does its thing .. but when this app is in the background .. the computer can goto sleep, screen-saver etc... but this kind of option would have to be an add-on not one-or-the-other kind of thing. because you hate to lose  the "if any chosen app is open"  thing... another example would be like when quicktime plays a video the computer does nothing but play, but when its not playing or if the video ends,  then the mac goes nighty night   etc.
+

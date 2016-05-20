@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10116"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="PrefsController">
+            <connections>
+                <outlet property="applicationNameComponentTextfield" destination="688" id="715"/>
+                <outlet property="cpuUsageSlider" destination="696" id="716"/>
+                <outlet property="cpuUsageTextfield" destination="698" id="717"/>
+                <outlet property="frontAppsNameComponentTextfield" destination="709" id="745"/>
+                <outlet property="invisibleCloseButton" destination="aez-qj-q8f" id="AWr-rm-qjr"/>
+                <outlet property="jiggleOnlyWhenIdleRadio" destination="676" id="718"/>
+                <outlet property="jiggleTimeSlider" destination="658" id="719"/>
+                <outlet property="jiggleTimeTextfield" destination="694" id="720"/>
+                <outlet property="launchOnLoginCheckbox" destination="iNl-Uo-XLe" id="B0Q-Wl-zuu"/>
+                <outlet property="notOnBatteryCheckbox" destination="711" id="721"/>
+                <outlet property="notWithFrontAppsNamedXCheckbox" destination="713" id="744"/>
+                <outlet property="onlyWithApplicationsNamedXCheckbox" destination="686" id="722"/>
+                <outlet property="onlyWithCPUUsageCheckbox" destination="682" id="723"/>
+                <outlet property="onlyWithITunesPlayingCheckbox" destination="692" id="724"/>
+                <outlet property="onlyWithIdentityPopUp" destination="700" id="725"/>
+                <outlet property="onlyWithRemovableWritableDisksCheckbox" destination="684" id="726"/>
+                <outlet property="preferencesWindow" destination="654" id="727"/>
+                <outlet property="showJigglerIconWhenJigglingButton" destination="656" id="728"/>
+                <outlet property="zenJiggleCheckbox" destination="YAd-kt-mbO" id="Egc-dE-pYL"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <customObject id="651" customClass="NSApplication"/>
+        <customObject id="652" customClass="NSApplication"/>
+        <customObject id="653" customClass="NSApplication"/>
+        <window title="Jiggler Preferences" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="654" customClass="NSPanel">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="489" y="501" width="510" height="673"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1578"/>
+            <value key="minSize" type="size" width="213" height="167"/>
+            <view key="contentView" id="655">
+                <rect key="frame" x="0.0" y="0.0" width="510" height="673"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <textField verticalHuggingPriority="750" id="690">
+                        <rect key="frame" x="57" y="159" width="396" height="30"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="691">
+                            <font key="font" metaFont="smallSystem"/>
+                            <string key="title">(Enter a single item, such as "tea" to match "Tea Timer", or enter a list separated by commas, such as "tea, chat" to match Tea Timer or iChat.)</string>
+                            <color key="textColor" white="0.40000001000000002" alpha="1" colorSpace="calibratedWhite"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <button id="656">
+                        <rect key="frame" x="28" y="464" width="379" height="18"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <buttonCell key="cell" type="check" title="Show Jiggler's icon onscreen whenever jiggling is active" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="657">
+                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="showJigglerIconWhenJigglingChanged:" target="-2" id="732"/>
+                        </connections>
+                    </button>
+                    <slider verticalHuggingPriority="750" id="658">
+                        <rect key="frame" x="182" y="524" width="300" height="25"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <sliderCell key="cell" continuous="YES" alignment="left" maxValue="5" doubleValue="1" tickMarkPosition="below" numberOfTickMarks="6" sliderType="linear" id="659">
+                            <font key="font" size="12" name="Helvetica"/>
+                        </sliderCell>
+                        <connections>
+                            <action selector="jiggleTimeChanged:" target="-2" id="733"/>
+                        </connections>
+                    </slider>
+                    <textField verticalHuggingPriority="750" id="660">
+                        <rect key="frame" x="27" y="533" width="148" height="17"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Time between jiggles:" id="661">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <textField verticalHuggingPriority="750" id="662">
+                        <rect key="frame" x="168" y="503" width="42" height="13"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" title="5 sec." id="663">
+                            <font key="font" metaFont="label"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <textField verticalHuggingPriority="750" id="664">
+                        <rect key="frame" x="221" y="503" width="47" height="13"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" title="1 min." id="665">
+                            <font key="font" metaFont="label"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <textField verticalHuggingPriority="750" id="666">
+                        <rect key="frame" x="279" y="503" width="42" height="13"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" title="5 min." id="667">
+                            <font key="font" metaFont="label"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <textField verticalHuggingPriority="750" id="668">
+                        <rect key="frame" x="336" y="503" width="46" height="13"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" title="1 hour" id="669">
+                            <font key="font" metaFont="label"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <textField verticalHuggingPriority="750" id="670">
+                        <rect key="frame" x="386" y="503" width="55" height="13"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" title="5 hours" id="671">
+                            <font key="font" metaFont="label"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <textField verticalHuggingPriority="750" id="672">
+                        <rect key="frame" x="440" y="503" width="60" height="13"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" title="24 hours" id="673">
+                            <font key="font" metaFont="label"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <textField verticalHuggingPriority="750" id="674">
+                        <rect key="frame" x="27" y="569" width="456" height="45"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="675">
+                            <font key="font" metaFont="smallSystem"/>
+                            <string key="title">Choose a delay that is shorter than the screensaver delay set in the Screen Effects pane of System Preferences, and shorter than the sleep time set in the Energy Saver pane of System Preferences, so you jiggle often enough to keep your machine alert.</string>
+                            <color key="textColor" white="0.40000001000000002" alpha="1" colorSpace="calibratedWhite"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <matrix verticalHuggingPriority="750" allowsEmptySelection="NO" autosizesCells="NO" id="676">
+                        <rect key="frame" x="28" y="406" width="454" height="38"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        <size key="cellSize" width="454" height="18"/>
+                        <size key="intercellSpacing" width="4" height="2"/>
+                        <buttonCell key="prototype" type="radio" title="Radio" imagePosition="left" alignment="left" inset="2" id="679">
+                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <cells>
+                            <column>
+                                <buttonCell type="radio" title="Jiggle whenever Jiggler is running (considering conditions set below)" imagePosition="left" alignment="left" state="on" inset="2" id="678">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <buttonCell type="radio" title="Jiggle only when the machine has been idle (no keyboard or mouse)" imagePosition="left" alignment="left" tag="1" inset="2" id="677">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </column>
+                        </cells>
+                        <connections>
+                            <action selector="jiggleOnlyWhenIdleChanged:" target="-2" id="734"/>
+                        </connections>
+                    </matrix>
+                    <textField verticalHuggingPriority="750" id="680">
+                        <rect key="frame" x="27" y="326" width="456" height="22"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Require at least one of these conditions, if checked below, to jiggle:" id="681">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <textField verticalHuggingPriority="750" id="705">
+                        <rect key="frame" x="27" y="119" width="456" height="22"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="But never jiggle if one of these conditions is met:" id="706">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <button id="682">
+                        <rect key="frame" x="40" y="302" width="326" height="18"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <buttonCell key="cell" type="check" title="The machine is busy working – CPU usage over:" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="683">
+                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="onlyWithCPUUsageChanged:" target="-2" id="735"/>
+                        </connections>
+                    </button>
+                    <button id="684">
+                        <rect key="frame" x="40" y="276" width="439" height="18"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <buttonCell key="cell" type="check" title="A removable, writable disk is mounted (such as an unburned CD)" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="685">
+                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="onlyWithRemovableWritableDisksChanged:" target="-2" id="736"/>
+                        </connections>
+                    </button>
+                    <button id="711">
+                        <rect key="frame" x="40" y="95" width="439" height="18"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <buttonCell key="cell" type="check" title="The machine is running on battery power only" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="712">
+                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="notOnBatteryChanged:" target="-2" id="741"/>
+                        </connections>
+                    </button>
+                    <button id="686">
+                        <rect key="frame" x="40" y="224" width="361" height="18"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <buttonCell key="cell" type="check" title="                                   is running whose name contains:" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="687">
+                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="onlyWithApplicationsNamedXChanged:" target="-2" id="737"/>
+                        </connections>
+                    </button>
+                    <textField verticalHuggingPriority="750" id="688">
+                        <rect key="frame" x="60" y="194" width="390" height="22"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="left" drawsBackground="YES" id="689">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                        <connections>
+                            <outlet property="delegate" destination="-2" id="730"/>
+                        </connections>
+                    </textField>
+                    <button id="692">
+                        <rect key="frame" x="40" y="250" width="390" height="18"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <buttonCell key="cell" type="check" title="iTunes is currently playing music (not paused or stopped)" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="693">
+                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="onlyWithITunesPlayingChanged:" target="-2" id="738"/>
+                        </connections>
+                    </button>
+                    <textField verticalHuggingPriority="750" id="694">
+                        <rect key="frame" x="47" y="509" width="117" height="18"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="(Set to 20 seconds)" id="695">
+                            <font key="font" metaFont="smallSystem"/>
+                            <color key="textColor" white="0.40000001000000002" alpha="1" colorSpace="calibratedWhite"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <slider verticalHuggingPriority="750" id="696">
+                        <rect key="frame" x="372" y="303" width="63" height="15"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="10" maxValue="90" doubleValue="50" tickMarkPosition="below" sliderType="linear" id="697"/>
+                        <connections>
+                            <action selector="cpuUsageSliderChanged:" target="-2" id="739"/>
+                        </connections>
+                    </slider>
+                    <textField verticalHuggingPriority="750" id="698">
+                        <rect key="frame" x="440" y="301" width="30" height="17"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="50%" id="699">
+                            <font key="font" metaFont="smallSystem"/>
+                            <color key="textColor" white="0.40000001000000002" alpha="1" colorSpace="calibratedWhite"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <popUpButton verticalHuggingPriority="750" id="700">
+                        <rect key="frame" x="58" y="219" width="125" height="26"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <popUpButtonCell key="cell" type="push" title="An application" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="703" id="701">
+                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="menu"/>
+                            <menu key="menu" title="OtherViews" id="702">
+                                <items>
+                                    <menuItem title="An application" state="on" id="703"/>
+                                    <menuItem title="A process" tag="1" id="704"/>
+                                </items>
+                            </menu>
+                        </popUpButtonCell>
+                        <connections>
+                            <action selector="onlyWithIdentityPopUpChanged:" target="-2" id="740"/>
+                        </connections>
+                    </popUpButton>
+                    <textField verticalHuggingPriority="750" id="707">
+                        <rect key="frame" x="57" y="20" width="396" height="14"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="(As above, enter a single item or a comma-separated list)" id="708">
+                            <font key="font" metaFont="smallSystem"/>
+                            <color key="textColor" white="0.40000001000000002" alpha="1" colorSpace="calibratedWhite"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <button id="713">
+                        <rect key="frame" x="40" y="69" width="397" height="18"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <buttonCell key="cell" type="check" title="An application is active (frontmost) whose name contains:" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="714">
+                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="onlyWithFrontAppsNamedXChanged:" target="-2" id="746"/>
+                        </connections>
+                    </button>
+                    <textField verticalHuggingPriority="750" id="709">
+                        <rect key="frame" x="60" y="39" width="390" height="22"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="left" drawsBackground="YES" id="710">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                        <connections>
+                            <outlet property="delegate" destination="-2" id="731"/>
+                        </connections>
+                    </textField>
+                    <button id="iNl-Uo-XLe">
+                        <rect key="frame" x="28" y="632" width="347" height="18"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <buttonCell key="cell" type="check" title="Launch Jiggler automatically on login (recommended)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="5Fd-YH-88y">
+                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="launchOnLoginChanged:" target="-2" id="dsi-Lv-bnE"/>
+                        </connections>
+                    </button>
+                    <button id="YAd-kt-mbO">
+                        <rect key="frame" x="28" y="368" width="418" height="18"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="check" title="Zen Jiggle (jiggle the system idle time without moving the cursor)" bezelStyle="regularSquare" imagePosition="left" inset="2" id="Wsl-Bp-IFu">
+                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="zenJiggleChanged:" target="-2" id="BSi-u1-OLJ"/>
+                        </connections>
+                    </button>
+                    <button verticalHuggingPriority="750" id="aez-qj-q8f">
+                        <rect key="frame" x="429" y="625" width="75" height="32"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="push" title="Close" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="xnN-ZB-ePE">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                            <string key="keyEquivalent">w</string>
+                            <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="performClose:" target="654" id="uye-y4-djr"/>
+                        </connections>
+                    </button>
+                </subviews>
+            </view>
+            <connections>
+                <outlet property="delegate" destination="-2" id="729"/>
+            </connections>
+            <point key="canvasLocation" x="1056" y="765.5"/>
+        </window>
+    </objects>
+</document>

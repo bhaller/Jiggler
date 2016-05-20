@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+    <dependencies>
+        <deployment version="101000" identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10116"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
+            <connections>
+                <outlet property="delegate" destination="197" id="198"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <customObject id="197" userLabel="AppDelegate" customClass="AppDelegate">
+            <connections>
+                <outlet property="masterSwitchItem" destination="1VC-jO-rbl" id="QJC-vk-WTU"/>
+                <outlet property="statusItemMenu" destination="RMr-e6-vuZ" id="yuq-l1-PlR"/>
+                <outlet property="timedQuitItem" destination="UfQ-4W-BhK" id="GBv-Kx-u7n"/>
+            </connections>
+        </customObject>
+        <menu id="RMr-e6-vuZ">
+            <items>
+                <menuItem title="Jiggler Enabled" state="on" id="1VC-jO-rbl">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="jiggleMasterSwitchChanged:" target="197" id="Mdt-8O-csj"/>
+                    </connections>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="IWi-Cc-yaM"/>
+                <menuItem title="About Jiggler" id="TJw-DT-ZAp">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="showAbout:" target="197" id="GOC-x9-eIh"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Preferences..." id="mNP-ki-We3">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="showPreferences:" target="197" id="aYD-c0-I8V"/>
+                    </connections>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="W2X-6W-4WZ"/>
+                <menuItem title="Check Version Now" id="Pk3-OT-aVt">
+                    <connections>
+                        <action selector="checkVersionNow:" target="197" id="QA0-ne-PMK"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Automatic Checking..." id="Ltv-tk-vS4">
+                    <connections>
+                        <action selector="automaticVersionChecking:" target="197" id="qvn-vs-yHe"/>
+                    </connections>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="gCq-O7-BeC"/>
+                <menuItem title="Jiggler's 'Read Me' File" id="fQB-Ag-hM0">
+                    <connections>
+                        <action selector="showReadMe:" target="197" id="LEn-NW-Sqf"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Jiggler's Home Page" id="B8K-0P-81Q">
+                    <connections>
+                        <action selector="showProductHomePage:" target="197" id="mee-Xo-GhH"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Stick Software's Home Page" id="scw-Mi-ccv">
+                    <connections>
+                        <action selector="showStickSoftwarePage:" target="197" id="IuB-iI-ekF"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="E-Mail Stick Software" id="vTh-Dr-knj">
+                    <connections>
+                        <action selector="sendStickSoftwareEmail:" target="197" id="ttf-G3-7Ij"/>
+                    </connections>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="SIi-Hr-viz"/>
+                <menuItem title="Timed Quit..." id="UfQ-4W-BhK">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="timedQuit:" target="197" id="PGz-xo-AYg"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Cancel Timed Quit" id="DFI-Cm-5cW">
+                    <connections>
+                        <action selector="cancelTimedQuit:" target="197" id="MTW-cm-QHM"/>
+                    </connections>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="Yud-pd-Dt2"/>
+                <menuItem title="Quit Jiggler" id="22i-o1-8Ux">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="terminate:" target="-2" id="zyz-be-CoF"/>
+                    </connections>
+                </menuItem>
+            </items>
+            <point key="canvasLocation" x="722.5" y="586.5"/>
+        </menu>
+    </objects>
+</document>

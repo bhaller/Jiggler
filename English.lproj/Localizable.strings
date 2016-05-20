@@ -1,0 +1,74 @@
+/*
+ *  Common button names
+ */
+
+/* OK button */
+"OK button" = "OK";
+
+/* Cancel button */
+"Cancel button" = "Cancel";
+
+/* No button */
+"No button" = "No";
+
+/* Yes button */
+"Yes button" = "Yes";
+
+/* Stop button */
+"Stop button" = "Stop";
+
+
+/*
+ *  The strings in this section are used to build the About window, which is done in code, not in a nib
+ *	Also in this section are strings used to make the splash panel at launch time
+ */
+
+/* For the About box and splash panel */
+"Version %@" = "Version %@";
+
+/* The Stick Software URL string in the About window */
+"Visit %@ for more!" = "Visit %@ for more!";
+
+/* The body text in the About panel */
+"About panel body text" = "  Jiggler is a little application that jiggles your mouse cursor periodically.  It can keep your screensaver from kicking in, keep your CPU from falling asleep, or otherwise keep your Mac on its toes.\n\n  Jiggler is freeware.  If you like it, please check out some of our shareware products at www.sticksoftware.com (and pay for them if you use them!)\n\n  Jiggler is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.  Jiggler is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.  You should have received a copy of the GNU General Public License along with Jiggler. If not, see http://www.gnu.org/licenses/.\n\n  You can find the source code for Jiggler at github.com.  Please let us know if you find it useful, and please feel free to submit pull requests; open-sourcing Jiggler is a new experiment for us, and we are hoping that it goes well!\n\n  Thanks to Roberto Muñoz for providing Jiggler's icon.\n\n  Jiggler was written in Cocoa, Apple's object-oriented application framework, using Objective-C, the best programming language in the world!";
+
+/* The authorship string in the About window */
+"By Ben Haller (%@)" = "By Ben Haller (%@)";
+
+/* The copyright string in the About window */
+"Copyright 2016 Stick Software, Ben Haller.  All Rights Reserved." = "Copyright © 2016 Stick Software, Ben Haller.  All Rights Reserved.";
+
+
+/*
+ *  Version Check strings
+ */
+
+/* Version Check panels title */
+"Version Check" = "Version Check";
+
+/* Version Check offer panel text */
+"Version Check offer panel text" = "%@ can check on the web automatically for a newer version of itself.  Would you like this check to be performed for you each time %@ starts up?  (You can always check manually, using the Check Version Now menu command.)";
+
+/* Version Check progress string */
+"Checking for a new version..." = "Checking for a new version...";
+
+/* Version Check up to date */
+"Version Check up to date" = "Your version of %@, %@, is up to date.";
+
+/* Version Check new version available */
+"Version Check new version available" = "A newer version of %@, %@, is available (you have version %@).\n\nWould you like to begin a download of the new version in your default browser?";
+
+/* Version Check download failed error */
+"Version Check download failed error" = "The download did not begin successfully (your default web browser may be configured incorrectly in the Internet panel of System Preferences).  You may wish to manually download the latest version from www.sticksoftware.com.";
+
+/* Version Check info unavailable error */
+"Version Check info unavailable error" = "The version check failed; the information needed appears to be unavailable.\n\nIf you wish to, feel free to send email to support@sticksoftware.com to help us resolve this issue.";
+
+/* Version Check info unavailable error (sending email) */
+"Version Check info unavailable error (sending email)" = "The version check failed; the information needed appears to be unavailable.\n\nAn email message will be automatically generated to Stick Software regarding this problem; please send it, to help us resolve this issue.";
+
+/* Version Check network unavailable error (long version) */
+"Version Check network unavailable error (long version)" = "The automatic version check failed; the network may not be accessible at this time, or the Stick Software web site may be temporarily unavailable.\n\nYou can initiate a version check at any time using the Check Version Now menu command.  You can disable the automatic version check using the Automatic Checking... menu command.";
+
+/* Version Check network unavailable error (short version) */
+"Version Check network unavailable error (short version)" = "The version check failed; the network may not be accessible at this time, or the Stick Software web site may be temporarily unavailable.";
