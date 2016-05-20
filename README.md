@@ -2,6 +2,8 @@ Jiggler
 ---------------------------------------------------------------------------------------------
 Home page: [http://www.sticksoftware.com/software/Jiggler.html](http://www.sticksoftware.com/software/Jiggler.html)
 
+GitHub page: [https://github.com/bhaller/Jiggler](https://github.com/bhaller/Jiggler)
+
 Jiggler is a little freeware app with one purpose: to keep your Mac awake. When you have some lengthy task for your computer to do, it's annoying to have to turn off your screensaver and turn off the sleep timer, only to have to turn it all back on again when you're done. (The "never sleep" corner will keep your screensaver from kicking in, but still won't prevent your machine from falling asleep.) What you really want is a little helper who will bump your mouse every once in a while to keep your machine alert. That's Jiggler.
 
 Jiggler is a [Stick Software](http://www.sticksoftware.com) product.  If you like it, please check out some of our shareware products at [www.sticksoftware.com](http://www.sticksoftware.com) – and pay for them if you use them!

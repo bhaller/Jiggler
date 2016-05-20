@@ -43,7 +43,7 @@ x	tint the status item icon: red when timed quit is active, green when jiggling 
 x	add a "launch Jiggler at startup" checkbox to toggle that in the system preferences
 x	add "Zen jiggle" checkbox that resets system timers without actually jiggling the cursor
 x	update the Read Me to describe the new functionality, mention open-sourcing and GitHub, etc.
-	add GitHub link to readme files and about window
+x	add GitHub link to readme files and about window
 
 
 Suggestions:

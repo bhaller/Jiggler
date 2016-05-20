@@ -887,7 +887,7 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 	NSDictionary *linkDict = [NSDictionary dictionaryWithObjectsAndKeys:
 							  @"http://www.sticksoftware.com/", @"www.sticksoftware.com",
 							  @"http://www.gnu.org/licenses/", @"http://www.gnu.org/licenses/",
-							  @"http://github.com/", @"github.com",
+							  @"https://github.com/bhaller/Jiggler", @"https://github.com/bhaller/Jiggler",
 							  nil];
 	
 	[NSWindow runStandardSSAboutPanelWithURLDictionary:linkDict hideOnDeactivate:NO];
