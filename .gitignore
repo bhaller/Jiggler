@@ -214,3 +214,6 @@ xcuserdata
 # This keeps a built executable of slim, or a bin directory, from getting added
 slim
 bin
+./idea
+.idea
+.idea/vcs.xml

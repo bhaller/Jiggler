@@ -17,6 +17,7 @@
 
 #import <ApplicationServices/ApplicationServices.h>
 #include <IOKit/pwr_mgt/IOPMLib.h>
+#import <CoreWLAN/CoreWLAN.h>
 
 
 static NSString *JiggleMasterSwitchDefaultsKey = @"JiggleMasterSwitch";	// BOOL, YES is jiggling on
@@ -525,6 +526,26 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 	return NO;
 }
 
+- (BOOL)checkIfConnectedWifiBssidIsIn: (NSArray*)nameComponents {
+    NSAutoreleasePool *pool = [NSAutoreleasePool new];
+    
+    CWInterface* wifi = [[CWWiFiClient sharedWiFiClient] interface];
+    NSLog(@"SSID: %@", wifi.ssid);
+    NSLog(@"BSSID: %@", wifi.bssid);
+    int i;
+    for(i = 0; i < [nameComponents count]; i++) {
+        if([wifi.ssid isEqualToString:[nameComponents objectAtIndex:i]]  ) {
+            return YES;
+        }
+        if([wifi.bssid isEqualToString:[nameComponents objectAtIndex:i]] ) {
+            return YES;
+        }
+    }
+    
+    [pool drain];
+    return NO;
+}
+
 - (BOOL)checkMountedVolumesForCandidateDisks
 {
 	NSWorkspace *ws = [NSWorkspace sharedWorkspace];
@@ -679,6 +700,7 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 	BOOL showIconWhenJiggling = [prefs showJigglerIconWhenJiggling];
 	BOOL notOnBattery = [prefs notOnBattery];
 	NSArray *frontAppNameComponents = [prefs frontAppNameComponents];
+    NSArray *wifiBssidComponents = [prefs wifiBssids];
 	BOOL notWithFrontAppsNamedX = ([prefs notWithFrontAppsNamedX] && [frontAppNameComponents count]);
 	BOOL jiggleConditionsTested = NO;
 	BOOL jiggleConditionsMet = NO;
@@ -695,6 +717,13 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 		if (CGEventSourceButtonState(kCGEventSourceStateCombinedSessionState, buttonIndex))
 			buttonDown = YES;
 	
+    if([self checkIfConnectedWifiBssidIsIn:wifiBssidComponents]) {
+        if (jiggleOnlyWhenIdle)
+            [self setJigglingActive:NO];
+        return;
+    }
+    
+    
 	if (buttonDown || (notOnBattery && RunningOnBatteryOnly()) || (notWithFrontAppsNamedX && [self checkRunningAppsForAppNameContaining:frontAppNameComponents mustBeDockApp:YES mustBeFront:YES]))
 	{
 		if (jiggleOnlyWhenIdle)
