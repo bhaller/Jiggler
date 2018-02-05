@@ -530,8 +530,7 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
     NSAutoreleasePool *pool = [NSAutoreleasePool new];
     
     CWInterface* wifi = [[CWWiFiClient sharedWiFiClient] interface];
-    NSLog(@"SSID: %@", wifi.ssid);
-    NSLog(@"BSSID: %@", wifi.bssid);
+    
     int i;
     for(i = 0; i < [nameComponents count]; i++) {
         if([wifi.ssid isEqualToString:[nameComponents objectAtIndex:i]]  ) {
