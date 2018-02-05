@@ -7,7 +7,6 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import <QuickTime/Movies.h>
 
 #if 0
 // Short-circuit to NSLocalizedString, passing nil for the comment so we don't inflate our binary

@@ -42,6 +42,10 @@
     IBOutlet NSButton *notWithFrontAppsNamedXCheckbox;
 	IBOutlet NSTextField *frontAppsNameComponentTextfield;
 
+    
+    IBOutlet NSButton *notWhenWifiBssidCheckbox;
+    IBOutlet NSTextField *wifiBssidTextField;
+    
 	// Cached values
 	int jiggleSeconds;
 	BOOL showJigglerIconWhenJiggling;
@@ -66,6 +70,10 @@
     BOOL notWithFrontAppsNamedX;
 	NSString *frontAppNameComponent;
 	NSArray *frontAppNameComponents;
+    
+    BOOL notWhenWifiBssid;
+    NSString *wifiBssid;
+    NSArray *wifiBssids;
 }
 
 + (PrefsController *)sharedPrefsController;
@@ -95,6 +103,7 @@
 
 - (BOOL)notWithFrontAppsNamedX;
 - (NSArray *)frontAppNameComponents;
+- (NSArray *)wifiBssids;
 
 // Actions and internals
 - (IBAction)jiggleTimeChanged:(id)sender;
@@ -116,6 +125,8 @@
 - (IBAction)notOnBatteryChanged:(id)sender;
 
 - (IBAction)onlyWithFrontAppsNamedXChanged:(id)sender;
+
+- (IBAction)onlyWhenWifiIsConnectedChanged:(id)sender;
 
 // Launch on Login
 - (BOOL)launchOnLogin;

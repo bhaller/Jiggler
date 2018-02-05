@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8F5E6BE8202800560067F9C3 /* CoreWLAN.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F5E6BE7202800560067F9C3 /* CoreWLAN.framework */; };
 		982192D50A3E6A3500A4CA3E /* Jiggler_Prefix.h in Headers */ = {isa = PBXBuildFile; fileRef = 32CA4F630368D1EE00C91783 /* Jiggler_Prefix.h */; };
 		982192D60A3E6A3500A4CA3E /* AppDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 98C7A53D04DC7E94000001E2 /* AppDelegate.h */; };
 		982192D70A3E6A3500A4CA3E /* CocoaExtra.h in Headers */ = {isa = PBXBuildFile; fileRef = 98C7A57504DCA8D5000001E2 /* CocoaExtra.h */; };
@@ -45,6 +46,7 @@
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32CA4F630368D1EE00C91783 /* Jiggler_Prefix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Jiggler_Prefix.h; sourceTree = "<group>"; };
+		8F5E6BE7202800560067F9C3 /* CoreWLAN.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreWLAN.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk/System/Library/Frameworks/CoreWLAN.framework; sourceTree = DEVELOPER_DIR; };
 		982192F90A3E6A3500A4CA3E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		982192FA0A3E6A3500A4CA3E /* Jiggler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Jiggler.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9821933E0A3E749200A4CA3E /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
@@ -85,6 +87,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8F5E6BE8202800560067F9C3 /* CoreWLAN.framework in Frameworks */,
 				982192F30A3E6A3500A4CA3E /* Cocoa.framework in Frameworks */,
 				982192F40A3E6A3500A4CA3E /* IOKit.framework in Frameworks */,
 				9821933F0A3E749200A4CA3E /* ApplicationServices.framework in Frameworks */,
@@ -180,6 +183,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8F5E6BE7202800560067F9C3 /* CoreWLAN.framework */,
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
 			);
@@ -252,6 +256,11 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0730;
+				TargetAttributes = {
+					982192D30A3E6A3500A4CA3E = {
+						DevelopmentTeam = HWRC6CPJM9;
+					};
+				};
 			};
 			buildConfigurationList = 98218FBA0A3E46C000A4CA3E /* Build configuration list for PBXProject "Jiggler" */;
 			compatibilityVersion = "Xcode 6.3";
@@ -398,8 +407,9 @@
 		982192F60A3E6A3500A4CA3E /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "Developer ID Application: Ben Haller (C5P6M43RZ7)";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = HWRC6CPJM9;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
 				INFOPLIST_FILE = Info.plist;
@@ -407,6 +417,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.stick.app.jiggler;
 				PRODUCT_NAME = Jiggler;
 				PROVISIONING_PROFILE = "";
+				SDKROOT = macosx10.13;
 				WARNING_CFLAGS = (
 					"-Wmost",
 					"-Wno-four-char-constants",
@@ -418,14 +429,16 @@
 		982192F70A3E6A3500A4CA3E /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "Developer ID Application: Ben Haller (C5P6M43RZ7)";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = HWRC6CPJM9;
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				PRODUCT_BUNDLE_IDENTIFIER = com.stick.app.jiggler;
 				PRODUCT_NAME = Jiggler;
 				PROVISIONING_PROFILE = "";
+				SDKROOT = macosx10.13;
 				WARNING_CFLAGS = (
 					"-Wmost",
 					"-Wno-four-char-constants",
@@ -437,14 +450,16 @@
 		982192F80A3E6A3500A4CA3E /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "Developer ID Application: Ben Haller (C5P6M43RZ7)";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = HWRC6CPJM9;
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				PRODUCT_BUNDLE_IDENTIFIER = com.stick.app.jiggler;
 				PRODUCT_NAME = Jiggler;
 				PROVISIONING_PROFILE = "";
+				SDKROOT = macosx10.13;
 				WARNING_CFLAGS = (
 					"-Wmost",
 					"-Wno-four-char-constants",
