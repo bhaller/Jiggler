@@ -28,6 +28,8 @@ static NSString *ApplicationNameComponentDefaultsKey = @"ApplicationNameComponen
 static NSString *NotOnBatteryDefaultsKey = @"NotOnBattery";
 static NSString *NotWithFrontAppsNamedXDefaultsKey = @"NotWithFrontAppsNamedX";
 static NSString *FrontAppNameComponentDefaultsKey = @"FrontAppNameComponent";
+static NSString *NotWithWifiBssidDefaultKey=@"NotWhenWifiBssid";
+static NSString *WifiBssidNameDefaultKey=@"WifiBssidComponent";
 
 
 @implementation PrefsController
@@ -74,6 +76,9 @@ static PrefsController *sharedPrefsController = nil;
                                             
                                             @"NO", NotWithFrontAppsNamedXDefaultsKey,
                                             @"", FrontAppNameComponentDefaultsKey,
+                                            
+                                            @"NO", NotWithWifiBssidDefaultKey,
+                                            @"", WifiBssidNameDefaultKey,
 											
 											[NSNumber numberWithBool:YES], @"NSAppSleepDisabled",	// completely disable App Nap; we want to always be live, that's kind of the point
                                             
@@ -125,6 +130,11 @@ static PrefsController *sharedPrefsController = nil;
 			frontAppNameComponent = [[userDefaults stringForKey:FrontAppNameComponentDefaultsKey] retain];
 			[frontAppNameComponents release];
 			frontAppNameComponents = nil;
+            
+            notWhenWifiBssid = [userDefaults boolForKey:NotWithWifiBssidDefaultKey];
+            wifiBssid = [[userDefaults stringForKey:WifiBssidNameDefaultKey] retain];
+            [wifiBssids release];
+            wifiBssids = nil;
 		}
 		
 		sharedPrefsController = [self retain];
@@ -205,6 +215,10 @@ static PrefsController *sharedPrefsController = nil;
 		[notWithFrontAppsNamedXCheckbox setState:(notWithFrontAppsNamedX && [frontAppNameComponent length])];
 		[frontAppsNameComponentTextfield setStringValue:frontAppNameComponent];
         [frontAppsNameComponentTextfield setEnabled:notWithFrontAppsNamedX];
+        
+        [notWhenWifiBssidCheckbox setState:(notWhenWifiBssid && [wifiBssid length])];
+        [wifiBssidTextField setStringValue:wifiBssid];
+        [wifiBssidTextField setEnabled:notWhenWifiBssid];
         
 		[preferencesWindow centerOnPrimaryScreen];
 		[preferencesWindow setReleasedWhenClosed:NO];
@@ -326,6 +340,26 @@ static PrefsController *sharedPrefsController = nil;
 	}
 	
 	return frontAppNameComponents;
+}
+
+- (NSArray *)wifiBssids
+{
+    if(!wifiBssids && [wifiBssid length]) {
+        NSMutableArray *newWifiBssidComponents = [[NSMutableArray alloc] init];
+        NSArray *uncorrectedComponents = [wifiBssid componentsSeparatedByString:@","];
+        NSCharacterSet *trimSet = [NSCharacterSet characterSetWithCharactersInString:@" \t\""];
+        int i, c;
+        for(i=0, c=[uncorrectedComponents count]; i< c; ++i) {
+            NSString *uncorrectedComponent = [uncorrectedComponents objectAtIndex:i];
+            NSString *correctedString = [uncorrectedComponent stringByTrimmingCharactersInSet:trimSet];
+            if ([correctedString length]) {
+                [newWifiBssidComponents addObject:correctedString];
+            }
+        }
+        
+        wifiBssids = (NSArray *)newWifiBssidComponents;
+    }
+    return wifiBssids;
 }
 
 - (IBAction)jiggleTimeChanged:(id)sender
@@ -487,6 +521,24 @@ static PrefsController *sharedPrefsController = nil;
 	}
 }
 
+- (IBAction)onlyWhenWifiIsConnectedChanged:(id)sender {
+    BOOL newState = [sender state];
+    
+    if (newState != notWhenWifiBssid)
+    {
+        notWhenWifiBssid = newState;
+        [[NSUserDefaults standardUserDefaults] setBool:newState forKey:NotWithWifiBssidDefaultKey];
+        
+        [wifiBssidTextField setEnabled:notWhenWifiBssid];
+        
+        if (notWhenWifiBssid)
+        {
+            [wifiBssidTextField selectText:nil];
+            [preferencesWindow makeFirstResponder:wifiBssidTextField];
+        }
+    }
+}
+
 - (void)controlTextDidChange:(NSNotification *)aNotification
 {
 	id object = [aNotification object];
@@ -509,6 +561,14 @@ static PrefsController *sharedPrefsController = nil;
 		
 		[[NSUserDefaults standardUserDefaults] setObject:frontAppNameComponent forKey:FrontAppNameComponentDefaultsKey];
 	}
+    if(object == wifiBssidTextField) {
+        [wifiBssid release];
+        wifiBssid = [[wifiBssidTextField stringValue] retain];
+        [wifiBssids release];
+        wifiBssids = nil;
+        
+        [[NSUserDefaults standardUserDefaults] setObject:wifiBssid forKey:WifiBssidNameDefaultKey];
+    }
 }
 
 - (IBAction)notOnBatteryChanged:(id)sender
