@@ -12,7 +12,7 @@ Jiggler is a [Stick Software](http://www.sticksoftware.com) product.  If you lik
 License
 ----------
 
-Copyright (c) 2016 Ben Haller.  All rights reserved.
+Copyright (c) 2020 Ben Haller.  All rights reserved.
 
 Jiggler is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 

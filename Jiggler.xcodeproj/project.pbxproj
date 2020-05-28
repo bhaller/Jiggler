@@ -3,480 +3,501 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 47;
+	objectVersion = 50;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		982192D50A3E6A3500A4CA3E /* Jiggler_Prefix.h in Headers */ = {isa = PBXBuildFile; fileRef = 32CA4F630368D1EE00C91783 /* Jiggler_Prefix.h */; };
-		982192D60A3E6A3500A4CA3E /* AppDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 98C7A53D04DC7E94000001E2 /* AppDelegate.h */; };
-		982192D70A3E6A3500A4CA3E /* CocoaExtra.h in Headers */ = {isa = PBXBuildFile; fileRef = 98C7A57504DCA8D5000001E2 /* CocoaExtra.h */; };
-		982192D80A3E6A3500A4CA3E /* SSPanels.h in Headers */ = {isa = PBXBuildFile; fileRef = 98C7A57904DCC3A3000001E2 /* SSPanels.h */; };
-		982192D90A3E6A3500A4CA3E /* SSProgressPanel.h in Headers */ = {isa = PBXBuildFile; fileRef = 98C7A57B04DCC3A3000001E2 /* SSProgressPanel.h */; };
-		982192DA0A3E6A3500A4CA3E /* SSVersionChecker.h in Headers */ = {isa = PBXBuildFile; fileRef = 98C7A57D04DCC3A3000001E2 /* SSVersionChecker.h */; };
-		982192DB0A3E6A3500A4CA3E /* PrefsController.h in Headers */ = {isa = PBXBuildFile; fileRef = 98C7A59304DD81C2000001E2 /* PrefsController.h */; };
-		982192DC0A3E6A3500A4CA3E /* JigglerOverlayWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 9844984706DD34AC00072E4E /* JigglerOverlayWindow.h */; };
-		982192DD0A3E6A3500A4CA3E /* TimedQuitController.h in Headers */ = {isa = PBXBuildFile; fileRef = 9844999006DD71D000072E4E /* TimedQuitController.h */; };
-		982192DE0A3E6A3500A4CA3E /* SSCPU.h in Headers */ = {isa = PBXBuildFile; fileRef = 98449B4C06DDA0F000072E4E /* SSCPU.h */; };
-		982192E10A3E6A3500A4CA3E /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 98C7A58604DCC564000001E2 /* Localizable.strings */; };
-		982192E20A3E6A3500A4CA3E /* jiggler.icns in Resources */ = {isa = PBXBuildFile; fileRef = 98C7A59104DCDBC4000001E2 /* jiggler.icns */; };
-		982192E40A3E6A3500A4CA3E /* stickman5.16G.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 98C7BCF604DEBB19000001E2 /* stickman5.16G.tiff */; };
-		982192E50A3E6A3500A4CA3E /* Read Me.html in Resources */ = {isa = PBXBuildFile; fileRef = 984497DF06DD222B00072E4E /* Read Me.html */; };
-		982192E80A3E6A3500A4CA3E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
-		982192E90A3E6A3500A4CA3E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 98C7A53E04DC7E94000001E2 /* AppDelegate.m */; };
-		982192EA0A3E6A3500A4CA3E /* CocoaExtra.m in Sources */ = {isa = PBXBuildFile; fileRef = 98C7A57604DCA8D5000001E2 /* CocoaExtra.m */; };
-		982192EB0A3E6A3500A4CA3E /* SSPanels.m in Sources */ = {isa = PBXBuildFile; fileRef = 98C7A57A04DCC3A3000001E2 /* SSPanels.m */; };
-		982192EC0A3E6A3500A4CA3E /* SSProgressPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = 98C7A57C04DCC3A3000001E2 /* SSProgressPanel.m */; };
-		982192ED0A3E6A3500A4CA3E /* SSVersionChecker.m in Sources */ = {isa = PBXBuildFile; fileRef = 98C7A57E04DCC3A3000001E2 /* SSVersionChecker.m */; };
-		982192EE0A3E6A3500A4CA3E /* PrefsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 98C7A59404DD81C2000001E2 /* PrefsController.m */; };
-		982192EF0A3E6A3500A4CA3E /* JigglerOverlayWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 9844984806DD34AC00072E4E /* JigglerOverlayWindow.m */; };
-		982192F00A3E6A3500A4CA3E /* TimedQuitController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9844999106DD71D000072E4E /* TimedQuitController.m */; };
-		982192F10A3E6A3500A4CA3E /* SSCPU.m in Sources */ = {isa = PBXBuildFile; fileRef = 98449B4D06DDA0F000072E4E /* SSCPU.m */; };
-		982192F30A3E6A3500A4CA3E /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
-		982192F40A3E6A3500A4CA3E /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98C7AD1A04DDAF30000001E2 /* IOKit.framework */; };
-		9821933F0A3E749200A4CA3E /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9821933E0A3E749200A4CA3E /* ApplicationServices.framework */; };
-		98783DC31CEE7F1500FBD456 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 98783DBD1CEE7F1500FBD456 /* MainMenu.xib */; };
-		98783DC41CEE7F1500FBD456 /* Preferences.xib in Resources */ = {isa = PBXBuildFile; fileRef = 98783DBF1CEE7F1500FBD456 /* Preferences.xib */; };
-		98783DC51CEE7F1500FBD456 /* TimedQuit.xib in Resources */ = {isa = PBXBuildFile; fileRef = 98783DC11CEE7F1500FBD456 /* TimedQuit.xib */; };
+		987BCA03247F5AD80069B2FC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 987BCA02247F5AD80069B2FC /* AppDelegate.m */; };
+		987BCA05247F5AD80069B2FC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 987BCA04247F5AD80069B2FC /* Assets.xcassets */; };
+		987BCA08247F5AD80069B2FC /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 987BCA06247F5AD80069B2FC /* MainMenu.xib */; };
+		987BCA0B247F5AD80069B2FC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 987BCA0A247F5AD80069B2FC /* main.m */; };
+		987BCA24247F5CAE0069B2FC /* JigglerOverlayWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 987BCA1F247F5CAE0069B2FC /* JigglerOverlayWindow.m */; };
+		987BCA25247F5CAE0069B2FC /* TimedQuitController.m in Sources */ = {isa = PBXBuildFile; fileRef = 987BCA21247F5CAE0069B2FC /* TimedQuitController.m */; };
+		987BCA26247F5CAE0069B2FC /* PrefsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 987BCA23247F5CAE0069B2FC /* PrefsController.m */; };
+		987BCA31247F5CD30069B2FC /* CocoaExtra.m in Sources */ = {isa = PBXBuildFile; fileRef = 987BCA27247F5CD20069B2FC /* CocoaExtra.m */; };
+		987BCA32247F5CD30069B2FC /* SSCPU.m in Sources */ = {isa = PBXBuildFile; fileRef = 987BCA29247F5CD20069B2FC /* SSCPU.m */; };
+		987BCA33247F5CD30069B2FC /* SSProgressPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = 987BCA2B247F5CD20069B2FC /* SSProgressPanel.m */; };
+		987BCA34247F5CD30069B2FC /* SSPanels.m in Sources */ = {isa = PBXBuildFile; fileRef = 987BCA2C247F5CD20069B2FC /* SSPanels.m */; };
+		987BCA35247F5CD30069B2FC /* SSVersionChecker.m in Sources */ = {isa = PBXBuildFile; fileRef = 987BCA2F247F5CD30069B2FC /* SSVersionChecker.m */; };
+		987BCA3E247F5D090069B2FC /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 987BCA36247F5D090069B2FC /* Localizable.strings */; };
+		987BCA3F247F5D090069B2FC /* TimedQuit.xib in Resources */ = {isa = PBXBuildFile; fileRef = 987BCA38247F5D090069B2FC /* TimedQuit.xib */; };
+		987BCA40247F5D090069B2FC /* Preferences.xib in Resources */ = {isa = PBXBuildFile; fileRef = 987BCA3A247F5D090069B2FC /* Preferences.xib */; };
+		987BCA41247F5D090069B2FC /* Read Me.html in Resources */ = {isa = PBXBuildFile; fileRef = 987BCA3C247F5D090069B2FC /* Read Me.html */; };
+		987BCA43247F5D360069B2FC /* stickman5.16G.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 987BCA42247F5D360069B2FC /* stickman5.16G.tiff */; };
+		987BCA49247F74B80069B2FC /* VersionCheck.strings in Resources */ = {isa = PBXBuildFile; fileRef = 987BCA47247F74B80069B2FC /* VersionCheck.strings */; };
+		987BCA4C247F75360069B2FC /* Base.strings in Resources */ = {isa = PBXBuildFile; fileRef = 987BCA4A247F75360069B2FC /* Base.strings */; };
+		987BCA4E248030420069B2FC /* apple.png in Resources */ = {isa = PBXBuildFile; fileRef = 987BCA4D248030420069B2FC /* apple.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
-		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
-		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
-		32CA4F630368D1EE00C91783 /* Jiggler_Prefix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Jiggler_Prefix.h; sourceTree = "<group>"; };
-		982192F90A3E6A3500A4CA3E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		982192FA0A3E6A3500A4CA3E /* Jiggler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Jiggler.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		9821933E0A3E749200A4CA3E /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
-		984497E006DD222B00072E4E /* English */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html; name = English; path = "English.lproj/Read Me.html"; sourceTree = "<group>"; };
-		9844984706DD34AC00072E4E /* JigglerOverlayWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JigglerOverlayWindow.h; sourceTree = "<group>"; };
-		9844984806DD34AC00072E4E /* JigglerOverlayWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JigglerOverlayWindow.m; sourceTree = "<group>"; };
-		9844999006DD71D000072E4E /* TimedQuitController.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = TimedQuitController.h; sourceTree = "<group>"; };
-		9844999106DD71D000072E4E /* TimedQuitController.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = TimedQuitController.m; sourceTree = "<group>"; };
-		98449B4C06DDA0F000072E4E /* SSCPU.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SSCPU.h; sourceTree = "<group>"; };
-		98449B4D06DDA0F000072E4E /* SSCPU.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = SSCPU.m; sourceTree = "<group>"; };
-		98783DBE1CEE7F1500FBD456 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/MainMenu.xib; sourceTree = "<group>"; };
-		98783DC01CEE7F1500FBD456 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/Preferences.xib; sourceTree = "<group>"; };
-		98783DC21CEE7F1500FBD456 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/TimedQuit.xib; sourceTree = "<group>"; };
-		98783DC61CEE864C00FBD456 /* README.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = README.html; sourceTree = "<group>"; };
-		98783DC71CEE864C00FBD456 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		98C7A53D04DC7E94000001E2 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
-		98C7A53E04DC7E94000001E2 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		98C7A57504DCA8D5000001E2 /* CocoaExtra.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CocoaExtra.h; sourceTree = "<group>"; };
-		98C7A57604DCA8D5000001E2 /* CocoaExtra.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CocoaExtra.m; sourceTree = "<group>"; };
-		98C7A57904DCC3A3000001E2 /* SSPanels.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SSPanels.h; sourceTree = "<group>"; };
-		98C7A57A04DCC3A3000001E2 /* SSPanels.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = SSPanels.m; sourceTree = "<group>"; };
-		98C7A57B04DCC3A3000001E2 /* SSProgressPanel.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SSProgressPanel.h; sourceTree = "<group>"; };
-		98C7A57C04DCC3A3000001E2 /* SSProgressPanel.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = SSProgressPanel.m; sourceTree = "<group>"; };
-		98C7A57D04DCC3A3000001E2 /* SSVersionChecker.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SSVersionChecker.h; sourceTree = "<group>"; };
-		98C7A57E04DCC3A3000001E2 /* SSVersionChecker.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = SSVersionChecker.m; sourceTree = "<group>"; };
-		98C7A58704DCC564000001E2 /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/Localizable.strings; sourceTree = "<group>"; };
-		98C7A58C04DCD540000001E2 /* TO DO */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "TO DO"; sourceTree = "<group>"; };
-		98C7A59104DCDBC4000001E2 /* jiggler.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = jiggler.icns; sourceTree = "<group>"; };
-		98C7A59304DD81C2000001E2 /* PrefsController.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = PrefsController.h; sourceTree = "<group>"; };
-		98C7A59404DD81C2000001E2 /* PrefsController.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = PrefsController.m; sourceTree = "<group>"; };
-		98C7AD1A04DDAF30000001E2 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = /System/Library/Frameworks/IOKit.framework; sourceTree = "<absolute>"; };
-		98C7BCF604DEBB19000001E2 /* stickman5.16G.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = stickman5.16G.tiff; sourceTree = "<group>"; };
-		98F7A44B1CEE766A00B06EF6 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		987BC9FE247F5AD80069B2FC /* Jiggler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Jiggler.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		987BCA01247F5AD80069B2FC /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		987BCA02247F5AD80069B2FC /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		987BCA04247F5AD80069B2FC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		987BCA07247F5AD80069B2FC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		987BCA09247F5AD80069B2FC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		987BCA0A247F5AD80069B2FC /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		987BCA0C247F5AD80069B2FC /* Jiggler.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Jiggler.entitlements; sourceTree = "<group>"; };
+		987BCA14247F5BBD0069B2FC /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		987BCA15247F5BBD0069B2FC /* TO DO */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "TO DO"; sourceTree = "<group>"; };
+		987BCA16247F5BBD0069B2FC /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		987BCA17247F5BBD0069B2FC /* README.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = README.html; sourceTree = "<group>"; };
+		987BCA1E247F5CAE0069B2FC /* PrefsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrefsController.h; sourceTree = "<group>"; };
+		987BCA1F247F5CAE0069B2FC /* JigglerOverlayWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JigglerOverlayWindow.m; sourceTree = "<group>"; };
+		987BCA20247F5CAE0069B2FC /* JigglerOverlayWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JigglerOverlayWindow.h; sourceTree = "<group>"; };
+		987BCA21247F5CAE0069B2FC /* TimedQuitController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TimedQuitController.m; sourceTree = "<group>"; };
+		987BCA22247F5CAE0069B2FC /* TimedQuitController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimedQuitController.h; sourceTree = "<group>"; };
+		987BCA23247F5CAE0069B2FC /* PrefsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrefsController.m; sourceTree = "<group>"; };
+		987BCA27247F5CD20069B2FC /* CocoaExtra.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CocoaExtra.m; sourceTree = "<group>"; };
+		987BCA28247F5CD20069B2FC /* SSPanels.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSPanels.h; sourceTree = "<group>"; };
+		987BCA29247F5CD20069B2FC /* SSCPU.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSCPU.m; sourceTree = "<group>"; };
+		987BCA2A247F5CD20069B2FC /* SSProgressPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSProgressPanel.h; sourceTree = "<group>"; };
+		987BCA2B247F5CD20069B2FC /* SSProgressPanel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSProgressPanel.m; sourceTree = "<group>"; };
+		987BCA2C247F5CD20069B2FC /* SSPanels.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSPanels.m; sourceTree = "<group>"; };
+		987BCA2D247F5CD30069B2FC /* SSCPU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSCPU.h; sourceTree = "<group>"; };
+		987BCA2E247F5CD30069B2FC /* SSVersionChecker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSVersionChecker.h; sourceTree = "<group>"; };
+		987BCA2F247F5CD30069B2FC /* SSVersionChecker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSVersionChecker.m; sourceTree = "<group>"; };
+		987BCA30247F5CD30069B2FC /* CocoaExtra.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CocoaExtra.h; sourceTree = "<group>"; };
+		987BCA37247F5D090069B2FC /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
+		987BCA39247F5D090069B2FC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/TimedQuit.xib; sourceTree = "<group>"; };
+		987BCA3B247F5D090069B2FC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/Preferences.xib; sourceTree = "<group>"; };
+		987BCA3D247F5D090069B2FC /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = Base; path = "Base.lproj/Read Me.html"; sourceTree = "<group>"; };
+		987BCA42247F5D360069B2FC /* stickman5.16G.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = stickman5.16G.tiff; sourceTree = "<group>"; };
+		987BCA45247F5DEE0069B2FC /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		987BCA48247F74B80069B2FC /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/VersionCheck.strings; sourceTree = "<group>"; };
+		987BCA4B247F75360069B2FC /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Base.strings; sourceTree = "<group>"; };
+		987BCA4D248030420069B2FC /* apple.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = apple.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		982192F20A3E6A3500A4CA3E /* Frameworks */ = {
+		987BC9FB247F5AD80069B2FC /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				982192F30A3E6A3500A4CA3E /* Cocoa.framework in Frameworks */,
-				982192F40A3E6A3500A4CA3E /* IOKit.framework in Frameworks */,
-				9821933F0A3E749200A4CA3E /* ApplicationServices.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		080E96DDFE201D6D7F000001 /* Classes */ = {
+		987BC9F5247F5AD80069B2FC = {
 			isa = PBXGroup;
 			children = (
-				98C7A58504DCC3A7000001E2 /* Stick Software */,
-				98C7A53D04DC7E94000001E2 /* AppDelegate.h */,
-				98C7A53E04DC7E94000001E2 /* AppDelegate.m */,
-				9844984706DD34AC00072E4E /* JigglerOverlayWindow.h */,
-				9844984806DD34AC00072E4E /* JigglerOverlayWindow.m */,
-				98C7A59304DD81C2000001E2 /* PrefsController.h */,
-				98C7A59404DD81C2000001E2 /* PrefsController.m */,
-				9844999006DD71D000072E4E /* TimedQuitController.h */,
-				9844999106DD71D000072E4E /* TimedQuitController.m */,
+				987BCA14247F5BBD0069B2FC /* LICENSE */,
+				987BCA17247F5BBD0069B2FC /* README.html */,
+				987BCA16247F5BBD0069B2FC /* README.md */,
+				987BCA15247F5BBD0069B2FC /* TO DO */,
+				987BCA12247F5B750069B2FC /* Classes */,
+				987BCA13247F5B7F0069B2FC /* Resources */,
+				987BCA1D247F5C630069B2FC /* Other sources */,
+				987BC9FF247F5AD80069B2FC /* Products */,
+				987BCA44247F5DEE0069B2FC /* Frameworks */,
 			);
-			name = Classes;
 			sourceTree = "<group>";
 		};
-		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
+		987BC9FF247F5AD80069B2FC /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
-				98C7AD1A04DDAF30000001E2 /* IOKit.framework */,
-				9821933E0A3E749200A4CA3E /* ApplicationServices.framework */,
-			);
-			name = "Linked Frameworks";
-			sourceTree = "<group>";
-		};
-		1058C7A2FEA54F0111CA2CBB /* Other Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				29B97325FDCFA39411CA2CEA /* Foundation.framework */,
-				29B97324FDCFA39411CA2CEA /* AppKit.framework */,
-			);
-			name = "Other Frameworks";
-			sourceTree = "<group>";
-		};
-		19C28FACFE9D520D11CA2CBB /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				982192FA0A3E6A3500A4CA3E /* Jiggler.app */,
+				987BC9FE247F5AD80069B2FC /* Jiggler.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		29B97314FDCFA39411CA2CEA /* Jiggler */ = {
+		987BCA12247F5B750069B2FC /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				98C7A58C04DCD540000001E2 /* TO DO */,
-				98F7A44B1CEE766A00B06EF6 /* LICENSE */,
-				98783DC61CEE864C00FBD456 /* README.html */,
-				98783DC71CEE864C00FBD456 /* README.md */,
-				080E96DDFE201D6D7F000001 /* Classes */,
-				29B97317FDCFA39411CA2CEA /* Resources */,
-				29B97315FDCFA39411CA2CEA /* Other Sources */,
-				29B97323FDCFA39411CA2CEA /* Frameworks */,
-				19C28FACFE9D520D11CA2CBB /* Products */,
-				982192F90A3E6A3500A4CA3E /* Info.plist */,
+				987BCA1C247F5BF60069B2FC /* Stick Software */,
+				987BCA01247F5AD80069B2FC /* AppDelegate.h */,
+				987BCA02247F5AD80069B2FC /* AppDelegate.m */,
+				987BCA20247F5CAE0069B2FC /* JigglerOverlayWindow.h */,
+				987BCA1F247F5CAE0069B2FC /* JigglerOverlayWindow.m */,
+				987BCA1E247F5CAE0069B2FC /* PrefsController.h */,
+				987BCA23247F5CAE0069B2FC /* PrefsController.m */,
+				987BCA22247F5CAE0069B2FC /* TimedQuitController.h */,
+				987BCA21247F5CAE0069B2FC /* TimedQuitController.m */,
 			);
-			name = Jiggler;
+			name = Classes;
 			sourceTree = "<group>";
 		};
-		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
+		987BCA13247F5B7F0069B2FC /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				32CA4F630368D1EE00C91783 /* Jiggler_Prefix.h */,
-				29B97316FDCFA39411CA2CEA /* main.m */,
-			);
-			name = "Other Sources";
-			sourceTree = "<group>";
-		};
-		29B97317FDCFA39411CA2CEA /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				98783DBD1CEE7F1500FBD456 /* MainMenu.xib */,
-				98783DBF1CEE7F1500FBD456 /* Preferences.xib */,
-				98783DC11CEE7F1500FBD456 /* TimedQuit.xib */,
-				98C7A58604DCC564000001E2 /* Localizable.strings */,
-				984497DF06DD222B00072E4E /* Read Me.html */,
-				98C7A59104DCDBC4000001E2 /* jiggler.icns */,
-				98C7BCF604DEBB19000001E2 /* stickman5.16G.tiff */,
+				987BCA4D248030420069B2FC /* apple.png */,
+				987BCA0C247F5AD80069B2FC /* Jiggler.entitlements */,
+				987BCA04247F5AD80069B2FC /* Assets.xcassets */,
+				987BCA09247F5AD80069B2FC /* Info.plist */,
+				987BCA36247F5D090069B2FC /* Localizable.strings */,
+				987BCA4A247F75360069B2FC /* Base.strings */,
+				987BCA47247F74B80069B2FC /* VersionCheck.strings */,
+				987BCA3C247F5D090069B2FC /* Read Me.html */,
+				987BCA42247F5D360069B2FC /* stickman5.16G.tiff */,
+				987BCA06247F5AD80069B2FC /* MainMenu.xib */,
+				987BCA3A247F5D090069B2FC /* Preferences.xib */,
+				987BCA38247F5D090069B2FC /* TimedQuit.xib */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
 		};
-		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
+		987BCA1C247F5BF60069B2FC /* Stick Software */ = {
 			isa = PBXGroup;
 			children = (
-				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
-				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		98C7A58504DCC3A7000001E2 /* Stick Software */ = {
-			isa = PBXGroup;
-			children = (
-				98C7A57904DCC3A3000001E2 /* SSPanels.h */,
-				98C7A57A04DCC3A3000001E2 /* SSPanels.m */,
-				98C7A57B04DCC3A3000001E2 /* SSProgressPanel.h */,
-				98C7A57C04DCC3A3000001E2 /* SSProgressPanel.m */,
-				98C7A57D04DCC3A3000001E2 /* SSVersionChecker.h */,
-				98C7A57E04DCC3A3000001E2 /* SSVersionChecker.m */,
-				98C7A57504DCA8D5000001E2 /* CocoaExtra.h */,
-				98C7A57604DCA8D5000001E2 /* CocoaExtra.m */,
-				98449B4C06DDA0F000072E4E /* SSCPU.h */,
-				98449B4D06DDA0F000072E4E /* SSCPU.m */,
+				987BCA28247F5CD20069B2FC /* SSPanels.h */,
+				987BCA2C247F5CD20069B2FC /* SSPanels.m */,
+				987BCA2A247F5CD20069B2FC /* SSProgressPanel.h */,
+				987BCA2B247F5CD20069B2FC /* SSProgressPanel.m */,
+				987BCA2E247F5CD30069B2FC /* SSVersionChecker.h */,
+				987BCA2F247F5CD30069B2FC /* SSVersionChecker.m */,
+				987BCA30247F5CD30069B2FC /* CocoaExtra.h */,
+				987BCA27247F5CD20069B2FC /* CocoaExtra.m */,
+				987BCA2D247F5CD30069B2FC /* SSCPU.h */,
+				987BCA29247F5CD20069B2FC /* SSCPU.m */,
 			);
 			name = "Stick Software";
 			sourceTree = "<group>";
 		};
+		987BCA1D247F5C630069B2FC /* Other sources */ = {
+			isa = PBXGroup;
+			children = (
+				987BCA0A247F5AD80069B2FC /* main.m */,
+			);
+			name = "Other sources";
+			sourceTree = "<group>";
+		};
+		987BCA44247F5DEE0069B2FC /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				987BCA45247F5DEE0069B2FC /* IOKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
-/* Begin PBXHeadersBuildPhase section */
-		982192D40A3E6A3500A4CA3E /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				982192D50A3E6A3500A4CA3E /* Jiggler_Prefix.h in Headers */,
-				982192D60A3E6A3500A4CA3E /* AppDelegate.h in Headers */,
-				982192D70A3E6A3500A4CA3E /* CocoaExtra.h in Headers */,
-				982192D80A3E6A3500A4CA3E /* SSPanels.h in Headers */,
-				982192D90A3E6A3500A4CA3E /* SSProgressPanel.h in Headers */,
-				982192DA0A3E6A3500A4CA3E /* SSVersionChecker.h in Headers */,
-				982192DB0A3E6A3500A4CA3E /* PrefsController.h in Headers */,
-				982192DC0A3E6A3500A4CA3E /* JigglerOverlayWindow.h in Headers */,
-				982192DD0A3E6A3500A4CA3E /* TimedQuitController.h in Headers */,
-				982192DE0A3E6A3500A4CA3E /* SSCPU.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXHeadersBuildPhase section */
-
 /* Begin PBXNativeTarget section */
-		982192D30A3E6A3500A4CA3E /* Jiggler */ = {
+		987BC9FD247F5AD80069B2FC /* Jiggler */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 982192F50A3E6A3500A4CA3E /* Build configuration list for PBXNativeTarget "Jiggler" */;
+			buildConfigurationList = 987BCA0F247F5AD80069B2FC /* Build configuration list for PBXNativeTarget "Jiggler" */;
 			buildPhases = (
-				982192D40A3E6A3500A4CA3E /* Headers */,
-				982192DF0A3E6A3500A4CA3E /* Resources */,
-				982192E70A3E6A3500A4CA3E /* Sources */,
-				982192F20A3E6A3500A4CA3E /* Frameworks */,
+				987BC9FA247F5AD80069B2FC /* Sources */,
+				987BC9FB247F5AD80069B2FC /* Frameworks */,
+				987BC9FC247F5AD80069B2FC /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = Jiggler;
-			productInstallPath = "$(HOME)/Applications";
 			productName = Jiggler;
-			productReference = 982192FA0A3E6A3500A4CA3E /* Jiggler.app */;
+			productReference = 987BC9FE247F5AD80069B2FC /* Jiggler.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		29B97313FDCFA39411CA2CEA /* Project object */ = {
+		987BC9F6247F5AD80069B2FC /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0730;
+				LastUpgradeCheck = 1140;
+				ORGANIZATIONNAME = "Stick Software";
+				TargetAttributes = {
+					987BC9FD247F5AD80069B2FC = {
+						CreatedOnToolsVersion = 11.4.1;
+					};
+				};
 			};
-			buildConfigurationList = 98218FBA0A3E46C000A4CA3E /* Build configuration list for PBXProject "Jiggler" */;
-			compatibilityVersion = "Xcode 6.3";
-			developmentRegion = English;
-			hasScannedForEncodings = 1;
+			buildConfigurationList = 987BC9F9247F5AD80069B2FC /* Build configuration list for PBXProject "Jiggler" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
-				English,
+				Base,
 			);
-			mainGroup = 29B97314FDCFA39411CA2CEA /* Jiggler */;
+			mainGroup = 987BC9F5247F5AD80069B2FC;
+			productRefGroup = 987BC9FF247F5AD80069B2FC /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				982192D30A3E6A3500A4CA3E /* Jiggler */,
+				987BC9FD247F5AD80069B2FC /* Jiggler */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		982192DF0A3E6A3500A4CA3E /* Resources */ = {
+		987BC9FC247F5AD80069B2FC /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				982192E10A3E6A3500A4CA3E /* Localizable.strings in Resources */,
-				98783DC31CEE7F1500FBD456 /* MainMenu.xib in Resources */,
-				982192E20A3E6A3500A4CA3E /* jiggler.icns in Resources */,
-				982192E40A3E6A3500A4CA3E /* stickman5.16G.tiff in Resources */,
-				98783DC41CEE7F1500FBD456 /* Preferences.xib in Resources */,
-				98783DC51CEE7F1500FBD456 /* TimedQuit.xib in Resources */,
-				982192E50A3E6A3500A4CA3E /* Read Me.html in Resources */,
+				987BCA49247F74B80069B2FC /* VersionCheck.strings in Resources */,
+				987BCA3F247F5D090069B2FC /* TimedQuit.xib in Resources */,
+				987BCA05247F5AD80069B2FC /* Assets.xcassets in Resources */,
+				987BCA3E247F5D090069B2FC /* Localizable.strings in Resources */,
+				987BCA4E248030420069B2FC /* apple.png in Resources */,
+				987BCA43247F5D360069B2FC /* stickman5.16G.tiff in Resources */,
+				987BCA41247F5D090069B2FC /* Read Me.html in Resources */,
+				987BCA08247F5AD80069B2FC /* MainMenu.xib in Resources */,
+				987BCA4C247F75360069B2FC /* Base.strings in Resources */,
+				987BCA40247F5D090069B2FC /* Preferences.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		982192E70A3E6A3500A4CA3E /* Sources */ = {
+		987BC9FA247F5AD80069B2FC /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				982192E80A3E6A3500A4CA3E /* main.m in Sources */,
-				982192E90A3E6A3500A4CA3E /* AppDelegate.m in Sources */,
-				982192EA0A3E6A3500A4CA3E /* CocoaExtra.m in Sources */,
-				982192EB0A3E6A3500A4CA3E /* SSPanels.m in Sources */,
-				982192EC0A3E6A3500A4CA3E /* SSProgressPanel.m in Sources */,
-				982192ED0A3E6A3500A4CA3E /* SSVersionChecker.m in Sources */,
-				982192EE0A3E6A3500A4CA3E /* PrefsController.m in Sources */,
-				982192EF0A3E6A3500A4CA3E /* JigglerOverlayWindow.m in Sources */,
-				982192F00A3E6A3500A4CA3E /* TimedQuitController.m in Sources */,
-				982192F10A3E6A3500A4CA3E /* SSCPU.m in Sources */,
+				987BCA35247F5CD30069B2FC /* SSVersionChecker.m in Sources */,
+				987BCA0B247F5AD80069B2FC /* main.m in Sources */,
+				987BCA24247F5CAE0069B2FC /* JigglerOverlayWindow.m in Sources */,
+				987BCA31247F5CD30069B2FC /* CocoaExtra.m in Sources */,
+				987BCA32247F5CD30069B2FC /* SSCPU.m in Sources */,
+				987BCA26247F5CAE0069B2FC /* PrefsController.m in Sources */,
+				987BCA25247F5CAE0069B2FC /* TimedQuitController.m in Sources */,
+				987BCA34247F5CD30069B2FC /* SSPanels.m in Sources */,
+				987BCA03247F5AD80069B2FC /* AppDelegate.m in Sources */,
+				987BCA33247F5CD30069B2FC /* SSProgressPanel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		984497DF06DD222B00072E4E /* Read Me.html */ = {
+		987BCA06247F5AD80069B2FC /* MainMenu.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				984497E006DD222B00072E4E /* English */,
-			);
-			name = "Read Me.html";
-			sourceTree = "<group>";
-		};
-		98783DBD1CEE7F1500FBD456 /* MainMenu.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				98783DBE1CEE7F1500FBD456 /* English */,
+				987BCA07247F5AD80069B2FC /* Base */,
 			);
 			name = MainMenu.xib;
 			sourceTree = "<group>";
 		};
-		98783DBF1CEE7F1500FBD456 /* Preferences.xib */ = {
+		987BCA36247F5D090069B2FC /* Localizable.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
-				98783DC01CEE7F1500FBD456 /* English */,
+				987BCA37247F5D090069B2FC /* Base */,
 			);
-			name = Preferences.xib;
+			name = Localizable.strings;
 			sourceTree = "<group>";
 		};
-		98783DC11CEE7F1500FBD456 /* TimedQuit.xib */ = {
+		987BCA38247F5D090069B2FC /* TimedQuit.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				98783DC21CEE7F1500FBD456 /* English */,
+				987BCA39247F5D090069B2FC /* Base */,
 			);
 			name = TimedQuit.xib;
 			sourceTree = "<group>";
 		};
-		98C7A58604DCC564000001E2 /* Localizable.strings */ = {
+		987BCA3A247F5D090069B2FC /* Preferences.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				98C7A58704DCC564000001E2 /* English */,
+				987BCA3B247F5D090069B2FC /* Base */,
 			);
-			name = Localizable.strings;
+			name = Preferences.xib;
+			sourceTree = "<group>";
+		};
+		987BCA3C247F5D090069B2FC /* Read Me.html */ = {
+			isa = PBXVariantGroup;
+			children = (
+				987BCA3D247F5D090069B2FC /* Base */,
+			);
+			name = "Read Me.html";
+			sourceTree = "<group>";
+		};
+		987BCA47247F74B80069B2FC /* VersionCheck.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				987BCA48247F74B80069B2FC /* Base */,
+			);
+			name = VersionCheck.strings;
+			sourceTree = "<group>";
+		};
+		987BCA4A247F75360069B2FC /* Base.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				987BCA4B247F75360069B2FC /* Base */,
+			);
+			name = Base.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		98218FBB0A3E46C000A4CA3E /* Development */ = {
+		987BCA0D247F5AD80069B2FC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_SHADOW = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = macosx10.10;
-				STRIP_STYLE = debugging;
-			};
-			name = Development;
-		};
-		98218FBC0A3E46C000A4CA3E /* Deployment */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_SHADOW = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				SDKROOT = macosx10.10;
-				STRIP_STYLE = debugging;
-			};
-			name = Deployment;
-		};
-		98218FBD0A3E46C000A4CA3E /* Default */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_SHADOW = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				SDKROOT = macosx10.10;
-				STRIP_STYLE = debugging;
-			};
-			name = Default;
-		};
-		982192F60A3E6A3500A4CA3E /* Development */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "Developer ID Application: Ben Haller (C5P6M43RZ7)";
-				COMBINE_HIDPI_IMAGES = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
-				INFOPLIST_FILE = Info.plist;
-				INSTALL_PATH = "$(HOME)/Applications";
-				PRODUCT_BUNDLE_IDENTIFIER = com.stick.app.jiggler;
-				PRODUCT_NAME = Jiggler;
-				PROVISIONING_PROFILE = "";
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
 				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
 			};
-			name = Development;
+			name = Debug;
 		};
-		982192F70A3E6A3500A4CA3E /* Deployment */ = {
+		987BCA0E247F5AD80069B2FC /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "Developer ID Application: Ben Haller (C5P6M43RZ7)";
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
-				INFOPLIST_FILE = Info.plist;
-				INSTALL_PATH = "$(HOME)/Applications";
-				PRODUCT_BUNDLE_IDENTIFIER = com.stick.app.jiggler;
-				PRODUCT_NAME = Jiggler;
-				PROVISIONING_PROFILE = "";
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
 			};
-			name = Deployment;
+			name = Release;
 		};
-		982192F80A3E6A3500A4CA3E /* Default */ = {
+		987BCA10247F5AD80069B2FC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "Developer ID Application: Ben Haller (C5P6M43RZ7)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Jiggler.entitlements;
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
+				CURRENT_PROJECT_VERSION = 1.8;
+				DEVELOPMENT_TEAM = C5P6M43RZ7;
+				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = Info.plist;
-				INSTALL_PATH = "$(HOME)/Applications";
-				PRODUCT_BUNDLE_IDENTIFIER = com.stick.app.jiggler;
-				PRODUCT_NAME = Jiggler;
-				PROVISIONING_PROFILE = "";
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MARKETING_VERSION = 1.8;
+				PRODUCT_BUNDLE_IDENTIFIER = com.stick.app.jiggler;
+				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
-			name = Default;
+			name = Debug;
+		};
+		987BCA11247F5AD80069B2FC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Jiggler.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1.8;
+				DEVELOPMENT_TEAM = C5P6M43RZ7;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MARKETING_VERSION = 1.8;
+				PRODUCT_BUNDLE_IDENTIFIER = com.stick.app.jiggler;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		98218FBA0A3E46C000A4CA3E /* Build configuration list for PBXProject "Jiggler" */ = {
+		987BC9F9247F5AD80069B2FC /* Build configuration list for PBXProject "Jiggler" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				98218FBB0A3E46C000A4CA3E /* Development */,
-				98218FBC0A3E46C000A4CA3E /* Deployment */,
-				98218FBD0A3E46C000A4CA3E /* Default */,
+				987BCA0D247F5AD80069B2FC /* Debug */,
+				987BCA0E247F5AD80069B2FC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Default;
+			defaultConfigurationName = Release;
 		};
-		982192F50A3E6A3500A4CA3E /* Build configuration list for PBXNativeTarget "Jiggler" */ = {
+		987BCA0F247F5AD80069B2FC /* Build configuration list for PBXNativeTarget "Jiggler" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				982192F60A3E6A3500A4CA3E /* Development */,
-				982192F70A3E6A3500A4CA3E /* Deployment */,
-				982192F80A3E6A3500A4CA3E /* Default */,
+				987BCA10247F5AD80069B2FC /* Debug */,
+				987BCA11247F5AD80069B2FC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Default;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 29B97313FDCFA39411CA2CEA /* Project object */;
+	rootObject = 987BC9F6247F5AD80069B2FC /* Project object */;
 }

@@ -37,6 +37,9 @@
 	NSImage *scaledJigglerImage;
 	NSImage *scaledJigglerImageRed;
 	NSImage *scaledJigglerImageGreen;
+	
+	// Prevent App Nap
+	id <NSObject> activityToken;
 }
 
 @property (retain) IBOutlet NSMenu *statusItemMenu;

@@ -34,6 +34,25 @@ NSString *SSTestLocalizedString(NSString *key)
 	return localizedString;
 }
 
+NSString *SSTestLocalizedStringFromTable(NSString *key, NSString *table)
+{
+	NSBundle *mainBundle = [NSBundle mainBundle];
+	NSString *localizedString = [mainBundle localizedStringForKey:key value:@"*** error" table:table];
+	
+	if ([localizedString isEqualToString:@"*** error"])
+	{
+		localizedString = [NSString stringWithFormat:@"*%@*", key];
+		NSLog(@"No value found for key \"%@\"", key);
+	}
+	else
+	{
+		// Uncomment this to log successful key lookups
+		//NSLog(@"key \"%@\" produced value \"%@\"", key, localizedString);
+	}
+	
+	return localizedString;
+}
+
 @implementation NSTextView (SSCocoaExtra)
 
 // This is the best solution I've found so far to the problem of how to get clickable links into a window using
@@ -75,7 +94,7 @@ NSString *SSTestLocalizedString(NSString *key)
 {
     NSString *tfString = [self stringValue];
     NSRange urlRange = [tfString rangeOfString:text options:NSBackwardsSearch];
-    int length = [tfString length];
+    int length = (int)[tfString length];
 	NSMutableParagraphStyle *pStyle = [[[NSParagraphStyle defaultParagraphStyle] mutableCopy] autorelease];
     NSTextView *tv;
     NSTextStorage *ts;
@@ -132,6 +151,90 @@ NSString *SSTestLocalizedString(NSString *key)
 
 @end
 
+NSModalResponse SSRunAlertPanel(NSString *title, NSString *msg, NSString *defaultButton, NSString *alternateButton, NSString *otherButton, ...)
+{
+	va_list params;
+	NSString *resolvedMessage;
+	
+	va_start(params, otherButton);
+	resolvedMessage = [[NSString alloc] initWithFormat:msg arguments:params];
+	va_end(params);
+	
+	NSAlert *alert = [[NSAlert alloc] init];
+	
+	[alert addButtonWithTitle:defaultButton];
+	if (alternateButton)
+		[alert addButtonWithTitle:alternateButton];
+	if (otherButton)
+		[alert addButtonWithTitle:otherButton];
+	[alert setMessageText:title];
+	[alert setInformativeText:resolvedMessage];
+	[alert setAlertStyle:NSAlertStyleWarning];
+	
+	NSModalResponse value = [alert runModal];
+	
+	[alert release];
+	[resolvedMessage release];
+	
+    return value;
+}
+
+NSModalResponse SSRunInformationalAlertPanel(NSString *title, NSString *msg, NSString *defaultButton, NSString *alternateButton, NSString *otherButton, ...)
+{
+	va_list params;
+	NSString *resolvedMessage;
+	
+	va_start(params, otherButton);
+	resolvedMessage = [[NSString alloc] initWithFormat:msg arguments:params];
+	va_end(params);
+	
+	NSAlert *alert = [[NSAlert alloc] init];
+	
+	[alert addButtonWithTitle:defaultButton];
+	if (alternateButton)
+		[alert addButtonWithTitle:alternateButton];
+	if (otherButton)
+		[alert addButtonWithTitle:otherButton];
+	[alert setMessageText:title];
+	[alert setInformativeText:resolvedMessage];
+	[alert setAlertStyle:NSAlertStyleInformational];
+	
+	NSModalResponse value = [alert runModal];
+	
+	[alert release];
+	[resolvedMessage release];
+	
+    return value;
+}
+
+NSModalResponse SSRunCriticalAlertPanel(NSString *title, NSString *msg, NSString *defaultButton, NSString *alternateButton, NSString *otherButton, ...)
+{
+	va_list params;
+	NSString *resolvedMessage;
+	
+	va_start(params, otherButton);
+	resolvedMessage = [[NSString alloc] initWithFormat:msg arguments:params];
+	va_end(params);
+	
+	NSAlert *alert = [[NSAlert alloc] init];
+	
+	[alert addButtonWithTitle:defaultButton];
+	if (alternateButton)
+		[alert addButtonWithTitle:alternateButton];
+	if (otherButton)
+		[alert addButtonWithTitle:otherButton];
+	[alert setMessageText:title];
+	[alert setInformativeText:resolvedMessage];
+	[alert setAlertStyle:NSAlertStyleCritical];
+	
+	NSModalResponse value = [alert runModal];
+	
+	[alert release];
+	[resolvedMessage release];
+	
+    return value;
+}
+
 @implementation NSScreen (SSScreens)
 
 // Returns the screen with an origin of (0, 0); +mainScreen returns the screen which the key window is currently on, which is not often what we want.
@@ -140,7 +243,7 @@ NSString *SSTestLocalizedString(NSString *key)
 	NSArray *screens = [NSScreen screens];
 	int i, c;
 	
-	for (i = 0, c = [screens count]; i < c; ++i)
+	for (i = 0, c = (int)[screens count]; i < c; ++i)
 	{
 		NSScreen *screen = [screens objectAtIndex:i];
 		NSRect frame = [screen frame];
@@ -178,12 +281,13 @@ NSString *SSTestLocalizedString(NSString *key)
 @implementation NSPanel (SSCocoaExtra)
 
 // This makes command-W work to close the window, even though we have no menubar
+// Note that we assume NSPanel does not implement this method, which seems to be true through 10.15...
 - (BOOL)performKeyEquivalent:(NSEvent *)event
 {
 	NSString *chars = [event charactersIgnoringModifiers];
-	unsigned int flags = [event modifierFlags];
+	NSEventModifierFlags flags = [event modifierFlags] & NSEventModifierFlagDeviceIndependentFlagsMask;
 	
-	if ([chars isEqualToString:@"w"] && ((flags == NSCommandKeyMask) || (flags == (NSCommandKeyMask | NSAlphaShiftKeyMask))) && ([self styleMask] & NSClosableWindowMask))
+	if ([chars isEqualToString:@"w"] && ((flags == NSEventModifierFlagCommand) || (flags == (NSEventModifierFlagCommand | NSEventModifierFlagCapsLock))) && ([self styleMask] & NSWindowStyleMaskClosable))
 	{
 		[self performClose:self];
 		return YES;
@@ -208,7 +312,7 @@ NSString *SSTestLocalizedString(NSString *key)
 	context = [NSGraphicsContext currentContext];
 	savedInterpolation = [context imageInterpolation];
 	[context setImageInterpolation:NSImageInterpolationHigh];
-	[appIcon drawInRect:NSMakeRect(0, 0, finalSize.width, finalSize.height) fromRect:NSMakeRect(0, 0, appIconSize.width, appIconSize.height) operation:NSCompositeSourceOver fraction:1.0];
+	[appIcon drawInRect:NSMakeRect(0, 0, finalSize.width, finalSize.height) fromRect:NSMakeRect(0, 0, appIconSize.width, appIconSize.height) operation:NSCompositingOperationSourceOver fraction:1.0];
 	[context setImageInterpolation:savedInterpolation];
 	[icon unlockFocus];
 	
@@ -255,8 +359,6 @@ static BOOL stringsAreEqual (CFStringRef a, CFStringRef b)
 }
 
 // see http://context-macosx.googlecode.com/svn-history/r138/trunk/Tools/Applications/Pennyworth/PowerObserver.m
-BOOL RunningOnBatteryOnly(void);
-
 BOOL RunningOnBatteryOnly(void)
 {
     BOOL onlyBattery = NO;  // if we have no information on power, assume we're not on battery only
@@ -264,13 +366,13 @@ BOOL RunningOnBatteryOnly(void)
     CFTypeRef blob = IOPSCopyPowerSourcesInfo();
     CFArrayRef list = IOPSCopyPowerSourcesList(blob);
     
-    unsigned int count = CFArrayGetCount(list);
+    CFIndex count = CFArrayGetCount(list);
     
     if (count)
     {
         onlyBattery = YES;  // if we have information on power sources, then start assuming battery only, and knock that down if we find a non-battery source
         
-        for (unsigned int i = 0; i < count; i++)
+        for (CFIndex i = 0; i < count; i++)
         {
             CFTypeRef source;
             CFDictionaryRef description;
@@ -293,6 +395,21 @@ BOOL RunningOnBatteryOnly(void)
     
     //NSLog(@"%d sources, onlyBattery == %@", count, onlyBattery ? @"YES" : @"NO");
     return onlyBattery;
+}
+
+// see https://stackoverflow.com/questions/11505255/osx-check-if-the-screen-is-locked
+// and https://stackoverflow.com/questions/54346761/swift-how-to-observe-if-screen-is-locked-in-macos
+BOOL ScreenIsLocked(void)
+{
+	CFDictionaryRef sessionDict = CGSessionCopyCurrentDictionary();
+	
+	if (!sessionDict)
+		return NO;
+	
+	BOOL isLocked = ([[(NSDictionary *)sessionDict objectForKey:@"CGSSessionScreenIsLocked"] intValue] == 1);
+	
+	CFRelease(sessionDict);
+	return isLocked;
 }
 
 

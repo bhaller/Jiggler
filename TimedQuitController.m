@@ -37,8 +37,8 @@ static NSString *TimedQuitMinutesDefaultsKey = @"TimedQuitMinutes";
 {
 	NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
 	
-	hoursToQuit = [userDefaults integerForKey:TimedQuitHoursDefaultsKey];
-	minutesToQuit = [userDefaults integerForKey:TimedQuitMinutesDefaultsKey];
+	hoursToQuit = (int)[userDefaults integerForKey:TimedQuitHoursDefaultsKey];
+	minutesToQuit = (int)[userDefaults integerForKey:TimedQuitMinutesDefaultsKey];
 	
 	if (hoursToQuit < 0)
 		hoursToQuit = 0;
@@ -110,7 +110,7 @@ static NSString *TimedQuitMinutesDefaultsKey = @"TimedQuitMinutes";
 
 - (int)runForMinutesUntilQuit
 {
-	int resultCode;
+	NSModalResponse resultCode;
 	
 	[self prepareWindow];
 	

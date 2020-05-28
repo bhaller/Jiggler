@@ -45,6 +45,16 @@ x	add "Zen jiggle" checkbox that resets system timers without actually jiggling 
 x	update the Read Me to describe the new functionality, mention open-sourcing and GitHub, etc.
 x	add GitHub link to readme files and about window
 
+1.8:
+x	Advance version number & copyright
+x	Build for 10.13 and later, fix deprecated APIs (where possible)
+x	Add check/handling for lack of accessibility permissions
+x	Add code to prevent App Nap
+x	Make Jiggler's overlay window active in all Spaces / Exposé states
+x	Add a checkbox option to disable jiggling when the screen is locked, defaulting to YES since this is sensible
+x	Add a "click jiggle" choice that clicks the mouse without moving the cursor
+x	Add a jiggle distance slider, allowing the user to make the mouse jiggle long distances (some apps only stay awake with a large jiggle distance)
+
 
 Suggestions:
 

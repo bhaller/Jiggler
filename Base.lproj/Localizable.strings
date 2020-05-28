@@ -1,0 +1,20 @@
+/*
+ *  The strings in this section are used to build the About window, which is done in code, not in a nib
+ *	Also in this section are strings used to make the splash panel at launch time
+ */
+
+/* For the About box and splash panel */
+"Version %@" = "Version %@";
+
+/* The Stick Software URL string in the About window */
+"Visit %@ for more!" = "Visit %@ for more!";
+
+/* The body text in the About panel */
+"About panel body text" = "  Jiggler is a little application that jiggles your mouse cursor periodically.  It can keep your screensaver from kicking in, keep your CPU from falling asleep, or otherwise keep your Mac on its toes.\n\n  Jiggler is freeware.  If you like it, please check out some of our shareware products at www.sticksoftware.com (and pay for them if you use them!)\n\n  Jiggler is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.  Jiggler is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.  You should have received a copy of the GNU General Public License along with Jiggler. If not, see http://www.gnu.org/licenses/.\n\n  You can find Jiggler's source code in GitHub at https://github.com/bhaller/Jiggler.  Please let us know if you find it useful, and please feel free to submit pull requests; open-sourcing Jiggler is a new experiment for us, and we are hoping that it goes well!\n\n  Thanks to Roberto Muñoz for providing Jiggler's icon.\n\n  Jiggler was written in Cocoa, Apple's object-oriented application framework, using Objective-C, the best programming language in the world!";
+
+/* The authorship string in the About window */
+"By Ben Haller (%@)" = "By Ben Haller (%@)";
+
+/* The copyright string in the About window */
+"Copyright 2020 Stick Software, Ben Haller.  All Rights Reserved." = "Copyright © 2020 Stick Software, Ben Haller.  All Rights Reserved.";
+

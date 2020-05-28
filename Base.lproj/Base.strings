@@ -1,0 +1,32 @@
+/*
+ *  The strings in this file are shared among the various Stick Software subsystem components, and may also be used by application code
+ */
+
+/*
+ *  Common button names
+ */
+
+/* OK button */
+"OK button" = "OK";
+
+/* Cancel button */
+"Cancel button" = "Cancel";
+
+/* Yes button */
+"Yes button" = "Yes";
+
+/* No button */
+"No button" = "No";
+
+/* Continue button */
+"Continue button" = "Continue";
+
+/* Stop button */
+"Stop button" = "Stop";
+
+/* Register button */
+"Register button" = "Register";
+
+/* Quit button */
+"Quit button" = "Quit";
+

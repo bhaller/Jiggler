@@ -1,6 +1,6 @@
 //
 //  PrefsController.m
-//  PhotoReviewer
+//  Jiggler
 //
 //  Created by Ben Haller on Wed Jul 23 2003.
 //  Copyright (c) 2003 Stick Software. All rights reserved.
@@ -16,7 +16,10 @@ static NSString *JiggleTimeDefaultsKey = @"JiggleTime";							// version 1.3 and
 static NSString *JiggleSecondsDefaultsKey = @"JiggleSeconds";					// version 1.4 and later: the actual number of seconds between jiggles (minimum 5)
 static NSString *ShowIconWhenJigglingDefaultsKey = @"ShowIconWhenJiggling";
 static NSString *JiggleOnlyWhenIdleDefaultsKey = @"JiggleOnlyWhenIdle";
-static NSString *ZenJiggleDefaultsKey = @"ZenJiggle";
+
+static NSString *ZenJiggleDefaultsKey = @"ZenJiggle";							// version 1.7 and before, superseded by JiggleStyleDefaultsKey
+static NSString *JiggleStyleDefaultsKey = @"JiggleStyle";						// version 1.8 and later: 0 is standard, 1 is Zen jiggle, 2 is click jiggle
+static NSString *JiggleDistanceDefaultsKey = @"JiggleDistance";
 
 static NSString *OnlyWithCPUUsageDefaultsKey = @"OnlyWithCPUUsage";
 static NSString *CPUUsageThresholdDefaultsKey = @"CPUUsageThreshold";
@@ -25,6 +28,7 @@ static NSString *OnlyWithITunesPlayingDefaultsKey = @"OnlyWithITunesPlaying";
 static NSString *OnlyWithApplicationsNamedXDefaultsKey = @"OnlyWithApplicationsNamedX";
 static NSString *OnlyWithIdentityDefaultsKey = @"OnlyWithIdentity";
 static NSString *ApplicationNameComponentDefaultsKey = @"ApplicationNameComponent";
+static NSString *NotWhenScreenLockedDefaultsKey = @"NotWhenScreenLocked";
 static NSString *NotOnBatteryDefaultsKey = @"NotOnBattery";
 static NSString *NotWithFrontAppsNamedXDefaultsKey = @"NotWithFrontAppsNamedX";
 static NSString *FrontAppNameComponentDefaultsKey = @"FrontAppNameComponent";
@@ -57,7 +61,9 @@ static PrefsController *sharedPrefsController = nil;
                                             @"YES", ShowIconWhenJigglingDefaultsKey,
 											@"YES", JiggleOnlyWhenIdleDefaultsKey,
 											
-											@"NO", ZenJiggleDefaultsKey,
+											@"NO", ZenJiggleDefaultsKey,											// the default for the old key
+											[NSNumber numberWithInt:-1], JiggleStyleDefaultsKey,					// use -1 as a flag value for "no value set for the new key"
+                                            [NSNumber numberWithFloat:2], JiggleDistanceDefaultsKey,				// 0 was the old default in 1.7 and earlier, effectively
                                             
                                             @"NO", OnlyWithCPUUsageDefaultsKey,
                                             [NSNumber numberWithInt:20], CPUUsageThresholdDefaultsKey,
@@ -69,6 +75,8 @@ static PrefsController *sharedPrefsController = nil;
                                             @"NO", OnlyWithApplicationsNamedXDefaultsKey,
                                             [NSNumber numberWithInt:0], OnlyWithIdentityDefaultsKey,
                                             @"", ApplicationNameComponentDefaultsKey,
+											
+											@"YES", NotWhenScreenLockedDefaultsKey,
                                             
                                             @"NO", NotOnBatteryDefaultsKey,
                                             
@@ -80,13 +88,13 @@ static PrefsController *sharedPrefsController = nil;
                                             nil]];
 			
 			// Read our de facto values into our caches
-			jiggleSeconds = [userDefaults integerForKey:JiggleSecondsDefaultsKey];
+			jiggleSeconds = (int)[userDefaults integerForKey:JiggleSecondsDefaultsKey];
 			
 			if (jiggleSeconds < 0)
 			{
 				int jiggleTime;		// old defaults key: -1 is 20 seconds, 0 is 40 seconds, positive integers are a number of minutes
 				
-				jiggleTime = [userDefaults integerForKey:JiggleTimeDefaultsKey];
+				jiggleTime = (int)[userDefaults integerForKey:JiggleTimeDefaultsKey];
 				
 				if (jiggleTime == -1)
 					jiggleSeconds = 20;
@@ -104,21 +112,32 @@ static PrefsController *sharedPrefsController = nil;
 			showJigglerIconWhenJiggling = [userDefaults boolForKey:ShowIconWhenJigglingDefaultsKey];
 			jiggleOnlyWhenIdle = [userDefaults boolForKey:JiggleOnlyWhenIdleDefaultsKey];
 			
-			zenJiggle = [userDefaults boolForKey:ZenJiggleDefaultsKey];
-
+			jiggleStyle = (int)[userDefaults integerForKey:JiggleStyleDefaultsKey];
+			if (jiggleStyle == -1)
+				jiggleStyle = ([userDefaults boolForKey:ZenJiggleDefaultsKey] ? 1 : 0);
+			if ((jiggleStyle < 0) || (jiggleStyle > 2)) jiggleStyle = 0;
+			
+            jiggleDistance = [userDefaults floatForKey:JiggleDistanceDefaultsKey];
+			if (jiggleDistance < 0.0f)
+				jiggleDistance = 0.0f;
+			if (jiggleDistance > 20.0f)
+				jiggleDistance = 20.0f;
+			
 			onlyWithCPUUsage = [userDefaults boolForKey:OnlyWithCPUUsageDefaultsKey];
-            cpuUsageThreshold = [userDefaults integerForKey:CPUUsageThresholdDefaultsKey];
+            cpuUsageThreshold = (int)[userDefaults integerForKey:CPUUsageThresholdDefaultsKey];
             
 			onlyWithRemovableWritableDisks = [userDefaults boolForKey:OnlyWithRemovableWritableDisksDefaultsKey];
             
 			onlyWithITunesPlaying = [userDefaults boolForKey:OnlyWithITunesPlayingDefaultsKey];
             
 			onlyWithApplicationsNamedX = [userDefaults boolForKey:OnlyWithApplicationsNamedXDefaultsKey];
-            onlyWithIdentityTag = [userDefaults integerForKey:OnlyWithIdentityDefaultsKey];
+            onlyWithIdentityTag = (int)[userDefaults integerForKey:OnlyWithIdentityDefaultsKey];
 			applicationNameComponent = [[userDefaults stringForKey:ApplicationNameComponentDefaultsKey] retain];
 			[applicationNameComponents release];
 			applicationNameComponents = nil;
             
+			notWhenScreenLocked = [userDefaults boolForKey:NotWhenScreenLockedDefaultsKey];
+			
 			notOnBattery = [userDefaults boolForKey:NotOnBatteryDefaultsKey];
             
 			notWithFrontAppsNamedX = [userDefaults boolForKey:NotWithFrontAppsNamedXDefaultsKey];
@@ -183,7 +202,9 @@ static PrefsController *sharedPrefsController = nil;
 		[showJigglerIconWhenJigglingButton setState:showJigglerIconWhenJiggling];
 		[jiggleOnlyWhenIdleRadio selectCellWithTag:(jiggleOnlyWhenIdle ? 1 : 0)];
 		
-		[zenJiggleCheckbox setState:zenJiggle];
+		[jiggleStyleRadio selectCellWithTag:jiggleStyle];
+        [jiggleDistanceSlider setEnabled:(jiggleStyle == 0)];
+		[jiggleDistanceSlider setFloatValue:jiggleDistance];
 		
 		[onlyWithCPUUsageCheckbox setState:onlyWithCPUUsage];
         [cpuUsageSlider setEnabled:onlyWithCPUUsage];
@@ -199,6 +220,8 @@ static PrefsController *sharedPrefsController = nil;
         [onlyWithIdentityPopUp setEnabled:onlyWithApplicationsNamedX];
 		[applicationNameComponentTextfield setStringValue:applicationNameComponent];
         [applicationNameComponentTextfield setEnabled:onlyWithApplicationsNamedX];
+        
+		[notWhenScreenLockedCheckbox setState:notWhenScreenLocked];
         
 		[notOnBatteryCheckbox setState:notOnBattery];
         
@@ -235,9 +258,14 @@ static PrefsController *sharedPrefsController = nil;
 	return jiggleOnlyWhenIdle;
 }
 
-- (BOOL)zenJiggle
+- (int)jiggleStyle
 {
-	return zenJiggle;
+	return jiggleStyle;
+}
+
+- (int)jiggleDistance
+{
+	return (int)(jiggleDistance * jiggleDistance + 10);
 }
 
 - (BOOL)onlyWithCPUUsage
@@ -279,7 +307,7 @@ static PrefsController *sharedPrefsController = nil;
 		NSCharacterSet *trimSet = [NSCharacterSet characterSetWithCharactersInString:@" \t\""];
 		int i, c;
 		
-		for (i = 0, c = [uncorrectedComponents count]; i < c; ++i)
+		for (i = 0, c = (int)[uncorrectedComponents count]; i < c; ++i)
 		{
 			NSString *uncorrectedComponent = [uncorrectedComponents objectAtIndex:i];
 			NSString *correctedString = [uncorrectedComponent stringByTrimmingCharactersInSet:trimSet];
@@ -292,6 +320,11 @@ static PrefsController *sharedPrefsController = nil;
 	}
 	
 	return applicationNameComponents;
+}
+
+- (BOOL)notWhenScreenLocked
+{
+	return notWhenScreenLocked;
 }
 
 - (BOOL)notOnBattery
@@ -313,7 +346,7 @@ static PrefsController *sharedPrefsController = nil;
 		NSCharacterSet *trimSet = [NSCharacterSet characterSetWithCharactersInString:@" \t\""];
 		int i, c;
 		
-		for (i = 0, c = [uncorrectedComponents count]; i < c; ++i)
+		for (i = 0, c = (int)[uncorrectedComponents count]; i < c; ++i)
 		{
 			NSString *uncorrectedComponent = [uncorrectedComponents objectAtIndex:i];
 			NSString *correctedString = [uncorrectedComponent stringByTrimmingCharactersInSet:trimSet];
@@ -378,15 +411,28 @@ static PrefsController *sharedPrefsController = nil;
 	}
 }
 
-- (IBAction)zenJiggleChanged:(id)sender
+- (IBAction)jiggleStyleChanged:(id)sender
 {
-	BOOL newState = [sender state];
+	BOOL newState = [[sender selectedCell] tag];
 	
-	if (newState != zenJiggle)
+	if (newState != jiggleStyle)
 	{
-		zenJiggle = newState;
-		[[NSUserDefaults standardUserDefaults] setBool:newState forKey:ZenJiggleDefaultsKey];
+		jiggleStyle = newState;
+		[[NSUserDefaults standardUserDefaults] setInteger:newState forKey:JiggleStyleDefaultsKey];
+		
+        [jiggleDistanceSlider setEnabled:(jiggleStyle == 0)];
 	}
+}
+
+- (IBAction)jiggleDistanceSliderChanged:(id)sender
+{
+    float newValue = [jiggleDistanceSlider floatValue];
+    
+    if (newValue != jiggleDistance)
+    {
+        jiggleDistance = newValue;
+		[[NSUserDefaults standardUserDefaults] setFloat:jiggleDistance forKey:JiggleDistanceDefaultsKey];
+    }
 }
 
 - (IBAction)onlyWithCPUUsageChanged:(id)sender
@@ -459,7 +505,7 @@ static PrefsController *sharedPrefsController = nil;
 
 - (IBAction)onlyWithIdentityPopUpChanged:(id)sender
 {
-	int newTag = [[onlyWithIdentityPopUp selectedItem] tag];
+	int newTag = (int)[[onlyWithIdentityPopUp selectedItem] tag];
 	
 	if (newTag != onlyWithIdentityTag)
 	{
@@ -508,6 +554,17 @@ static PrefsController *sharedPrefsController = nil;
 		frontAppNameComponents = nil;
 		
 		[[NSUserDefaults standardUserDefaults] setObject:frontAppNameComponent forKey:FrontAppNameComponentDefaultsKey];
+	}
+}
+
+- (IBAction)notWhenScreenLockedChanged:(id)sender
+{
+	BOOL newState = [sender state];
+	
+	if (newState != notWhenScreenLocked)
+	{
+		notWhenScreenLocked = newState;
+		[[NSUserDefaults standardUserDefaults] setBool:newState forKey:NotWhenScreenLockedDefaultsKey];
 	}
 }
 

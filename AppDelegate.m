@@ -63,7 +63,7 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 		[image lockFocus];
 		[tint set];
 		NSRect imageRect = {NSZeroPoint, [image size]};
-		NSRectFillUsingOperation(imageRect, NSCompositeSourceAtop);
+		NSRectFillUsingOperation(imageRect, NSCompositingOperationSourceAtop);
 		[image unlockFocus];
 	}
 	return image;
@@ -110,7 +110,7 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 	[self setStatusItem:statusItem];
 	
 	// Prepare our status item icon variants
-	NSImage *jigglerImage = [NSImage imageNamed:@"jiggler"];
+	NSImage *jigglerImage = [NSImage imageNamed:NSImageNameApplicationIcon];
 	
 	scaledJigglerImage = [jigglerImage copy];
 	
@@ -127,6 +127,25 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 	[userDefaults registerDefaults:@{JiggleMasterSwitchDefaultsKey: @"YES"}];
 	jiggleMasterSwitch = [userDefaults boolForKey:JiggleMasterSwitchDefaultsKey];
 	[self fixMasterSwitchUI];
+	
+	// Check that we have the Accessibility access we need; see https://stackoverflow.com/a/53617674/2752221
+	if (!AXIsProcessTrusted())
+	{
+		NSModalResponse retval = SSRunCriticalAlertPanel(@"Turn on accessibility", @"Jiggler needs to control the mouse cursor to function.  To enable this capability, please select the Jiggler checkbox in Security & Privacy > Accessibility, and then restart Jiggler (which will quit now).", @"Turn On Accessibility", @"Quit", nil);
+		
+		if (retval == NSAlertFirstButtonReturn)
+		{
+			NSString *prefPage = @"x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility";
+			
+			[[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:prefPage]];
+		}
+		
+		[NSApp terminate:nil];
+	}
+	
+	// Prevent app nap; see https://lapcatsoftware.com/articles/prevent-app-nap.html
+    activityToken = [[NSProcessInfo processInfo] beginActivityWithOptions:NSActivityUserInitiatedAllowingIdleSystemSleep reason:@"No napping on the job!"];
+	[activityToken retain];
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification
@@ -135,6 +154,11 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 	
 	[statusBar removeStatusItem:[self statusItem]];
 	[self setStatusItem:nil];
+	
+	// Release our anti-App-Nap token
+    [[NSProcessInfo processInfo] endActivity:activityToken];
+	[activityToken release];
+	activityToken = nil;
 }
 
 
@@ -182,7 +206,7 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 		
 		[newAppImage lockFocus];
 		
-		[appImage drawAtPoint:NSMakePoint(0, 0) fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1.0];
+		[appImage drawAtPoint:NSMakePoint(0, 0) fromRect:NSZeroRect operation:NSCompositingOperationSourceOver fraction:1.0];
 		
 		//[timerString drawAtPoint:NSMakePoint(timerPoint.x + 2, timerPoint.y - 2) withAttributes:timerShadowDict];
 		for (int shadowIndex = 0; shadowIndex < 25; ++shadowIndex)
@@ -227,7 +251,7 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 	// We stay out of corners, to avoid making screensavers kick in and such.  This
 	// also avoids an issue where setting the mouse point outside bounds makes it jump
 	// to a safe initial starting location and ignore set commands.
-	for (i = 0, c = [screens count]; i < c; ++i)
+	for (i = 0, c = (int)[screens count]; i < c; ++i)
 	{
 		NSScreen *screen = [screens objectAtIndex:i];
 		NSRect frame = NSInsetRect([screen frame], 3, 3);
@@ -275,6 +299,12 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 		lastUserMouseLocation.y = cgMouseLocation.y;
 	}
 	
+	// Figure out the distance scale we want to move over
+	int baseTolerance = [[PrefsController sharedPrefsController] jiggleDistance];
+	
+	if (baseTolerance < 10) baseTolerance = 10;
+	if (baseTolerance > 410) baseTolerance = 410;
+	
 	// Find a suitable new mouse location.  A suitable location is sufficiently close to the last seen user-set mouse
 	// location, to limit our drift.  It is not equal to the location the mouse was at at the start of the current
 	// jiggle, so that apps watching the mouse location periodically will see it change.  And it is on a monitor,
@@ -288,7 +318,7 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
             return;
         
         // after trying for a while, broaden our scope; something is wrong; we used to hang occasionally without this
-        int tolerance = (tryCount < 20) ? 10 : (10 + tryCount - 20);    // tried 50 for a HipChat fix, but it made no difference
+        int tolerance = (tryCount < 20) ? baseTolerance : (baseTolerance + tryCount - 20);
         
 		do
 		{
@@ -498,7 +528,7 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 	NSArray *processList = [[NSWorkspace sharedWorkspace] runningApplications];
 	int i, processCount, j, componentCount;
 	
-	for (i = 0, processCount = [processList count]; i < processCount; ++i)
+	for (i = 0, processCount = (int)[processList count]; i < processCount; ++i)
 	{
 		NSRunningApplication *app = [processList objectAtIndex:i];
 		NSString *processName = [app localizedName];
@@ -513,7 +543,7 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
         if (mustBeFront && !isActive)
             continue;
         
-		for (j = 0, componentCount = [nameComponents count]; j < componentCount; ++j)
+		for (j = 0, componentCount = (int)[nameComponents count]; j < componentCount; ++j)
 		{
 			NSString *appNameComponent = [nameComponents objectAtIndex:j];
 			
@@ -531,7 +561,7 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 	NSArray *mountedRemovables = [ws mountedRemovableMedia];    // the header suggests switching to mountedVolumeURLsIncludingResourceValuesForKeys:options:, but that looks annoying
 	int i, c;
 	
-	for (i = 0, c = [mountedRemovables count]; i < c; ++i)
+	for (i = 0, c = (int)[mountedRemovables count]; i < c; ++i)
 	{
 		NSString *diskPath = [mountedRemovables objectAtIndex:i];
 		BOOL isRemovable, isWritable;
@@ -566,7 +596,7 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 	int i, c;
 	BOOL iTunesIsRunning = NO;
 	
-	for (i = 0, c = [runningApps count]; i < c; ++i)
+	for (i = 0, c = (int)[runningApps count]; i < c; ++i)
 	{
 		NSRunningApplication *runningApp = [runningApps objectAtIndex:i];
 		NSString *runningAppLocalizedName = [runningApp localizedName];
@@ -678,6 +708,7 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 	BOOL jiggleOnlyWhenIdle = [prefs jiggleOnlyWhenIdle];
 	BOOL showIconWhenJiggling = [prefs showJigglerIconWhenJiggling];
 	BOOL notOnBattery = [prefs notOnBattery];
+	BOOL notWhenScreenLocked = [prefs notWhenScreenLocked];
 	NSArray *frontAppNameComponents = [prefs frontAppNameComponents];
 	BOOL notWithFrontAppsNamedX = ([prefs notWithFrontAppsNamedX] && [frontAppNameComponents count]);
 	BOOL jiggleConditionsTested = NO;
@@ -695,7 +726,10 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 		if (CGEventSourceButtonState(kCGEventSourceStateCombinedSessionState, buttonIndex))
 			buttonDown = YES;
 	
-	if (buttonDown || (notOnBattery && RunningOnBatteryOnly()) || (notWithFrontAppsNamedX && [self checkRunningAppsForAppNameContaining:frontAppNameComponents mustBeDockApp:YES mustBeFront:YES]))
+	if (buttonDown ||
+		(notOnBattery && RunningOnBatteryOnly()) ||
+		(notWithFrontAppsNamedX && [self checkRunningAppsForAppNameContaining:frontAppNameComponents mustBeDockApp:YES mustBeFront:YES]) ||
+		(notWhenScreenLocked && ScreenIsLocked()))
 	{
 		if (jiggleOnlyWhenIdle)
 			[self setJigglingActive:NO];
@@ -762,10 +796,38 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 			
 			if (jiggleConditionsMet)
 			{
-				// If the new "zen jiggle" option is set, skip actually moving the mouse.  Of course some apps watch the cursor
-				// position rather than looking at the system idle time, so zen jiggle may fail to jiggle some apps; caveat jigglor...
-				if (![prefs zenJiggle])
+				int jiggleStyle = [prefs jiggleStyle];
+				
+				if (jiggleStyle == 1)
 				{
+					// Zen jiggle: skip actually moving the mouse.  Of course some apps watch the cursor position rather
+					// than looking at the system idle time, so Zen jiggle may fail to jiggle some apps; caveat jigglor...
+				}
+				else if (jiggleStyle == 2)
+				{
+					// Click jiggle: click the mouse once, at the current cursor location, without moving the mouse
+					NSPoint mouseLocation = [NSEvent mouseLocation];
+					NSScreen *primaryScreen = [NSScreen primaryScreen];
+					NSRect screenFrame = [primaryScreen frame];
+					CGPoint cgMouseLocation;
+					
+					cgMouseLocation.x = mouseLocation.x;
+					cgMouseLocation.y = screenFrame.size.height - mouseLocation.y;
+					
+					// Create and post the mouse-down and mouse-up events
+					CGEventRef click_down = CGEventCreateMouseEvent(NULL, kCGEventLeftMouseDown, cgMouseLocation, kCGMouseButtonLeft);
+					CGEventRef click_up = CGEventCreateMouseEvent(NULL, kCGEventLeftMouseUp, cgMouseLocation, kCGMouseButtonLeft);
+					
+					CGEventPost(kCGHIDEventTap, click_down);
+					usleep(10000);
+					CGEventPost(kCGHIDEventTap, click_up);
+					
+					CFRelease(click_down);
+					CFRelease(click_up);
+				}
+				else	// jiggleStyle == 0, and bad values
+				{
+					// Standard jiggle: move the mouse a bunch of times
 					// Remember the current mouse point, so we can avoid hitting it exactly
 					[self _setJiggleAvoidPoint];
 					
@@ -828,7 +890,7 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 	NSLog(@"screensaverDelay = %f", screensaverDelay);
 	
 	if (jiggleSeconds >= screensaverDelay)
-		NSRunCriticalAlertPanel(SSLocalizedString(@"Jiggler", @"Jiggle time warning panel title"), SSLocalizedString(@"The jiggle time you currently have set is longer than your screensaver or sleep delay, so Jiggler may not keep your machine alert.  You may wish to change your jiggle time in Jiggler's Preferences panel.", @"Jiggle time warning panel text"), SSLocalizedString(@"OK button", @"OK button"), nil, nil);
+		NSRunCriticalAlertPanel(SSLocalizedString(@"Jiggler", @"Jiggle time warning panel title"), SSLocalizedString(@"The jiggle time you currently have set is longer than your screensaver or sleep delay, so Jiggler may not keep your machine alert.  You may wish to change your jiggle time in Jiggler's Preferences panel.", @"Jiggle time warning panel text"), SSLocalizedStringFromTable(@"OK button", @"Base", @"OK button"), nil, nil);
 }
 
 // Add to Localizable.strings:

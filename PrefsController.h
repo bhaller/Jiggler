@@ -1,6 +1,6 @@
 //
 //  PrefsController.h
-//  PhotoReviewer
+//  Jiggler
 //
 //  Created by Ben Haller on Wed Jul 23 2003.
 //  Copyright (c) 2003 Stick Software. All rights reserved.
@@ -23,7 +23,8 @@
 	IBOutlet NSButton *showJigglerIconWhenJigglingButton;
 	IBOutlet NSMatrix *jiggleOnlyWhenIdleRadio;
 	
-	IBOutlet NSButton *zenJiggleCheckbox;
+	IBOutlet NSMatrix *jiggleStyleRadio;
+    IBOutlet NSSlider *jiggleDistanceSlider;
 	
 	IBOutlet NSButton *onlyWithCPUUsageCheckbox;
     IBOutlet NSSlider *cpuUsageSlider;
@@ -37,6 +38,8 @@
     IBOutlet NSPopUpButton *onlyWithIdentityPopUp;
 	IBOutlet NSTextField *applicationNameComponentTextfield;
     
+    IBOutlet NSButton *notWhenScreenLockedCheckbox;
+	
     IBOutlet NSButton *notOnBatteryCheckbox;
 
     IBOutlet NSButton *notWithFrontAppsNamedXCheckbox;
@@ -47,7 +50,8 @@
 	BOOL showJigglerIconWhenJiggling;
 	BOOL jiggleOnlyWhenIdle;
 	
-	BOOL zenJiggle;
+	int jiggleStyle;
+	float jiggleDistance;	// 0 to 20; returned to the client transformed, jiggleDistance * jiggleDistance + 10
 	
 	BOOL onlyWithCPUUsage;
     int cpuUsageThreshold;
@@ -61,6 +65,8 @@
 	NSString *applicationNameComponent;
 	NSArray *applicationNameComponents;
     
+    BOOL notWhenScreenLocked;
+	
     BOOL notOnBattery;
     
     BOOL notWithFrontAppsNamedX;
@@ -78,7 +84,8 @@
 - (BOOL)showJigglerIconWhenJiggling;
 - (BOOL)jiggleOnlyWhenIdle;
 
-- (BOOL)zenJiggle;
+- (int)jiggleStyle;							// 0 == standard, 1 == "Zen", 2 == "click jiggle"
+- (int)jiggleDistance;
 
 - (BOOL)onlyWithCPUUsage;
 - (int)cpuUsageThreshold;
@@ -91,6 +98,8 @@
 - (int)onlyWithIdentityTag;                 // 0 == app, 1 == process
 - (NSArray *)applicationNameComponents;
 
+- (BOOL)notWhenScreenLocked;
+
 - (BOOL)notOnBattery;
 
 - (BOOL)notWithFrontAppsNamedX;
@@ -101,7 +110,8 @@
 - (IBAction)showJigglerIconWhenJigglingChanged:(id)sender;
 - (IBAction)jiggleOnlyWhenIdleChanged:(id)sender;
 
-- (IBAction)zenJiggleChanged:(id)sender;
+- (IBAction)jiggleStyleChanged:(id)sender;
+- (IBAction)jiggleDistanceSliderChanged:(id)sender;
 
 - (IBAction)onlyWithCPUUsageChanged:(id)sender;
 - (IBAction)cpuUsageSliderChanged:(id)sender;
@@ -112,6 +122,8 @@
 
 - (IBAction)onlyWithIdentityPopUpChanged:(id)sender;
 - (IBAction)onlyWithApplicationsNamedXChanged:(id)sender;
+
+- (IBAction)notWhenScreenLockedChanged:(id)sender;
 
 - (IBAction)notOnBatteryChanged:(id)sender;
 

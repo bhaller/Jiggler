@@ -1,6 +1,6 @@
 //
 //  SSProgressPanel.m
-//  PhotoReviewer
+//  Stick Software subsystem
 //
 //  Created by Ben Haller on Thu Jul 31 2003.
 //  Copyright (c) 2003 Stick Software. All rights reserved.
@@ -39,6 +39,28 @@
 	}
 	
 	return self;
+}
+
+- (BOOL)isDeterminate
+{
+	return isDeterminate;
+}
+
+- (void)setDeterminate:(BOOL)flag
+{
+	if (flag != isDeterminate)
+	{
+		isDeterminate = flag;
+		
+		[progressIndicator setIndeterminate:!isDeterminate];
+		
+		if (isDeterminate)
+		{
+			[progressIndicator setMinValue:minValue];
+			[progressIndicator setMaxValue:maxValue];
+			[progressIndicator setDoubleValue:progress];
+		}
+	}
 }
 
 - (void)dealloc
@@ -255,7 +277,7 @@
 		if (modalWindow)
 		{
 			// If we're running as a sheet, we give time to the main event loop in the default mode
-			NSEvent *event = [NSApp nextEventMatchingMask:NSAnyEventMask untilDate:[NSDate date] inMode:NSDefaultRunLoopMode dequeue:YES];
+			NSEvent *event = [NSApp nextEventMatchingMask:NSEventMaskAny untilDate:[NSDate date] inMode:NSDefaultRunLoopMode dequeue:YES];
 			
 			if (event)
 				[NSApp sendEvent:event];
@@ -399,11 +421,11 @@
 	{
 		[self makeProgressWindow];
 		
-		if (!isDeterminate);
+		if (!isDeterminate)
 			[progressIndicator startAnimation:nil];
 		
 		if (modalWindow)
-			[modalWindow beginSheet:progressWindow completionHandler:^(NSModalResponse returnCode) { }];
+			[modalWindow beginSheet:progressWindow completionHandler:NULL];
 		else
 			modalSession = [NSApp beginModalSessionForWindow:progressWindow];
 	}
@@ -416,6 +438,7 @@
 
 - (IBAction)performStop:(id)sender
 {
+#pragma unused (sender)
 	progressStopped = YES;
 }
 
@@ -480,9 +503,9 @@
 	return thresholdTime;
 }
 
-- (void)setThresholdTime:(double)time
+- (void)setThresholdTime:(double)newThresholdTime
 {
-	thresholdTime = time;
+	thresholdTime = newThresholdTime;
 }
 
 @end
@@ -494,13 +517,13 @@
 	NSSize panelSize = NSMakeSize(331, 128);
 	NSImageView *iconView = [[NSImageView alloc] initWithFrame:NSMakeRect(24, panelSize.height - (16 + 64), 64, 64)];
 	NSButton *cancelButton = [[NSButton alloc] initWithFrame:NSMakeRect(panelSize.width - 110, 11, 90, 34)];
-	NSString *buttonString = SSLocalizedString(@"Stop button", @"Stop button");
+	NSString *buttonString = SSLocalizedStringFromTable(@"Stop button", @"Base", @"Stop button");
 	NSView *contentView;
 	NSFont *lucida13bold = [NSFont boldSystemFontOfSize:[NSFont systemFontSize]];
 	NSFont *lucida13 = [NSFont systemFontOfSize:[NSFont systemFontSize]];
 	NSFont *lucida11 = [NSFont systemFontOfSize:[NSFont smallSystemFontSize]];
 	
-	progressWindow = [[NSPanel alloc] initWithContentRect:NSMakeRect(0, 0, panelSize.width, panelSize.height) styleMask:NSTitledWindowMask backing:NSBackingStoreBuffered defer:YES];
+	progressWindow = [[NSPanel alloc] initWithContentRect:NSMakeRect(0, 0, panelSize.width, panelSize.height) styleMask:NSWindowStyleMaskTitled backing:NSBackingStoreBuffered defer:YES];
 	[progressWindow setReleasedWhenClosed:YES];
 	[progressWindow setDelegate:self];
 	[progressWindow setHidesOnDeactivate:NO];

@@ -1,6 +1,6 @@
 //
 //  SSPanels.h
-//  PhotoReviewer
+//  Stick Software subsystem
 //
 //  Created by Ben Haller on Wed May 22 2002.
 //  Copyright (c) 2002 Stick Software. All rights reserved.

@@ -1,6 +1,6 @@
 //
 //  SSProgressPanel.h
-//  PhotoReviewer
+//  Stick Software subsystem
 //
 //  Created by Ben Haller on Thu Jul 31 2003.
 //  Copyright (c) 2003 Stick Software. All rights reserved.
@@ -53,6 +53,9 @@
 + (SSProgressPanel *)progressPanelModalForWindow:(NSWindow *)window title:(NSString *)title subtitle:(NSString *)subtitle determinate:(BOOL)determinate;
 
 - (id)initModalForWindow:(NSWindow *)window title:(NSString *)title subtitle:(NSString *)subtitle determinate:(BOOL)determinate;
+
+- (BOOL)isDeterminate;
+- (void)setDeterminate:(BOOL)flag;
 
 // -start may be called to start the "elapsed time" counter that determines
 // when our panel is actually shown.  A panel may be shown at the point

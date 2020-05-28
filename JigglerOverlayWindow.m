@@ -89,7 +89,7 @@ static NSString *JigglerOverlayVerticalPositionDefaultsKey = @"OverlayVerticalPo
 		NSArray *screens = [NSScreen screens];
 		int i, c;
 		
-		for (i = 0, c = [screens count]; i < c; ++i)
+		for (i = 0, c = (int)[screens count]; i < c; ++i)
 		{
 			NSScreen *screen = [screens objectAtIndex:i];
 			NSRect frame = [screen frame];
@@ -110,7 +110,7 @@ static NSString *JigglerOverlayVerticalPositionDefaultsKey = @"OverlayVerticalPo
 	}
 	
 	// Make our overlay window
-	overlayWindow = [[NSWindow alloc] initWithContentRect:contentRect styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:YES];
+	overlayWindow = [[NSWindow alloc] initWithContentRect:contentRect styleMask:NSWindowStyleMaskBorderless backing:NSBackingStoreBuffered defer:YES];
 	[overlayWindow setCanHide:NO];
 	[overlayWindow setHasShadow:NO];
 	[overlayWindow setHidesOnDeactivate:NO];
@@ -122,6 +122,13 @@ static NSString *JigglerOverlayVerticalPositionDefaultsKey = @"OverlayVerticalPo
 	[overlayWindow setBackgroundColor:[NSColor clearColor]];
 	[overlayWindow setIgnoresMouseEvents:NO];
 	[overlayWindow setOneShot:YES];
+	
+	// Configure our behavior with Spaces / Exposé / Mission Control
+	[overlayWindow setCollectionBehavior:NSWindowCollectionBehaviorCanJoinAllSpaces |
+										 NSWindowCollectionBehaviorStationary |
+										 NSWindowCollectionBehaviorIgnoresCycle |
+										 NSWindowCollectionBehaviorFullScreenAuxiliary |
+										 NSWindowCollectionBehaviorFullScreenDisallowsTiling];
 	
 	// Make our icon view
 	iconView = [[JigglerOverlayView alloc] initWithFrame:NSMakeRect(0, 0, contentRect.size.width, contentRect.size.height)];
@@ -241,7 +248,7 @@ static NSString *JigglerOverlayVerticalPositionDefaultsKey = @"OverlayVerticalPo
 
 - (void)mouseDown:(NSEvent *)event
 {
-    if ([event type] == NSLeftMouseDown)
+    if ([event type] == NSEventTypeLeftMouseDown)
     {
         NSWindow *eventWindow = [event window];
 		NSPoint locInWindow = [event locationInWindow];
@@ -266,10 +273,10 @@ static NSString *JigglerOverlayVerticalPositionDefaultsKey = @"OverlayVerticalPo
             [[NSUserDefaults standardUserDefaults] setInteger:(int)windowFrame.origin.x forKey:JigglerOverlayHorizontalPositionDefaultsKey];
             [[NSUserDefaults standardUserDefaults] setInteger:(int)windowFrame.origin.y forKey:JigglerOverlayVerticalPositionDefaultsKey];
             
-            if ([event type] == NSLeftMouseUp)
+            if ([event type] == NSEventTypeLeftMouseUp)
                 break;
         }
-		while ((event = [eventWindow nextEventMatchingMask:(NSLeftMouseDraggedMask | NSLeftMouseUpMask) untilDate:[NSDate distantFuture] inMode:NSEventTrackingRunLoopMode dequeue:YES]));
+		while ((event = [eventWindow nextEventMatchingMask:(NSEventMaskLeftMouseDragged | NSEventMaskLeftMouseUp) untilDate:[NSDate distantFuture] inMode:NSEventTrackingRunLoopMode dequeue:YES]));
     }
 }
 

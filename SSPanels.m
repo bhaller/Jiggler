@@ -1,6 +1,6 @@
 //
 //  SSPanels.m
-//  PhotoReviewer
+//  Stick Software subsystem
 //
 //  Created by Ben Haller on Wed May 22 2002.
 //  Copyright (c) 2002 Stick Software. All rights reserved.
@@ -61,7 +61,7 @@ NSWindow *ssAboutPanel = nil;
 	NSString *fullVersionString = SSLocalizedString(@"Version %@", @"For the About box and splash panel");
 	NSString *authorString = SSLocalizedString(@"By Ben Haller (%@)", @"The authorship string in the About window");
 	NSString *stickString = SSLocalizedString(@"Visit %@ for more!", @"The Stick Software URL string in the About window");
-	NSString *copyrightString = SSLocalizedString(@"Copyright 2016 Stick Software, Ben Haller.  All Rights Reserved.", @"The copyright string in the About window");
+	NSString *copyrightString = SSLocalizedString(@"Copyright 2020 Stick Software, Ben Haller.  All Rights Reserved.", @"The copyright string in the About window");
 	NSString *bodyString = SSLocalizedString(@"About panel body text", @"The body text in the About panel");
 	
 	NSString *completedVersionString = [NSString stringWithFormat:fullVersionString, versionString];
@@ -106,7 +106,7 @@ NSWindow *ssAboutPanel = nil;
 	
 	{
 	NSRect contentRect = NSMakeRect(0, 0, panelWidth, panelHeight);
-	NSWindow *aboutWindow = [[NSPanel alloc] initWithContentRect:contentRect styleMask:(NSTitledWindowMask | NSClosableWindowMask) backing:NSBackingStoreBuffered defer:YES];
+	NSWindow *aboutWindow = [[NSPanel alloc] initWithContentRect:contentRect styleMask:(NSWindowStyleMaskTitled | NSWindowStyleMaskClosable) backing:NSBackingStoreBuffered defer:YES];
 	NSView *contentView = [aboutWindow contentView];
 	NSRect topThirdRect = NSMakeRect(0, contentRect.size.height - (whiteBandHeight - 1), contentRect.size.width, whiteBandHeight);
 	NSView *topThird = [[WhiteView alloc] initWithFrame:topThirdRect];
@@ -145,19 +145,19 @@ NSWindow *ssAboutPanel = nil;
 	[authorView setEditable:NO];
 	[authorView setSelectable:YES];
 	[authorView setBordered:NO];
-	[authorView setAlignment:NSRightTextAlignment];
+	[authorView setAlignment:NSTextAlignmentRight];
 	[stickView setStringValue:completedStickString];
 	[stickView setFont:lucida11];
 	[stickView setEditable:NO];
 	[stickView setSelectable:YES];
 	[stickView setBordered:NO];
-	[stickView setAlignment:NSRightTextAlignment];
+	[stickView setAlignment:NSTextAlignmentRight];
 	[copyrightView setStringValue:copyrightString];
 	[copyrightView setFont:lucida11];
 	[copyrightView setEditable:NO];
 	[copyrightView setSelectable:YES];
 	[copyrightView setBordered:NO];
-	[copyrightView setAlignment:NSCenterTextAlignment];
+	[copyrightView setAlignment:NSTextAlignmentCenter];
 	
 	[contentView addSubview:topThird];		[topThird release];
 	[contentView addSubview:middleThird];	[middleThird release];

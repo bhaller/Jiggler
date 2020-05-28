@@ -32,7 +32,6 @@ static NSString *VersionCheckingEnabledDefaultsKey = @"DoVersionCheck";
 {
 	if (self = [super init])
 	{
-		_receivedData = [[NSMutableData data] retain];
 	}
 	
 	return self;
@@ -40,9 +39,6 @@ static NSString *VersionCheckingEnabledDefaultsKey = @"DoVersionCheck";
 
 - (void)dealloc
 {
-	[_receivedData release];
-	_receivedData = nil;
-	
 	[super dealloc];
 }
 
@@ -53,21 +49,9 @@ static NSString *VersionCheckingEnabledDefaultsKey = @"DoVersionCheck";
 	NSBundle *mainBundle = [NSBundle mainBundle];
 	NSDictionary *infoDict = [mainBundle infoDictionary];
 	NSString *appName = [infoDict objectForKey:(NSString *)kCFBundleNameKey];
-	NSString *message = SSLocalizedString(@"Version Check offer panel text", @"Version Check offer panel text");
+	NSModalResponse retval;
 	
-	message = [NSString stringWithFormat:message, appName, appName];
-	
-	NSAlert *alert = [[NSAlert alloc] init];
-	
-	[alert addButtonWithTitle:SSLocalizedString(@"Yes button", @"Yes button")];
-	[alert addButtonWithTitle:SSLocalizedString(@"No button", @"No button")];
-	[alert setMessageText:SSLocalizedString(@"Version Check", @"Version Check panels title")];
-	[alert setInformativeText:message];
-	[alert setAlertStyle:NSInformationalAlertStyle];
-	
-	NSModalResponse retval = [alert runModal];
-	
-	[alert release];
+	retval = SSRunCriticalAlertPanel(SSLocalizedStringFromTable(@"Version Check", @"VersionCheck", @"Version Check panels title"), SSLocalizedStringFromTable(@"Version Check offer panel text", @"VersionCheck", @"Version Check offer panel text"), SSLocalizedStringFromTable(@"Yes button", @"Base", @"Yes button"), SSLocalizedStringFromTable(@"No button", @"Base", @"No button"), nil, appName, appName);
 	
 	if (retval == NSAlertFirstButtonReturn)
 		doCheck = @"YES";
@@ -108,8 +92,8 @@ static NSString *VersionCheckingEnabledDefaultsKey = @"DoVersionCheck";
 	BOOL appVersionIsFinal = !(appVersionIsAlpha || appVersionIsBeta);
 	int i, cWeb, cApp, cMin;
 	
-	cWeb = [webComponents count];
-	cApp = [appComponents count];
+	cWeb = (int)[webComponents count];
+	cApp = (int)[appComponents count];
 	cMin = MIN(cWeb, cApp);
 	
 	// Compare digits that line up; if one has a higher value, it wins.
@@ -159,7 +143,7 @@ static NSString *VersionCheckingEnabledDefaultsKey = @"DoVersionCheck";
 	NSArray *lines = [fullString componentsSeparatedByString:@"\n"];
 	int i, c;
 	
-	for (i = 0, c = [lines count]; i < c; ++i)
+	for (i = 0, c = (int)[lines count]; i < c; ++i)
 	{
 		NSString *line = [lines objectAtIndex:i];
 		
@@ -216,15 +200,7 @@ static NSString *VersionCheckingEnabledDefaultsKey = @"DoVersionCheck";
 		
 		if (mailURL)
 		{
-			NSAlert *alert = [[NSAlert alloc] init];
-			
-			[alert addButtonWithTitle:SSLocalizedString(@"OK button", @"OK button")];
-			[alert setMessageText:SSLocalizedString(@"Version Check", @"Version Check panels title")];
-			[alert setInformativeText:SSLocalizedString(@"Version Check info unavailable error (sending email)", @"Version Check info unavailable error (sending email)")];
-			[alert setAlertStyle:NSWarningAlertStyle];
-			
-			[alert runModal];
-			[alert release];
+			SSRunCriticalAlertPanel(SSLocalizedStringFromTable(@"Version Check", @"VersionCheck", @"Version Check panels title"), SSLocalizedStringFromTable(@"Version Check info unavailable error (sending email)", @"VersionCheck", @"Version Check info unavailable error (sending email)"), SSLocalizedStringFromTable(@"OK button", @"Base", @"OK button"), nil, nil);
 			
 			[[NSWorkspace sharedWorkspace] openURL:mailURL];
 		}
@@ -232,92 +208,25 @@ static NSString *VersionCheckingEnabledDefaultsKey = @"DoVersionCheck";
 		{
 			NSLog(@"mailURL didn't create from string:\n%@", mailURLString);
 			
-			NSAlert *alert = [[NSAlert alloc] init];
-			
-			[alert addButtonWithTitle:SSLocalizedString(@"OK button", @"OK button")];
-			[alert setMessageText:SSLocalizedString(@"Version Check", @"Version Check panels title")];
-			[alert setInformativeText:SSLocalizedString(@"Version Check info unavailable error", @"Version Check info unavailable error")];
-			[alert setAlertStyle:NSWarningAlertStyle];
-			
-			[alert runModal];
-			[alert release];
+			SSRunCriticalAlertPanel(SSLocalizedStringFromTable(@"Version Check", @"VersionCheck", @"Version Check panels title"), SSLocalizedStringFromTable(@"Version Check info unavailable error", @"VersionCheck", @"Version Check info unavailable error"), SSLocalizedStringFromTable(@"OK button", @"Base", @"OK button"), nil, nil);
 		}
 	}
 	else if ([self webVersion:webVersionString isLaterThanAppVersion:appVersionString])
 	{
-		NSString *message = [NSString stringWithFormat:SSLocalizedString(@"Version Check new version available", @"Version Check new version available"),
-			bundleName, webVersionString, appVersionString];
-		
-		NSAlert *alert = [[NSAlert alloc] init];
-		
-		[alert addButtonWithTitle:SSLocalizedString(@"Yes button", @"Yes button")];
-		[alert addButtonWithTitle:SSLocalizedString(@"No button", @"No button")];
-		[alert setMessageText:SSLocalizedString(@"Version Check", @"Version Check panels title")];
-		[alert setInformativeText:message];
-		[alert setAlertStyle:NSInformationalAlertStyle];
-		
-		NSModalResponse retval = [alert runModal];
-		
-		[alert release];
-		
-		if (retval == NSAlertFirstButtonReturn)
+		if (SSRunAlertPanel(SSLocalizedStringFromTable(@"Version Check", @"VersionCheck", @"Version Check panels title"), SSLocalizedStringFromTable(@"Version Check new version available", @"VersionCheck", @"Version Check new version available"), SSLocalizedStringFromTable(@"Yes button", @"Base", @"Yes button"), SSLocalizedStringFromTable(@"No button", @"Base", @"No button"), nil, bundleName, webVersionString, appVersionString) == NSAlertFirstButtonReturn)
 		{
 			NSString *productURLString = [NSString stringWithFormat:@"http://www.sticksoftware.com/software/%@.dmg.gz", bundleName];
 			NSURL *productURL = [NSURL URLWithString:productURLString];
 			
 			if (!productURL || ![[NSWorkspace sharedWorkspace] openURL:productURL])
 			{
-				NSAlert *failalert = [[NSAlert alloc] init];
-				
-				[failalert addButtonWithTitle:SSLocalizedString(@"OK button", @"OK button")];
-				[failalert setMessageText:SSLocalizedString(@"Version Check", @"Version Check panels title")];
-				[failalert setInformativeText:SSLocalizedString(@"Version Check download failed error", @"Version Check download failed error")];
-				[failalert setAlertStyle:NSWarningAlertStyle];
-				
-				[failalert runModal];
-				[failalert release];
+				SSRunCriticalAlertPanel(SSLocalizedStringFromTable(@"Version Check", @"VersionCheck", @"Version Check panels title"), SSLocalizedStringFromTable(@"Version Check download failed error", @"VersionCheck", @"Version Check download failed error"), SSLocalizedStringFromTable(@"OK button", @"Base", @"OK button"), nil, nil);
 			}
 		}
 	}
 	else if (flag)
 	{
-		NSString *message = [NSString stringWithFormat:SSLocalizedString(@"Version Check up to date", @"Version Check up to date"), bundleName, appVersionString];
-		
-		NSAlert *alert = [[NSAlert alloc] init];
-		
-		[alert addButtonWithTitle:SSLocalizedString(@"OK button", @"OK button")];
-		[alert setMessageText:SSLocalizedString(@"Version Check", @"Version Check panels title")];
-		[alert setInformativeText:message];
-		[alert setAlertStyle:NSInformationalAlertStyle];
-		
-		[alert runModal];
-		[alert release];
-	}
-}
-
-- (void)beginBackgroundCheckIfNecessary
-{
-	BOOL doCheck = [self shouldDoAutomaticVersionCheckAskIfNecessary:NO];
-	
-	if (doCheck)
-	{
-		NSString *versionFileURLString = @"http://www.sticksoftware.com/versions";
-		NSURL *versionFileURL = [NSURL URLWithString:versionFileURLString];
-		NSURLRequest *request = [NSURLRequest requestWithURL:versionFileURL cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:60.0];
-		NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
-		
-		[_receivedData setLength:0];
-
-		if (connection)
-		{
-			_finishedLoading = NO;
-			//NSLog(@"beginning background version check");
-		}
-		else
-		{
-			_finishedLoading = YES;
-			//NSLog(@"background version check could not be initiated");
-		}
+		SSRunInformationalAlertPanel(SSLocalizedStringFromTable(@"Version Check", @"VersionCheck", @"Version Check panels title"), SSLocalizedStringFromTable(@"Version Check up to date", @"VersionCheck", @"Version Check up to date"), SSLocalizedStringFromTable(@"OK button", @"Base", @"OK button"), nil, nil, bundleName, appVersionString);
 	}
 }
 
@@ -327,26 +236,46 @@ static NSString *VersionCheckingEnabledDefaultsKey = @"DoVersionCheck";
 	
 	if (doCheck)
 	{
+		// Start the download of the versions file
 		NSString *versionFileURLString = @"http://www.sticksoftware.com/versions";
 		NSURL *versionFileURL = [NSURL URLWithString:versionFileURLString];
-		NSURLRequest *request = [NSURLRequest requestWithURL:versionFileURL cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:60.0];
-		NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
+		NSURLSession *session = [NSURLSession sharedSession];
+		__block bool finishedLoading = NO;
 		
-		[_receivedData setLength:0];
-
-		if (connection)
+		[[session configuration] setRequestCachePolicy:NSURLRequestReloadIgnoringLocalCacheData];
+		
+		NSURLSessionDataTask *task = [session dataTaskWithURL:versionFileURL completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+			finishedLoading = YES;
+			
+			dispatch_async(dispatch_get_main_queue(), ^{
+				if (!error && data)
+				{
+					[self compareVersionWithVersionData:data tellUserNegativeResult:flag];
+				}
+				else
+				{
+					if (flag)
+						SSRunCriticalAlertPanel(SSLocalizedStringFromTable(@"Version Check", @"VersionCheck", @"Version Check panels title"), SSLocalizedStringFromTable(@"Version Check network unavailable error (short version)", @"VersionCheck", @"Version Check network unavailable error (short version)"), SSLocalizedStringFromTable(@"OK button", @"Base", @"OK button"), nil, nil);
+					// Commented out; we don't want to show an error when a non-user-requested version check fails, that was a bad policy decision
+					//else
+					//	SSRunCriticalAlertPanel(SSLocalizedStringFromTable(@"Version Check", @"VersionCheck", @"Version Check panels title"), SSLocalizedStringFromTable(@"Version Check network unavailable error (long version)", @"VersionCheck", @"Version Check network unavailable error (long version)"), SSLocalizedStringFromTable(@"OK button", @"Base", @"OK button"), nil, nil);
+				}
+			});
+		}];
+		[task resume];
+		
+		// Run a progress panel while we wait, iff the version check was requested by the user
+		if (flag)
 		{
 			SSProgressPanel *progressPanel;
 			BOOL loadCancelledByUser = NO;
 			
-			_finishedLoading = NO;
-			
-			progressPanel = [[SSProgressPanel progressPanelModalForWindow:nil title:SSLocalizedString(@"Version Check", @"Version Check panels title") subtitle:SSLocalizedString(@"Checking for a new version...", @"Version Check progress string") determinate:NO] retain];
+			progressPanel = [[SSProgressPanel progressPanelModalForWindow:nil title:SSLocalizedStringFromTable(@"Version Check", @"VersionCheck", @"Version Check panels title") subtitle:SSLocalizedStringFromTable(@"Checking for a new version...", @"VersionCheck", @"Version Check progress string") determinate:NO] retain];
 			[progressPanel setGiveTimeToRunLoop:YES];
 			[progressPanel setThresholdTime:1.0];
 			[progressPanel startNewTask];
 			
-			while (!_finishedLoading && ([progressPanel elapsedTime] < (flag ? 15.0 : 5.0)))
+			while (!finishedLoading && ([progressPanel elapsedTime] < 15.0))
 			{
 				if (![progressPanel giveTime])
 				{
@@ -358,83 +287,9 @@ static NSString *VersionCheckingEnabledDefaultsKey = @"DoVersionCheck";
 			[progressPanel finishAndRelease];
 			
 			if (loadCancelledByUser)
-			{
-				[connection cancel];
-				return;
-			}
-		}
-		else
-		{
-			_finishedLoading = YES;
-			//NSLog(@"version check could not be initiated");
-		}
-		
-		if ([_receivedData length])
-		{
-			[self compareVersionWithVersionData:_receivedData tellUserNegativeResult:flag];
-		}
-		else
-		{
-			if (flag)
-			{
-				NSAlert *alert = [[NSAlert alloc] init];
-				
-				[alert addButtonWithTitle:SSLocalizedString(@"OK button", @"OK button")];
-				[alert setMessageText:SSLocalizedString(@"Version Check", @"Version Check panels title")];
-				[alert setInformativeText:SSLocalizedString(@"Version Check network unavailable error (short version)", @"Version Check network unavailable error (short version)")];
-				[alert setAlertStyle:NSWarningAlertStyle];
-				
-				[alert runModal];
-				[alert release];
-			}
-			else
-			{
-				NSAlert *alert = [[NSAlert alloc] init];
-				
-				[alert addButtonWithTitle:SSLocalizedString(@"OK button", @"OK button")];
-				[alert setMessageText:SSLocalizedString(@"Version Check", @"Version Check panels title")];
-				[alert setInformativeText:SSLocalizedString(@"Version Check network unavailable error (long version)", @"Version Check network unavailable error (long version)")];
-				[alert setAlertStyle:NSWarningAlertStyle];
-				
-				[alert runModal];
-				[alert release];
-			}
+				[task cancel];
 		}
 	}
-}
-
-
-//
-//	NSURLConection delegate methods
-//
-
-- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
-{
-#pragma unused (connection, response)
-	[_receivedData setLength:0];
-}
-
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
-{
-#pragma unused (connection)
-	[_receivedData appendData:data];
-}
-
-- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
-{
-#pragma unused (connection, error)
-	[connection release];
-	
-	[_receivedData setLength:0];
-	
-	_finishedLoading = YES;
-}
-
-- (void)connectionDidFinishLoading:(NSURLConnection *)connection
-{
-	[connection release];
-	
-	_finishedLoading = YES;
 }
 
 @end
