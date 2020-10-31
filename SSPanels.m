@@ -95,6 +95,7 @@ NSWindow *ssAboutPanel = nil;
 	[bodyView setFont:lucida11];
 	[bodyView setEditable:NO];
 	[bodyView setDrawsBackground:NO];
+    [bodyView setTextColor:[NSColor blackColor]];
 	
 	[lm glyphRangeForTextContainer:tc];
 	bodyHeight = [lm usedRectForTextContainer:tc].size.height + 5;
@@ -136,29 +137,36 @@ NSWindow *ssAboutPanel = nil;
 	[appNameView setFont:lucida24];
 	[appNameView setEditable:NO];
 	[appNameView setBordered:NO];
+    [appNameView setTextColor:[NSColor blackColor]];
+    [appNameView setBackgroundColor:[NSColor clearColor]];
 	[versionView setStringValue:completedVersionString];
 	[versionView setFont:lucida13];
 	[versionView setEditable:NO];
 	[versionView setBordered:NO];
+    [versionView setTextColor:[NSColor blackColor]];
+    [versionView setBackgroundColor:[NSColor clearColor]];
 	[authorView setStringValue:completedAuthorString];
 	[authorView setFont:lucida11];
 	[authorView setEditable:NO];
-	[authorView setSelectable:YES];
 	[authorView setBordered:NO];
 	[authorView setAlignment:NSTextAlignmentRight];
-	[stickView setStringValue:completedStickString];
-	[stickView setFont:lucida11];
-	[stickView setEditable:NO];
-	[stickView setSelectable:YES];
-	[stickView setBordered:NO];
-	[stickView setAlignment:NSTextAlignmentRight];
+    [authorView setTextColor:[NSColor blackColor]];
+    [authorView setBackgroundColor:[NSColor clearColor]];
+    [stickView setStringValue:completedStickString];
+    [stickView setFont:lucida11];
+    [stickView setEditable:NO];
+    [stickView setBordered:NO];
+    [stickView setAlignment:NSTextAlignmentRight];
+    [stickView setTextColor:[NSColor blackColor]];
+    [stickView setBackgroundColor:[NSColor clearColor]];
 	[copyrightView setStringValue:copyrightString];
 	[copyrightView setFont:lucida11];
 	[copyrightView setEditable:NO];
 	[copyrightView setSelectable:YES];
 	[copyrightView setBordered:NO];
 	[copyrightView setAlignment:NSTextAlignmentCenter];
-	
+    [copyrightView setTextColor:[NSColor blackColor]];
+    [copyrightView setBackgroundColor:[NSColor clearColor]];
 	[contentView addSubview:topThird];		[topThird release];
 	[contentView addSubview:middleThird];	[middleThird release];
 	[contentView addSubview:bottomThird];	[bottomThird release];
@@ -175,7 +183,7 @@ NSWindow *ssAboutPanel = nil;
 	
 	[authorView fixText:emailString toGoToLink:@"mailto:bhaller@sticksoftware.com"];
 	[stickView fixText:urlString toGoToLink:@"http://www.sticksoftware.com/"];
-	
+        
 	urlKeys = [urlDict allKeys];
 	
 	for (i = 0; i < [urlKeys count]; ++i)
