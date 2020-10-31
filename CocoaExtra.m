@@ -109,6 +109,7 @@ NSString *SSTestLocalizedStringFromTable(NSString *key, NSString *table)
     [tv setRichText:YES];
     [tv setDrawsBackground:NO];
     [tv setTextContainerInset:NSMakeSize(0, 0)];
+    [tv setTextColor:self.textColor];
     [[tv textContainer] setLineFragmentPadding:1.0];
     
     ts = [tv textStorage];
