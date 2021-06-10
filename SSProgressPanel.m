@@ -557,7 +557,7 @@
 	
 	[cancelButton setTitle:buttonString];
 	[cancelButton setFont:lucida13];
-	[cancelButton setBezelStyle:NSRoundedBezelStyle];
+	[cancelButton setBezelStyle:NSBezelStyleRounded];
 	[cancelButton setTarget:self];
 	[cancelButton setAction:@selector(performStop:)];
 	[contentView addSubview:cancelButton];

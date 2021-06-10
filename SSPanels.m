@@ -61,7 +61,7 @@ NSWindow *ssAboutPanel = nil;
 	NSString *fullVersionString = SSLocalizedString(@"Version %@", @"For the About box and splash panel");
 	NSString *authorString = SSLocalizedString(@"By Ben Haller (%@)", @"The authorship string in the About window");
 	NSString *stickString = SSLocalizedString(@"Visit %@ for more!", @"The Stick Software URL string in the About window");
-	NSString *copyrightString = SSLocalizedString(@"Copyright 2020 Stick Software, Ben Haller.  All Rights Reserved.", @"The copyright string in the About window");
+	NSString *copyrightString = SSLocalizedString(@"Copyright 2021 Stick Software, Ben Haller.  All Rights Reserved.", @"The copyright string in the About window");
 	NSString *bodyString = SSLocalizedString(@"About panel body text", @"The body text in the About panel");
 	
 	NSString *completedVersionString = [NSString stringWithFormat:fullVersionString, versionString];

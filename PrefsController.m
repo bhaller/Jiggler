@@ -116,7 +116,7 @@ static PrefsController *sharedPrefsController = nil;
 			if (jiggleStyle == -1)
 				jiggleStyle = ([userDefaults boolForKey:ZenJiggleDefaultsKey] ? 1 : 0);
 			if ((jiggleStyle < 0) || (jiggleStyle > 2)) jiggleStyle = 0;
-			
+            
             jiggleDistance = [userDefaults floatForKey:JiggleDistanceDefaultsKey];
 			if (jiggleDistance < 0.0f)
 				jiggleDistance = 0.0f;
@@ -182,7 +182,7 @@ static PrefsController *sharedPrefsController = nil;
 		[invisibleCloseButton setTransparent:YES];
 		
 		// Set up our launch on login checkbox, which is not backed by a pref kept by us
-		[launchOnLoginCheckbox setState:([self launchOnLogin] ? NSOnState : NSOffState)];
+		[launchOnLoginCheckbox setState:([self launchOnLogin] ? NSControlStateValueOn : NSControlStateValueOff)];
 		
 		// Set the jiggle time slider.  It has values from 0 to 5, with ticks at each integer, for 5 secs, 1 min, 5 min, 1 hour, 5 hours, and 24 hours.
 		// We treat each segment of that slider range as an independent linear scale, so it's a bit complicated...
@@ -413,7 +413,7 @@ static PrefsController *sharedPrefsController = nil;
 
 - (IBAction)jiggleStyleChanged:(id)sender
 {
-	BOOL newState = [[sender selectedCell] tag];
+	int newState = (int)[[sender selectedCell] tag];
 	
 	if (newState != jiggleStyle)
 	{

@@ -121,7 +121,6 @@ static NSString *JigglerOverlayVerticalPositionDefaultsKey = @"OverlayVerticalPo
 	[overlayWindow setAlphaValue:0.0];
 	[overlayWindow setBackgroundColor:[NSColor clearColor]];
 	[overlayWindow setIgnoresMouseEvents:NO];
-	[overlayWindow setOneShot:YES];
 	
 	// Configure our behavior with Spaces / Exposé / Mission Control
 	[overlayWindow setCollectionBehavior:NSWindowCollectionBehaviorCanJoinAllSpaces |

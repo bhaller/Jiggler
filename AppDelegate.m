@@ -167,7 +167,7 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 - (void)fixMasterSwitchUI
 {
 	// Fix the master switch menu item to be checked or unchecked
-	[_masterSwitchItem setState:(jiggleMasterSwitch ? NSOnState : NSOffState)];
+	[_masterSwitchItem setState:(jiggleMasterSwitch ? NSControlStateValueOn : NSControlStateValueOff)];
 	
 	// Dim the status item icon if we are disabled
 	NSStatusBarButton *statusButton = [[self statusItem] button];
@@ -797,7 +797,7 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 			if (jiggleConditionsMet)
 			{
 				int jiggleStyle = [prefs jiggleStyle];
-				
+                
 				if (jiggleStyle == 1)
 				{
 					// Zen jiggle: skip actually moving the mouse.  Of course some apps watch the cursor position rather
@@ -818,12 +818,25 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 					CGEventRef click_down = CGEventCreateMouseEvent(NULL, kCGEventLeftMouseDown, cgMouseLocation, kCGMouseButtonLeft);
 					CGEventRef click_up = CGEventCreateMouseEvent(NULL, kCGEventLeftMouseUp, cgMouseLocation, kCGMouseButtonLeft);
 					
-					CGEventPost(kCGHIDEventTap, click_down);
-					usleep(10000);
-					CGEventPost(kCGHIDEventTap, click_up);
-					
-					CFRelease(click_down);
-					CFRelease(click_up);
+                    if (click_down && click_up)
+                    {
+                        CGEventPost(kCGHIDEventTap, click_down);
+                        usleep(10000);
+                        CGEventPost(kCGHIDEventTap, click_up);
+                        
+                        CFRelease(click_down);
+                        CFRelease(click_up);
+                    }
+                    else
+                    {
+                        static bool beenHere = false;
+                        
+                        if (!beenHere)
+                        {
+                            NSLog(@"Jiggler was unable to create mouse click events.");
+                            beenHere = true;
+                        }
+                    }
 				}
 				else	// jiggleStyle == 0, and bad values
 				{

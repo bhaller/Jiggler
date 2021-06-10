@@ -55,6 +55,13 @@ x	Add a checkbox option to disable jiggling when the screen is locked, defaultin
 x	Add a "click jiggle" choice that clicks the mouse without moving the cursor
 x	Add a jiggle distance slider, allowing the user to make the mouse jiggle long distances (some apps only stay awake with a large jiggle distance)
 
+1.9:
+x   Advance version number & copyright
+x   Build for 10.15 and later, fix deprecated APIs (where possible)
+        leaving LSShared... and mountedRemovableMedia deprecation warnings since they are not easily fixed
+x   Build universal for M1 on Xcode 11.4, test on M1
+x   Fix a bug that prevented Click Jiggle from working
+
 
 Suggestions:
 
