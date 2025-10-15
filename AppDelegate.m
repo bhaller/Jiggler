@@ -72,7 +72,9 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 @end
 
 
-@implementation AppDelegate
+@implementation AppDelegate {
+    IOPMAssertionID _userActivityAssertion;
+}
 
 #pragma mark Launch and Termination
 
@@ -241,6 +243,27 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 
 
 #pragma mark Jiggling
+
+- (void)declareUserActivity
+{
+    // Release any previous assertion before creating a new one
+    if (_userActivityAssertion != kIOPMNullAssertionID) {
+        IOPMAssertionRelease(_userActivityAssertion);
+        _userActivityAssertion = kIOPMNullAssertionID;
+    }
+
+    // Create a short-lived "user is active" assertion to reset system idle timer
+    IOReturn result = IOPMAssertionCreateWithName(
+        kIOPMAssertionTypePreventUserIdleDisplaySleep,   // tells macOS "the user just did something"
+        kIOPMAssertionLevelOn,
+        CFSTR("Jiggler Zen Jiggle Activity"),
+        &_userActivityAssertion
+    );
+
+    if (result != kIOReturnSuccess) {
+        NSLog(@"[Jiggler] Failed to declare user activity (IOReturn = 0x%x)", result);
+    }
+}
 
 - (BOOL)isInAScreen:(NSPoint)point
 {
@@ -857,18 +880,21 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 				// BCH 8 February 2015: UpdateSystemActivity() is officially deprecated beginning in 10.8.  I am going
 				// to continue using it until it actually goes away.
 				// BCH 19 May 2016: Added weak linking protection to this, just in case Apple actually removes it...
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-				if (UpdateSystemActivity != NULL)
-					UpdateSystemActivity(UsrActivity);
-#pragma clang diagnostic pop
+//#pragma clang diagnostic push
+//#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+//				if (UpdateSystemActivity != NULL)
+//					UpdateSystemActivity(UsrActivity);
+//#pragma clang diagnostic pop
 				
 				// BCH 19 May 2016: Adding the new IOKit call IOPMAssertionDeclareUserActivity(), which appears to be equivalent
 				// to UpdateSystemActivity(UsrActivity).  It may have slightly different effects, so I'm keeping the call to
 				// UpdateSystemActivity(UsrActivity) above as well, just to try to ensure the most complete coverage possible.
-				static IOPMAssertionID assertionID = kIOPMNullAssertionID;
+//				static IOPMAssertionID assertionID = kIOPMNullAssertionID;
 				
-				IOPMAssertionDeclareUserActivity(CFSTR("Jiggler"), kIOPMUserActiveLocal, &assertionID);
+//				IOPMAssertionDeclareUserActivity(CFSTR("Jiggler"), kIOPMUserActiveLocal, &assertionID);
+                
+                // Replace the old UpdateSystemActivity() + IOPMAssertionDeclareUserActivity()
+                [self declareUserActivity];
 				
 				[timeOfLastJiggle release];
 				timeOfLastJiggle = [[NSDate alloc] init];
