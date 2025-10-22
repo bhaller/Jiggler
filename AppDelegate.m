@@ -72,7 +72,9 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 @end
 
 
-@implementation AppDelegate
+@implementation AppDelegate {
+	IOPMAssertionID _userActivityAssertion;
+}
 
 #pragma mark Launch and Termination
 
@@ -244,8 +246,28 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 	[[self timedQuitItem] setTitle:timedQuitTitle];
 }
 
-
 #pragma mark Jiggling
+
+- (void)declareUserActivity
+{
+    // Release any previous assertion before creating a new one
+    if (_userActivityAssertion != kIOPMNullAssertionID) {
+        IOPMAssertionRelease(_userActivityAssertion);
+        _userActivityAssertion = kIOPMNullAssertionID;
+    }
+
+    // Create a short-lived "user is active" assertion to reset system idle timer
+    IOReturn result = IOPMAssertionCreateWithName(
+        kIOPMAssertionTypePreventUserIdleDisplaySleep,   // tells macOS "the user just did something"
+        kIOPMAssertionLevelOn,
+        CFSTR("Jiggler Zen Jiggle Activity"),
+        &_userActivityAssertion
+    );
+
+    if (result != kIOReturnSuccess) {
+        NSLog(@"[Jiggler] Failed to declare user activity (IOReturn = 0x%x)", result);
+    }
+}
 
 - (BOOL)isInAScreen:(NSPoint)point
 {
@@ -809,30 +831,6 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 				{
 					// Zen jiggle: skip actually moving the mouse.  Of course some apps watch the cursor position rather
 					// than looking at the system idle time, so Zen jiggle may fail to jiggle some apps; caveat jigglor...
-					
-					// On macOS 15 and later, also post a no-move mouse event to reset idle time without visible motion.
-					if (@available(macOS 15.0, *))
-					{
-						NSPoint mouseLocation = [NSEvent mouseLocation];
-						NSScreen *primaryScreen = [NSScreen primaryScreen];
-						NSRect screenFrame = [primaryScreen frame];
-						CGPoint cgMouseLocation;
-						
-						cgMouseLocation.x = mouseLocation.x;
-						cgMouseLocation.y = screenFrame.size.height - mouseLocation.y;
-						
-						CGEventSourceRef sourceRef = CGEventSourceCreate(kCGEventSourceStateHIDSystemState);
-						if (sourceRef)
-						{
-							CFTimeInterval oldSuppressionInterval = CGEventSourceGetLocalEventsSuppressionInterval(sourceRef);
-							CGEventSourceSetLocalEventsSuppressionInterval(sourceRef, 0.0);
-							CGEventRef eventMoved = CGEventCreateMouseEvent(sourceRef, kCGEventMouseMoved, cgMouseLocation, kCGMouseButtonLeft);
-							CGEventPost(kCGHIDEventTap, eventMoved);
-							CGEventSourceSetLocalEventsSuppressionInterval(sourceRef, oldSuppressionInterval);
-							CFRelease(eventMoved);
-							CFRelease(sourceRef);
-						}
-					}
 				}
 				else if (jiggleStyle == 2)
 				{
@@ -897,10 +895,9 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 				// BCH 19 May 2016: Adding the new IOKit call IOPMAssertionDeclareUserActivity(), which appears to be equivalent
 				// to UpdateSystemActivity(UsrActivity).  It may have slightly different effects, so I'm keeping the call to
 				// UpdateSystemActivity(UsrActivity) above as well, just to try to ensure the most complete coverage possible.
-				static IOPMAssertionID assertionID = kIOPMNullAssertionID;
 				
-				IOPMAssertionDeclareUserActivity(CFSTR("Jiggler"), kIOPMUserActiveLocal, &assertionID);
-				
+				[self declareUserActivity];
+
 				[timeOfLastJiggle release];
 				timeOfLastJiggle = [[NSDate alloc] init];
 				
