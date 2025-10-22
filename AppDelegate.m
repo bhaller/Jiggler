@@ -535,7 +535,7 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 		NSApplicationActivationPolicy activationPolicy = [app activationPolicy];
         BOOL isActive = [app isActive];
         
-        //NSLog(@"process name: %@, is dock app == %@, is active == %@", processName, (activationPolicy == NSApplicationActivationPolicyRegular) ? @"YES" : @"NO", isActive ? @"YES" : @"NO");
+        NSLog(@"process name: %@, is dock app == %@, is active == %@", processName, (activationPolicy == NSApplicationActivationPolicyRegular) ? @"YES" : @"NO", isActive ? @"YES" : @"NO");
         
         if (mustBeDockApp && (activationPolicy != NSApplicationActivationPolicyRegular))
             continue;
@@ -581,7 +581,7 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 {
 	int cpuBusyIndex = [SSCPU busyIndex];
 	
-    //NSLog(@"busy index %d", cpuBusyIndex);
+    NSLog(@"busy index %d", cpuBusyIndex);
     
 	if (cpuBusyIndex >= cpuUsageThreshold)
 		return YES;
@@ -602,7 +602,7 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 		NSString *runningAppLocalizedName = [runningApp localizedName];
 		NSString *runningAppBundleIdentifier = [runningApp bundleIdentifier];
 		
-		//NSLog(@"index %d: name %@ bundle id %@", i, runningAppLocalizedName, runningAppBundleIdentifier);
+		NSLog(@"index %d: name %@ bundle id %@", i, runningAppLocalizedName, runningAppBundleIdentifier);
 		
 		if ([runningAppLocalizedName isEqualToString:@"iTunes"] || [runningAppBundleIdentifier isEqualToString:@"com.apple.iTunes"])
 		{
@@ -673,27 +673,27 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 	// If we have conditions, check them; if any one is met, we return YES
 	if (onlyWithApplicationsNamedX && [self checkRunningAppsForAppNameContaining:applicationNameComponents mustBeDockApp:mustBeDockApp mustBeFront:NO])
     {
-        //NSLog(@"jiggleConditionsMet: app matching name is running");
+        NSLog(@"jiggleConditionsMet: app matching name is running");
 		return YES;
 	}
 	if (onlyWithRemovableWritableDisks && [self checkMountedVolumesForCandidateDisks])
     {
-        //NSLog(@"jiggleConditionsMet: mounted removable writable disk present");
+        NSLog(@"jiggleConditionsMet: mounted removable writable disk present");
 		return YES;
 	}
 	if (onlyWithCPUUsage && [self cpuUsageOverThreshold:cpuUsageThreshold])
     {
-        //NSLog(@"jiggleConditionsMet: cpu usage is high");
+        NSLog(@"jiggleConditionsMet: cpu usage is high");
 		return YES;
 	}
 	if (onlyWithITunesPlaying && ([self iTunesIsRunningNow] && iTunesIsPlaying))
     {
-        //NSLog(@"jiggleConditionsMet: iTunes is playing");
+        NSLog(@"jiggleConditionsMet: iTunes is playing");
 		return YES;
 	}
 	
 	// If we have conditions and they are not met, then we return NO
-    //NSLog(@"jiggleConditionsMet: NO");
+    NSLog(@"jiggleConditionsMet: NO");
 	return NO;
 }
 
@@ -750,7 +750,7 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 			
 			if (jiggleOnlyWhenIdle && (idleTime < timeSinceLastJiggle - 0.4))   // the code below schedules mouse moves for up to 0.34 seconds beyond timeOfLastJiggle, so 0.4 gives us a little wiggle room
 			{
-                //NSLog(@"idleTime %f, timeSinceLastJiggle %f, delta = %f, deactivating", idleTime, timeSinceLastJiggle, timeSinceLastJiggle - idleTime);
+                NSLog(@"idleTime %f, timeSinceLastJiggle %f, delta = %f, deactivating", idleTime, timeSinceLastJiggle, timeSinceLastJiggle - idleTime);
 				[self setJigglingActive:NO];
 			}
 			else if (((callout_counter & 0x0F) == 0) || jiggleConditionsLikelyToHaveChanged)
@@ -931,7 +931,7 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 	// Bump our jiggle code for immediate action if appropriate
 	[self jiggleMouse:nil];
 	
-	//NSLog(@"iTunesChanged:");
+	NSLog(@"iTunesChanged:");
 }
 
 - (void)applicationListChanged:(NSNotification *)note
@@ -941,7 +941,7 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 	// Bump our jiggle code for immediate action if appropriate
 	[self jiggleMouse:nil];
 	
-	//NSLog(@"applicationListChanged:");
+	NSLog(@"applicationListChanged:");
 }
 
 - (void)mountedDevicesChanged:(NSNotification *)note
@@ -951,7 +951,7 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 	// Bump our jiggle code for immediate action if appropriate
 	[self jiggleMouse:nil];
 	
-	//NSLog(@"mountedDevicesChanged:");
+	NSLog(@"mountedDevicesChanged:");
 }
 
 

@@ -60,8 +60,9 @@ int getCPUUsage(void)
         
         if (load[i] > 100) { load[i] = 100; };
 		
-		//NSLog(@"raw: user %d, system %d, idle %d, nice %d.", ticks[i].cpu_ticks[0], ticks[i].cpu_ticks[1], ticks[i].cpu_ticks[2], ticks[i].cpu_ticks[3]);
-		//NSLog(@"deltas: user %d, system %d, idle %d, nice %d.  Load == %d", deltas.cpu_ticks[0], deltas.cpu_ticks[1], deltas.cpu_ticks[2], deltas.cpu_ticks[3], load[i]);
+		NSLog(@"raw: user %d, system %d, idle %d, nice %d.", ticks[i].cpu_ticks[0], ticks[i].cpu_ticks[1], ticks[i].cpu_ticks[2], ticks[i].cpu_ticks[3]);
+		
+        NSLog(@"deltas: user %d, system %d, idle %d, nice %d.  Load == %d", deltas.cpu_ticks[0], deltas.cpu_ticks[1], deltas.cpu_ticks[2], deltas.cpu_ticks[3], load[i]);
     }
     
     vm_deallocate(mach_task_self(),
