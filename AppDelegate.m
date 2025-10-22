@@ -129,7 +129,12 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 	[self fixMasterSwitchUI];
 	
 	// Check that we have the Accessibility access we need; see https://stackoverflow.com/a/53617674/2752221
-	if (!AXIsProcessTrusted())
+	if (@available(macOS 15.0, *))
+	{
+		NSDictionary *opts = [NSDictionary dictionaryWithObjectsAndKeys:(id)kCFBooleanFalse, (id)kAXTrustedCheckOptionPrompt, nil];
+		(void)AXIsProcessTrustedWithOptions((CFDictionaryRef)opts);
+	}
+	else if (!AXIsProcessTrusted())
 	{
 		NSModalResponse retval = SSRunCriticalAlertPanel(@"Turn on accessibility", @"Jiggler needs to control the mouse cursor to function.  To enable this capability, please select the Jiggler checkbox in Security & Privacy > Accessibility, and then restart Jiggler (which will quit now).", @"Turn On Accessibility", @"Quit", nil);
 		
@@ -557,19 +562,21 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 
 - (BOOL)checkMountedVolumesForCandidateDisks
 {
-	NSWorkspace *ws = [NSWorkspace sharedWorkspace];
-	NSArray *mountedRemovables = [ws mountedRemovableMedia];    // the header suggests switching to mountedVolumeURLsIncludingResourceValuesForKeys:options:, but that looks annoying
+	NSFileManager *fm = [NSFileManager defaultManager];
+	NSArray *volumeURLs = [fm mountedVolumeURLsIncludingResourceValuesForKeys:@[NSURLVolumeIsRemovableKey, NSURLVolumeIsReadOnlyKey] options:0];
 	int i, c;
 	
-	for (i = 0, c = (int)[mountedRemovables count]; i < c; ++i)
+	for (i = 0, c = (int)[volumeURLs count]; i < c; ++i)
 	{
-		NSString *diskPath = [mountedRemovables objectAtIndex:i];
-		BOOL isRemovable, isWritable;
-		BOOL isMountPoint = [ws getFileSystemInfoForPath:diskPath isRemovable:&isRemovable isWritable:&isWritable isUnmountable:NULL description:NULL type:NULL];
+		NSURL *url = [volumeURLs objectAtIndex:i];
+		NSNumber *isRemovableNum = nil;
+		NSNumber *isReadOnlyNum = nil;
+		BOOL gotRemovable = [url getResourceValue:&isRemovableNum forKey:NSURLVolumeIsRemovableKey error:NULL];
+		BOOL gotReadOnly = [url getResourceValue:&isReadOnlyNum forKey:NSURLVolumeIsReadOnlyKey error:NULL];
 		
-		if (isMountPoint)
+		if (gotRemovable && gotReadOnly)
 		{
-			if (isRemovable && isWritable)
+			if ([isRemovableNum boolValue] && ![isReadOnlyNum boolValue])
 				return YES;
 		}
 	}
@@ -802,6 +809,30 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 				{
 					// Zen jiggle: skip actually moving the mouse.  Of course some apps watch the cursor position rather
 					// than looking at the system idle time, so Zen jiggle may fail to jiggle some apps; caveat jigglor...
+					
+					// On macOS 15 and later, also post a no-move mouse event to reset idle time without visible motion.
+					if (@available(macOS 15.0, *))
+					{
+						NSPoint mouseLocation = [NSEvent mouseLocation];
+						NSScreen *primaryScreen = [NSScreen primaryScreen];
+						NSRect screenFrame = [primaryScreen frame];
+						CGPoint cgMouseLocation;
+						
+						cgMouseLocation.x = mouseLocation.x;
+						cgMouseLocation.y = screenFrame.size.height - mouseLocation.y;
+						
+						CGEventSourceRef sourceRef = CGEventSourceCreate(kCGEventSourceStateHIDSystemState);
+						if (sourceRef)
+						{
+							CFTimeInterval oldSuppressionInterval = CGEventSourceGetLocalEventsSuppressionInterval(sourceRef);
+							CGEventSourceSetLocalEventsSuppressionInterval(sourceRef, 0.0);
+							CGEventRef eventMoved = CGEventCreateMouseEvent(sourceRef, kCGEventMouseMoved, cgMouseLocation, kCGMouseButtonLeft);
+							CGEventPost(kCGHIDEventTap, eventMoved);
+							CGEventSourceSetLocalEventsSuppressionInterval(sourceRef, oldSuppressionInterval);
+							CFRelease(eventMoved);
+							CFRelease(sourceRef);
+						}
+					}
 				}
 				else if (jiggleStyle == 2)
 				{
