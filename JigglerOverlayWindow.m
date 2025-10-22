@@ -221,7 +221,7 @@ static NSString *JigglerOverlayVerticalPositionDefaultsKey = @"OverlayVerticalPo
 
 - (void)activate
 {
-    //NSLog(@"+++ activate");
+    NSLog(@"+++ activate");
 	if (!overlayWindow)
 		[self createOverlayWindow];
 	
@@ -231,7 +231,7 @@ static NSString *JigglerOverlayVerticalPositionDefaultsKey = @"OverlayVerticalPo
 
 - (void)deactivate
 {
-    //NSLog(@"--- deactivate");
+    NSLog(@"--- deactivate");
 	activated = NO;
 	[self scheduleTimer];
 }
