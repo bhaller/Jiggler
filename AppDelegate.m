@@ -253,12 +253,11 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
     }
 
     // Create a short-lived "user is active" assertion to reset system idle timer
-    IOReturn result = IOPMAssertionCreateWithName(
-        kIOPMAssertionTypePreventUserIdleDisplaySleep,   // tells macOS "the user just did something"
-        kIOPMAssertionLevelOn,
-        CFSTR("Jiggler Zen Jiggle Activity"),
-        &_userActivityAssertion
-    );
+    IOReturn result = IOPMAssertionDeclareUserActivity(
+            CFSTR("Jiggler Zen Jiggle Activity"),
+            kIOPMUserActiveLocal,
+            &_userActivityAssertion
+        );
 
     if (result != kIOReturnSuccess) {
         NSLog(@"[Jiggler] Failed to declare user activity (IOReturn = 0x%x)", result);
