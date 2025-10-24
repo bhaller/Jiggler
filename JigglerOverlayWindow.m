@@ -67,6 +67,12 @@ static NSString *JigglerOverlayVerticalPositionDefaultsKey = @"OverlayVerticalPo
 - (void)createOverlayWindow
 {
 	NSScreen *mainScreen = [[NSScreen screens] objectAtIndex:0];
+	// Prefer the mainScreen accessor on macOS 15+ to ensure proper centering
+	if (@available(macOS 15.0, *))
+	{
+		NSScreen *main = [NSScreen mainScreen];
+		if (main) mainScreen = main;
+	}
 	NSRect screenFrame = [mainScreen frame];
 	NSRect contentRect;
 	JigglerOverlayView *iconView;
@@ -81,29 +87,37 @@ static NSString *JigglerOverlayVerticalPositionDefaultsKey = @"OverlayVerticalPo
 	contentRect.origin.y = screenFrame.origin.y + floor((screenFrame.size.height - contentRect.size.height) / 2.0);
 	
 	// Use our defaults window location if it exists
-	if (horizontalPosition && verticalPosition)
+	// On macOS 15+, skip restoring saved position to ensure centering
+	if (@available(macOS 15.0, *))
 	{
-		int horizontalInt = [horizontalPosition intValue];
-		int verticalInt = [verticalPosition intValue];
-		NSRect defaultBasedRect = NSMakeRect(horizontalInt, verticalInt, contentRect.size.width, contentRect.size.height);
-		NSArray *screens = [NSScreen screens];
-		int i, c;
-		
-		for (i = 0, c = (int)[screens count]; i < c; ++i)
+		// do nothing; keep centered on main screen
+	}
+	else
+	{
+		if (horizontalPosition && verticalPosition)
 		{
-			NSScreen *screen = [screens objectAtIndex:i];
-			NSRect frame = [screen frame];
+			int horizontalInt = [horizontalPosition intValue];
+			int verticalInt = [verticalPosition intValue];
+			NSRect defaultBasedRect = NSMakeRect(horizontalInt, verticalInt, contentRect.size.width, contentRect.size.height);
+			NSArray *screens = [NSScreen screens];
+			int i, c;
 			
-			if (NSIntersectsRect(frame, defaultBasedRect))
+			for (i = 0, c = (int)[screens count]; i < c; ++i)
 			{
-				NSRect intersection = NSIntersectionRect(frame, defaultBasedRect);
-				float intersectionSize = intersection.size.width * intersection.size.height;
+				NSScreen *screen = [screens objectAtIndex:i];
+				NSRect frame = [screen frame];
 				
-				if (intersectionSize >= 400.0)
+				if (NSIntersectsRect(frame, defaultBasedRect))
 				{
-					// We have a screen on which our defaults-based frame will lie, so we can use it.
-					contentRect = defaultBasedRect;
-					break;
+					NSRect intersection = NSIntersectionRect(frame, defaultBasedRect);
+					float intersectionSize = intersection.size.width * intersection.size.height;
+					
+					if (intersectionSize >= 400.0)
+					{
+						// We have a screen on which our defaults-based frame will lie, so we can use it.
+						contentRect = defaultBasedRect;
+						break;
+					}
 				}
 			}
 		}
@@ -221,7 +235,7 @@ static NSString *JigglerOverlayVerticalPositionDefaultsKey = @"OverlayVerticalPo
 
 - (void)activate
 {
-    //NSLog(@"+++ activate");
+    NSLog(@"+++ activate");
 	if (!overlayWindow)
 		[self createOverlayWindow];
 	
@@ -231,7 +245,7 @@ static NSString *JigglerOverlayVerticalPositionDefaultsKey = @"OverlayVerticalPo
 
 - (void)deactivate
 {
-    //NSLog(@"--- deactivate");
+    NSLog(@"--- deactivate");
 	activated = NO;
 	[self scheduleTimer];
 }

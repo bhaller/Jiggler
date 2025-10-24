@@ -103,7 +103,7 @@ NSWindow *ssAboutPanel = nil;
 	
 	[bodyView setFrame:NSMakeRect(20, 91, panelWidth - (bodyMarginWidth + bodyMarginWidth), bodyHeight)];
 	
-	//NSLog(@"panelWidth == %d, panelHeight == %d", panelWidth, panelHeight);
+	NSLog(@"panelWidth == %d, panelHeight == %d", panelWidth, panelHeight);
 	
 	{
 	NSRect contentRect = NSMakeRect(0, 0, panelWidth, panelHeight);
