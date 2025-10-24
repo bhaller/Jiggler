@@ -235,7 +235,7 @@
 				
 				if (estimatedTimeToCompletion > 1.0)
 				{
-					NSLog(@"progress == %f, max == %f, elapsedTime == %f, estimatedTimeToCompletion == %f; forcing panel visible", progress, maxValue, elapsedTime, estimatedTimeToCompletion);
+					//NSLog(@"progress == %f, max == %f, elapsedTime == %f, estimatedTimeToCompletion == %f; forcing panel visible", progress, maxValue, elapsedTime, estimatedTimeToCompletion);
 					[self forceVisible];
 				}
 			}

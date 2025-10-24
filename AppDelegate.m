@@ -72,9 +72,7 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 @end
 
 
-@implementation AppDelegate {
-	IOPMAssertionID _userActivityAssertion;
-}
+@implementation AppDelegate
 
 #pragma mark Launch and Termination
 
@@ -131,12 +129,7 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 	[self fixMasterSwitchUI];
 	
 	// Check that we have the Accessibility access we need; see https://stackoverflow.com/a/53617674/2752221
-	if (@available(macOS 15.0, *))
-	{
-		NSDictionary *opts = [NSDictionary dictionaryWithObjectsAndKeys:(id)kCFBooleanFalse, (id)kAXTrustedCheckOptionPrompt, nil];
-		(void)AXIsProcessTrustedWithOptions((CFDictionaryRef)opts);
-	}
-	else if (!AXIsProcessTrusted())
+	if (!AXIsProcessTrusted())
 	{
 		NSModalResponse retval = SSRunCriticalAlertPanel(@"Turn on accessibility", @"Jiggler needs to control the mouse cursor to function.  To enable this capability, please select the Jiggler checkbox in Security & Privacy > Accessibility, and then restart Jiggler (which will quit now).", @"Turn On Accessibility", @"Quit", nil);
 		
@@ -246,28 +239,8 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 	[[self timedQuitItem] setTitle:timedQuitTitle];
 }
 
+
 #pragma mark Jiggling
-
-- (void)declareUserActivity
-{
-    // Release any previous assertion before creating a new one
-    if (_userActivityAssertion != kIOPMNullAssertionID) {
-        IOPMAssertionRelease(_userActivityAssertion);
-        _userActivityAssertion = kIOPMNullAssertionID;
-    }
-
-    // Create a short-lived "user is active" assertion to reset system idle timer
-    IOReturn result = IOPMAssertionCreateWithName(
-        kIOPMAssertionTypePreventUserIdleDisplaySleep,   // tells macOS "the user just did something"
-        kIOPMAssertionLevelOn,
-        CFSTR("Jiggler Zen Jiggle Activity"),
-        &_userActivityAssertion
-    );
-
-    if (result != kIOReturnSuccess) {
-        NSLog(@"[Jiggler] Failed to declare user activity (IOReturn = 0x%x)", result);
-    }
-}
 
 - (BOOL)isInAScreen:(NSPoint)point
 {
@@ -562,7 +535,7 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 		NSApplicationActivationPolicy activationPolicy = [app activationPolicy];
         BOOL isActive = [app isActive];
         
-        NSLog(@"process name: %@, is dock app == %@, is active == %@", processName, (activationPolicy == NSApplicationActivationPolicyRegular) ? @"YES" : @"NO", isActive ? @"YES" : @"NO");
+        //NSLog(@"process name: %@, is dock app == %@, is active == %@", processName, (activationPolicy == NSApplicationActivationPolicyRegular) ? @"YES" : @"NO", isActive ? @"YES" : @"NO");
         
         if (mustBeDockApp && (activationPolicy != NSApplicationActivationPolicyRegular))
             continue;
@@ -584,21 +557,19 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 
 - (BOOL)checkMountedVolumesForCandidateDisks
 {
-	NSFileManager *fm = [NSFileManager defaultManager];
-	NSArray *volumeURLs = [fm mountedVolumeURLsIncludingResourceValuesForKeys:@[NSURLVolumeIsRemovableKey, NSURLVolumeIsReadOnlyKey] options:0];
+	NSWorkspace *ws = [NSWorkspace sharedWorkspace];
+	NSArray *mountedRemovables = [ws mountedRemovableMedia];    // the header suggests switching to mountedVolumeURLsIncludingResourceValuesForKeys:options:, but that looks annoying
 	int i, c;
 	
-	for (i = 0, c = (int)[volumeURLs count]; i < c; ++i)
+	for (i = 0, c = (int)[mountedRemovables count]; i < c; ++i)
 	{
-		NSURL *url = [volumeURLs objectAtIndex:i];
-		NSNumber *isRemovableNum = nil;
-		NSNumber *isReadOnlyNum = nil;
-		BOOL gotRemovable = [url getResourceValue:&isRemovableNum forKey:NSURLVolumeIsRemovableKey error:NULL];
-		BOOL gotReadOnly = [url getResourceValue:&isReadOnlyNum forKey:NSURLVolumeIsReadOnlyKey error:NULL];
+		NSString *diskPath = [mountedRemovables objectAtIndex:i];
+		BOOL isRemovable, isWritable;
+		BOOL isMountPoint = [ws getFileSystemInfoForPath:diskPath isRemovable:&isRemovable isWritable:&isWritable isUnmountable:NULL description:NULL type:NULL];
 		
-		if (gotRemovable && gotReadOnly)
+		if (isMountPoint)
 		{
-			if ([isRemovableNum boolValue] && ![isReadOnlyNum boolValue])
+			if (isRemovable && isWritable)
 				return YES;
 		}
 	}
@@ -610,7 +581,7 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 {
 	int cpuBusyIndex = [SSCPU busyIndex];
 	
-    NSLog(@"busy index %d", cpuBusyIndex);
+    //NSLog(@"busy index %d", cpuBusyIndex);
     
 	if (cpuBusyIndex >= cpuUsageThreshold)
 		return YES;
@@ -631,7 +602,7 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 		NSString *runningAppLocalizedName = [runningApp localizedName];
 		NSString *runningAppBundleIdentifier = [runningApp bundleIdentifier];
 		
-		NSLog(@"index %d: name %@ bundle id %@", i, runningAppLocalizedName, runningAppBundleIdentifier);
+		//NSLog(@"index %d: name %@ bundle id %@", i, runningAppLocalizedName, runningAppBundleIdentifier);
 		
 		if ([runningAppLocalizedName isEqualToString:@"iTunes"] || [runningAppBundleIdentifier isEqualToString:@"com.apple.iTunes"])
 		{
@@ -702,27 +673,27 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 	// If we have conditions, check them; if any one is met, we return YES
 	if (onlyWithApplicationsNamedX && [self checkRunningAppsForAppNameContaining:applicationNameComponents mustBeDockApp:mustBeDockApp mustBeFront:NO])
     {
-        NSLog(@"jiggleConditionsMet: app matching name is running");
+        //NSLog(@"jiggleConditionsMet: app matching name is running");
 		return YES;
 	}
 	if (onlyWithRemovableWritableDisks && [self checkMountedVolumesForCandidateDisks])
     {
-        NSLog(@"jiggleConditionsMet: mounted removable writable disk present");
+        //NSLog(@"jiggleConditionsMet: mounted removable writable disk present");
 		return YES;
 	}
 	if (onlyWithCPUUsage && [self cpuUsageOverThreshold:cpuUsageThreshold])
     {
-        NSLog(@"jiggleConditionsMet: cpu usage is high");
+        //NSLog(@"jiggleConditionsMet: cpu usage is high");
 		return YES;
 	}
 	if (onlyWithITunesPlaying && ([self iTunesIsRunningNow] && iTunesIsPlaying))
     {
-        NSLog(@"jiggleConditionsMet: iTunes is playing");
+        //NSLog(@"jiggleConditionsMet: iTunes is playing");
 		return YES;
 	}
 	
 	// If we have conditions and they are not met, then we return NO
-    NSLog(@"jiggleConditionsMet: NO");
+    //NSLog(@"jiggleConditionsMet: NO");
 	return NO;
 }
 
@@ -779,7 +750,7 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 			
 			if (jiggleOnlyWhenIdle && (idleTime < timeSinceLastJiggle - 0.4))   // the code below schedules mouse moves for up to 0.34 seconds beyond timeOfLastJiggle, so 0.4 gives us a little wiggle room
 			{
-                NSLog(@"idleTime %f, timeSinceLastJiggle %f, delta = %f, deactivating", idleTime, timeSinceLastJiggle, timeSinceLastJiggle - idleTime);
+                //NSLog(@"idleTime %f, timeSinceLastJiggle %f, delta = %f, deactivating", idleTime, timeSinceLastJiggle, timeSinceLastJiggle - idleTime);
 				[self setJigglingActive:NO];
 			}
 			else if (((callout_counter & 0x0F) == 0) || jiggleConditionsLikelyToHaveChanged)
@@ -895,9 +866,10 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 				// BCH 19 May 2016: Adding the new IOKit call IOPMAssertionDeclareUserActivity(), which appears to be equivalent
 				// to UpdateSystemActivity(UsrActivity).  It may have slightly different effects, so I'm keeping the call to
 				// UpdateSystemActivity(UsrActivity) above as well, just to try to ensure the most complete coverage possible.
+				static IOPMAssertionID assertionID = kIOPMNullAssertionID;
 				
-				[self declareUserActivity];
-
+				IOPMAssertionDeclareUserActivity(CFSTR("Jiggler"), kIOPMUserActiveLocal, &assertionID);
+				
 				[timeOfLastJiggle release];
 				timeOfLastJiggle = [[NSDate alloc] init];
 				
@@ -959,7 +931,7 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 	// Bump our jiggle code for immediate action if appropriate
 	[self jiggleMouse:nil];
 	
-	NSLog(@"iTunesChanged:");
+	//NSLog(@"iTunesChanged:");
 }
 
 - (void)applicationListChanged:(NSNotification *)note
@@ -969,7 +941,7 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 	// Bump our jiggle code for immediate action if appropriate
 	[self jiggleMouse:nil];
 	
-	NSLog(@"applicationListChanged:");
+	//NSLog(@"applicationListChanged:");
 }
 
 - (void)mountedDevicesChanged:(NSNotification *)note
@@ -979,7 +951,7 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 	// Bump our jiggle code for immediate action if appropriate
 	[self jiggleMouse:nil];
 	
-	NSLog(@"mountedDevicesChanged:");
+	//NSLog(@"mountedDevicesChanged:");
 }
 
 

@@ -587,9 +587,6 @@ static PrefsController *sharedPrefsController = nil;
 - (BOOL)launchOnLogin 
 {
 	BOOL loginItemFound = FALSE;
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 	LSSharedFileListRef loginItemsListRef = LSSharedFileListCreate(NULL, kLSSharedFileListSessionLoginItems, NULL);
 	
 	if (loginItemsListRef)
@@ -613,16 +610,12 @@ static PrefsController *sharedPrefsController = nil;
 		
 		CFRelease(loginItemsListRef);
 	}
-
-#pragma clang diagnostic pop
 	
 	return loginItemFound;
 }
 
 - (void)setLaunchOnLogin:(BOOL)launchOnLogin
 {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 	LSSharedFileListRef loginItemsListRef = LSSharedFileListCreate(NULL, kLSSharedFileListSessionLoginItems, NULL);
 	
 	if (loginItemsListRef)
@@ -654,7 +647,6 @@ static PrefsController *sharedPrefsController = nil;
 		
 		CFRelease(loginItemsListRef);
 	}
-#pragma clang diagnostic pop
 }
 
 - (IBAction)launchOnLoginChanged:(id)sender
@@ -665,3 +657,36 @@ static PrefsController *sharedPrefsController = nil;
 }
 
 @end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

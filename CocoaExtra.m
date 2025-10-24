@@ -27,7 +27,8 @@ NSString *SSTestLocalizedString(NSString *key)
 	}
 	else
 	{
-		NSLog(@"key \"%@\" produced value \"%@\"", key, localizedString);
+		// Uncomment this to log successful key lookups
+		//NSLog(@"key \"%@\" produced value \"%@\"", key, localizedString);
 	}
 	
 	return localizedString;
@@ -45,7 +46,8 @@ NSString *SSTestLocalizedStringFromTable(NSString *key, NSString *table)
 	}
 	else
 	{
-		NSLog(@"key \"%@\" produced value \"%@\"", key, localizedString);
+		// Uncomment this to log successful key lookups
+		//NSLog(@"key \"%@\" produced value \"%@\"", key, localizedString);
 	}
 	
 	return localizedString;
@@ -269,7 +271,7 @@ NSModalResponse SSRunCriticalAlertPanel(NSString *title, NSString *msg, NSString
 		windowFrame.size.width,
 		windowFrame.size.height);
 		
-	NSLog(@"centerOnPrimaryScreen called for window %p with frame %@.  New frame == %@.", self, NSStringFromRect(windowFrame), NSStringFromRect(newFrame));
+	//NSLog(@"centerOnPrimaryScreen called for window %p with frame %@.  New frame == %@.", self, NSStringFromRect(windowFrame), NSStringFromRect(newFrame));
 	
 	if (!NSEqualRects(windowFrame, newFrame))
 		[self setFrame:newFrame display:YES];
@@ -392,8 +394,7 @@ BOOL RunningOnBatteryOnly(void)
     CFRelease (list);
     CFRelease (blob);
     
-    NSLog(@"%ld sources, onlyBattery == %@", (long)count, onlyBattery ? @"YES" : @"NO");
-	
+    //NSLog(@"%d sources, onlyBattery == %@", count, onlyBattery ? @"YES" : @"NO");
     return onlyBattery;
 }
 
