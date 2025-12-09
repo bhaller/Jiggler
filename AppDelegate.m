@@ -86,7 +86,7 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 	
 	// We check with a repeating timer, to avoid issues with rescheduling and such.
 	// We do it this frequently because we need to notice activity to fade out our overlay.
-	jiggleTimer = [NSTimer timerWithTimeInterval:0.25 target:self selector:@selector(jiggleMouse:) userInfo:nil repeats:YES];
+	jiggleTimer = [NSTimer timerWithTimeInterval:0.25 target:self selector:@selector(periodicJiggleStatusCheck:) userInfo:nil repeats:YES];
 	[jiggleTimer setTolerance:0.10];	// no need to be incredibly precise; allow the system to save energy
 	
 	[runLoop addTimer:jiggleTimer forMode:NSRunLoopCommonModes];
@@ -194,41 +194,6 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 		[statusButton setImage:scaledJigglerImage];
 }
 
-// vestigial code from when Jiggler was Dock-based instead of using an NSStatusItem; kept this code in case it proves useful to someone
-- (void)fixAppIconForTimedQuit
-{
-	NSImage *appImage = [NSImage imageNamed: @"NSApplicationIcon"];
-	
-	if (timedQuitTimer)
-	{
-		int hoursRemainingToTimedQuit = minutesRemainingToTimedQuit / 60;
-		int remainderAfterHoursToTimedQuit = minutesRemainingToTimedQuit - (hoursRemainingToTimedQuit * 60);
-		NSString *timerString = [NSString stringWithFormat:@"%d:%@%d", hoursRemainingToTimedQuit, (remainderAfterHoursToTimedQuit < 10) ? @"0" : @"", remainderAfterHoursToTimedQuit];
-		NSFont *timerFont = [NSFont fontWithName:@"Times" size:50];
-		NSDictionary *timerDict = [NSDictionary dictionaryWithObjectsAndKeys:timerFont, NSFontAttributeName, nil];
-		NSDictionary *timerShadowDict = [NSDictionary dictionaryWithObjectsAndKeys:timerFont, NSFontAttributeName, [NSColor whiteColor], NSForegroundColorAttributeName, nil];
-		NSSize timerSize = [timerString sizeWithAttributes:timerDict];
-		NSPoint timerPoint = NSMakePoint(64 - floor(timerSize.width / 2), 64);
-		NSImage *newAppImage = [[[NSImage alloc] initWithSize:NSMakeSize(128, 128)] autorelease];
-		
-		[newAppImage lockFocus];
-		
-		[appImage drawAtPoint:NSMakePoint(0, 0) fromRect:NSZeroRect operation:NSCompositingOperationSourceOver fraction:1.0];
-		
-		//[timerString drawAtPoint:NSMakePoint(timerPoint.x + 2, timerPoint.y - 2) withAttributes:timerShadowDict];
-		for (int shadowIndex = 0; shadowIndex < 25; ++shadowIndex)
-			[timerString drawAtPoint:NSMakePoint(timerPoint.x + (shadowIndex / 5) - 2, timerPoint.y + (shadowIndex % 5) - 2) withAttributes:timerShadowDict];
-		
-		[timerString drawAtPoint:timerPoint withAttributes:timerDict];
-		
-		[newAppImage unlockFocus];
-		
-		appImage = newAppImage;
-	}
-	
-	[NSApp setApplicationIconImage:appImage];
-}
-
 // Now that we use NSStatusItem, we show our timed quit timer in the Timed Quit menu item
 - (void)fixTimedQuitMenuItem
 {
@@ -248,22 +213,40 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 
 #pragma mark Jiggling
 
+- (void)undeclareUserActivity
+{
+	// Release any previous assertion made by -declareUserActivity.
+	if (_userActivityAssertion != kIOPMNullAssertionID) {
+		IOPMAssertionRelease(_userActivityAssertion);
+		_userActivityAssertion = kIOPMNullAssertionID;
+	}
+}
+
 - (void)declareUserActivity
 {
-    // Release any previous assertion before creating a new one
-    if (_userActivityAssertion != kIOPMNullAssertionID) {
-        IOPMAssertionRelease(_userActivityAssertion);
-        _userActivityAssertion = kIOPMNullAssertionID;
-    }
-
-    // Create a short-lived "user is active" assertion to reset system idle timer
+	// Release any previous assertion from this method before creating a new one
+	[self undeclareUserActivity];
+	
+	// Bump the system activity timer, in case somebody is watching it.
+	// BCH 16 June 2013: This API is unofficially deprecated in favor of IOPMAssertionCreateWithName().
+	// BCH 8 February 2015: UpdateSystemActivity() is officially deprecated beginning in 10.8.
+	// BCH 19 May 2016: Added weak linking protection to this, just in case Apple actually removes it.
+	// I'm keeping this call to UpdateSystemActivity(UsrActivity), just to try to ensure the most complete
+	// coverage possible, but the new code using IOPMAssertionCreateWithName() is probably what matters now.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+	if (UpdateSystemActivity != NULL)
+		UpdateSystemActivity(UsrActivity);
+#pragma clang diagnostic pop
+	
+    // Create a short-lived "user is active" assertion to reset the system idle timer
     IOReturn result = IOPMAssertionCreateWithName(
         kIOPMAssertionTypePreventUserIdleDisplaySleep,   // tells macOS "the user just did something"
         kIOPMAssertionLevelOn,
         CFSTR("Jiggler Zen Jiggle Activity"),
         &_userActivityAssertion
     );
-
+	
     if (result != kIOReturnSuccess) {
         NSLog(@"[Jiggler] Failed to declare user activity (IOReturn = 0x%x)", result);
     }
@@ -392,164 +375,6 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
     }
 }
 
-/*
- BCH 16 June 2013: -[NSWorkspace runningApplications] gives information on user processes, too, not just apps, so we don't need this code at present.
- 
-// This code from Technical Q&A QA1123, Getting List of All Processes on Mac OS X
-static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
-// Returns a list of all BSD processes on the system.  This routine
-// allocates the list and puts it in *procList and a count of the
-// number of entries in *procCount.  You are responsible for freeing
-// this list (use "free" from System framework).
-// On success, the function returns 0.
-// On error, the function returns a BSD errno value.
-{
-    int                 err;
-    kinfo_proc *        result;
-    bool                done;
-    static const int    name[] = { CTL_KERN, KERN_PROC, KERN_PROC_ALL, 0 };
-    // Declaring name as const requires us to cast it when passing it to
-    // sysctl because the prototype doesn't include the const modifier.
-    size_t              length;
-    
-    assert( procList != NULL);
-    assert(*procList == NULL);
-    assert(procCount != NULL);
-    
-    *procCount = 0;
-    
-    // We start by calling sysctl with result == NULL and length == 0.
-    // That will succeed, and set length to the appropriate length.
-    // We then allocate a buffer of that size and call sysctl again
-    // with that buffer.  If that succeeds, we're done.  If that fails
-    // with ENOMEM, we have to throw away our buffer and loop.  Note
-    // that the loop causes use to call sysctl with NULL again; this
-    // is necessary because the ENOMEM failure case sets length to
-    // the amount of data returned, not the amount of data that
-    // could have been returned.
-    
-    result = NULL;
-    done = false;
-    do {
-        assert(result == NULL);
-        
-        // Call sysctl with a NULL buffer.
-        
-        length = 0;
-        err = sysctl( (int *) name, (sizeof(name) / sizeof(*name)) - 1,
-                     NULL, &length,
-                     NULL, 0);
-        if (err == -1) {
-            err = errno;
-        }
-        
-        // Allocate an appropriately sized buffer based on the results
-        // from the previous call.
-        
-        if (err == 0) {
-            result = malloc(length);
-            if (result == NULL) {
-                err = ENOMEM;
-            }
-        }
-        
-        // Call sysctl again with the new buffer.  If we get an ENOMEM
-        // error, toss away our buffer and start again.
-        
-        if (err == 0) {
-            err = sysctl( (int *) name, (sizeof(name) / sizeof(*name)) - 1,
-                         result, &length,
-                         NULL, 0);
-            if (err == -1) {
-                err = errno;
-            }
-            if (err == 0) {
-                done = true;
-            } else if (err == ENOMEM) {
-                assert(result != NULL);
-                free(result);
-                result = NULL;
-                err = 0;
-            }
-        }
-    } while (err == 0 && ! done);
-    
-    // Clean up and establish post conditions.
-    
-    if (err != 0 && result != NULL) {
-        free(result);
-        result = NULL;
-    }
-    *procList = result;
-    if (err == 0) {
-        *procCount = length / sizeof(kinfo_proc);
-    }
-    
-    assert( (err == 0) == (*procList != NULL) );
-    
-    return err;
-}
-
-// This code from http://stackoverflow.com/questions/2518160/programmatically-check-if-a-process-is-running-on-mac
-- (NSDictionary *)infoForPID:(pid_t)pid
-{
-    NSDictionary *ret = nil;
-    ProcessSerialNumber psn = { kNoProcess, kNoProcess };
-    if (GetProcessForPID(pid, &psn) == noErr) {
-        CFDictionaryRef cfDict = ProcessInformationCopyDictionary(&psn,kProcessDictionaryIncludeAllInformationMask);
-        ret = [NSDictionary dictionaryWithDictionary:(NSDictionary *)cfDict];
-        CFRelease(cfDict);
-    }
-    return ret;
-}
-
-// This code from http://stackoverflow.com/questions/2518160/programmatically-check-if-a-process-is-running-on-mac
-- (NSArray*)getBSDProcessList
-{
-    NSMutableArray *ret = [NSMutableArray arrayWithCapacity:1];
-    kinfo_proc *mylist;
-    size_t mycount = 0;
-    mylist = (kinfo_proc *)malloc(sizeof(kinfo_proc));
-    GetBSDProcessList(&mylist, &mycount);
-    int k;
-    for(k = 0; k < mycount; k++) {
-        kinfo_proc *proc = NULL;
-        proc = &mylist[k];
-        NSString *fullName = [[self infoForPID:proc->kp_proc.p_pid] objectForKey:(id)kCFBundleNameKey];
-        if (fullName == nil) fullName = [NSString stringWithFormat:@"%s",proc->kp_proc.p_comm];
-        [ret addObject:[NSDictionary dictionaryWithObjectsAndKeys:
-                        fullName,@"pname",
-                        [NSString stringWithFormat:@"%d",proc->kp_proc.p_pid],@"pid",
-                        [NSString stringWithFormat:@"%d",proc->kp_eproc.e_ucred.cr_uid],@"uid",
-                        nil]];
-    }
-    free(mylist);
-    return ret;
-}
-
-- (BOOL)checkRunningProcessesForProcessNameContaining:(NSArray *)nameComponents
-{
-	NSArray *processList = [self getBSDProcessList];
-	int i, processCount, j, componentCount;
-	
-	for (i = 0, processCount = [processList count]; i < processCount; ++i)
-	{
-		NSDictionary *processDict = [processList objectAtIndex:i];
-		NSString *processName = [processDict objectForKey:@"pname"];
-		
-		for (j = 0, componentCount = [nameComponents count]; j < componentCount; ++j)
-		{
-			NSString *appNameComponent = [nameComponents objectAtIndex:j];
-			
-			if ([processName rangeOfString:appNameComponent options:NSCaseInsensitiveSearch].location != NSNotFound)
-				return YES;
-		}
-	}
-	
-	return NO;
-}
-*/
-
 - (BOOL)checkRunningAppsForAppNameContaining:(NSArray *)nameComponents mustBeDockApp:(BOOL)mustBeDockApp mustBeFront:(BOOL)mustBeFront
 {
 	NSArray *processList = [[NSWorkspace sharedWorkspace] runningApplications];
@@ -662,18 +487,33 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 
 - (void)setJigglingActive:(BOOL)active
 {
+	// This is called whenever we make a decision about jiggling being on or off.  It responds to a change in
+	// jiggling state; if the state is the same, it does nothing.  (Actions that should be done each jiggle,
+	// such as actually moving the mouse, happen outside of this method; this is for state changes only.)
+	PrefsController *prefs = [PrefsController sharedPrefsController];
+	BOOL showIconWhenJiggling = [prefs showJigglerIconWhenJiggling];
+	
 	if (jigglingActive != active)
 	{
 		jigglingActive = active;
 		
 		if (jigglingActive)
 		{
-			[JigglerOverlayWindow activateOverlay];
+			if (showIconWhenJiggling)
+				[JigglerOverlayWindow activateOverlay];
+			
 			[self fixStatusItemIcon];
 		}
 		else
 		{
-			[JigglerOverlayWindow deactivateOverlay];
+			// Release any previous assertion whenever jiggling goes inactive.  The -declareUserActivity
+			// assertion of activity seems to last a while before it expires, so we need to undeclare
+			// or we won't fall asleep for a while even though all of the jiggle conditions are met.
+			[self undeclareUserActivity];
+			
+			if (showIconWhenJiggling)
+				[JigglerOverlayWindow deactivateOverlay];
+			
 			[self fixStatusItemIcon];
 		}
 	}
@@ -721,12 +561,12 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 		return YES;
 	}
 	
-	// If we have conditions and they are not met, then we return NO
+	// If we have conditions and none of them are met, then we return NO
     NSLog(@"jiggleConditionsMet: NO");
 	return NO;
 }
 
-- (void)jiggleMouse:(id)unused
+- (void)periodicJiggleStatusCheck:(id)unused
 {
 	static unsigned int callout_counter = 0;
 	int i;
@@ -735,7 +575,6 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 	double jiggleSeconds = [prefs jiggleSeconds];
 	double timeSinceLastJiggle = (timeOfLastJiggle ? -[timeOfLastJiggle timeIntervalSinceNow] : 100000.0);
 	BOOL jiggleOnlyWhenIdle = [prefs jiggleOnlyWhenIdle];
-	BOOL showIconWhenJiggling = [prefs showJigglerIconWhenJiggling];
 	BOOL notOnBattery = [prefs notOnBattery];
 	BOOL notWhenScreenLocked = [prefs notWhenScreenLocked];
 	NSArray *frontAppNameComponents = [prefs frontAppNameComponents];
@@ -747,57 +586,62 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 	// Each callout is 0.25 seconds, so ((callout_counter & 0x0F) == 0) gives you every 4.0 seconds...
 	callout_counter++;
 	
-	// If a mouse button is down, we don't jiggle; we don't want to interfere with dragging.  There are 32 buttons to check!
-    // Similarly, short-circuit jiggling if we're on battery power only, if the user has chosen that pref.
-	BOOL buttonDown = NO;
-	
-	for (int buttonIndex = 0; buttonIndex < 32; ++buttonIndex)
-		if (CGEventSourceButtonState(kCGEventSourceStateCombinedSessionState, buttonIndex))
-			buttonDown = YES;
-	
-	if (buttonDown ||
-		(notOnBattery && RunningOnBatteryOnly()) ||
+	// Check for conditions under which jiggling is forbidden; if any are true, turn off jiggling immediately
+	// and return.  There are no cases under which jiggling occurs, or stays on when active, with these conditions.
+	if ((notOnBattery && RunningOnBatteryOnly()) ||
 		(notWithFrontAppsNamedX && [self checkRunningAppsForAppNameContaining:frontAppNameComponents mustBeDockApp:YES mustBeFront:YES]) ||
 		(notWhenScreenLocked && ScreenIsLocked()))
 	{
-		if (jiggleOnlyWhenIdle)
-			[self setJigglingActive:NO];
+		[self setJigglingActive:NO];
 		return;
 	}
 	
-	// If jiggling is active, check for user activity since our last jiggle
+	// If a mouse button is down, we don't jiggle; we don't want to interfere with dragging.  There are 32 buttons
+	// to check!  If we're set to jiggle only when idle, then a mouse button being down makes us stop jiggling;
+	// a mouse button being down is "non-idle".  (Probably this would also reset the system activity timer, but
+	// there have been system versions where that wasn't true, I think, so we check here to be sure.)  If we're
+	// set to jiggle even when idle, then a mouse button being down doesn't make us stop jiggling if we're doing
+	// so already, but we return here so that we don't start jiggling while the button is down.
+	for (int buttonIndex = 0; buttonIndex < 32; ++buttonIndex)
+	{
+		if (CGEventSourceButtonState(kCGEventSourceStateCombinedSessionState, buttonIndex))
+		{
+			if (jiggleOnlyWhenIdle)
+				[self setJigglingActive:NO];
+			return;
+		}
+	}
+	
+	// If jiggling is active, check for user activity since our last jiggle and wake up if appropriate
 	if (jigglingActive)
 	{
-		if (!showIconWhenJiggling)
+		// Get the system idle time if we haven't already fetched it
+		if (jiggleOnlyWhenIdle && (idleTime < 0.0))
+			idleTime = JigglerIdleTime();
+		
+		// The code below schedules mouse moves for up to 0.34 seconds beyond timeOfLastJiggle, so 0.4 gives us
+		// a little wiggle room so that our own jiggling activity doesn't cause us to stop jiggling
+		if (jiggleOnlyWhenIdle && (idleTime < timeSinceLastJiggle - 0.4))
 		{
+			NSLog(@"idleTime %f, timeSinceLastJiggle %f, delta = %f, deactivating", idleTime, timeSinceLastJiggle, timeSinceLastJiggle - idleTime);
 			[self setJigglingActive:NO];
 		}
-		else
+		else if (((callout_counter & 0x0F) == 0) || jiggleConditionsLikelyToHaveChanged)
 		{
-			if (jiggleOnlyWhenIdle && (idleTime < 0.0))
-				idleTime = JigglerIdleTime();
+			if (!jiggleConditionsTested)
+			{
+				jiggleConditionsMet = [self jiggleConditionsMet];
+				jiggleConditionsTested = YES;
+				jiggleConditionsLikelyToHaveChanged = NO;
+			}
 			
-			if (jiggleOnlyWhenIdle && (idleTime < timeSinceLastJiggle - 0.4))   // the code below schedules mouse moves for up to 0.34 seconds beyond timeOfLastJiggle, so 0.4 gives us a little wiggle room
-			{
-                NSLog(@"idleTime %f, timeSinceLastJiggle %f, delta = %f, deactivating", idleTime, timeSinceLastJiggle, timeSinceLastJiggle - idleTime);
+			if (!jiggleConditionsMet)
 				[self setJigglingActive:NO];
-			}
-			else if (((callout_counter & 0x0F) == 0) || jiggleConditionsLikelyToHaveChanged)
-			{
-				if (!jiggleConditionsTested)
-				{
-					jiggleConditionsMet = [self jiggleConditionsMet];
-					jiggleConditionsTested = YES;
-					jiggleConditionsLikelyToHaveChanged = NO;
-				}
-				
-				if (!jiggleConditionsMet)
-					[self setJigglingActive:NO];
-			}
 		}
 	}
 	
 #if 0
+	// BCH 12/9/2025: This is debugging code that is normally disabled since it logs quite a bit.
 	if (YES)
 	{
 		if (idleTime < 0.0)
@@ -809,8 +653,10 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 		NSLog(@"jiggleSeconds == %f, timeSinceLastJiggle == %f", jiggleSeconds, timeSinceLastJiggle);
 #endif
 	
+	// If we last jiggled jiggleSeconds ago (or longer), it's time for another jiggle as long as conditions are met.
 	if (timeSinceLastJiggle > jiggleSeconds)
 	{
+		// Get the system idle time if we haven't already fetched it
 		if (jiggleOnlyWhenIdle && (idleTime < 0.0))
 			idleTime = JigglerIdleTime();
 		
@@ -878,31 +724,14 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 						[self performSelector:@selector(_jiggleMouse:) withObject:nil afterDelay:(double)i / 100.0 inModes:@[NSDefaultRunLoopMode, NSModalPanelRunLoopMode, NSEventTrackingRunLoopMode]];
 				}
 				
-				// Bump the system activity timer, in case somebody is watching it.  Note that on 10.2.5 this does not
-				// appear to properly reset NXIdleTime().  See #3362783.  This is fixed on 10.3.5, for me.
-                // BCH 16 June 2013: This API is unofficially deprecated in favor of IOPMAssertionCreateWithName(), but
-                // that API is more annoying to use because you have to do a start/end bracket.  Keeping this until
-                // such time as it produces a compile error.
-				// BCH 8 February 2015: UpdateSystemActivity() is officially deprecated beginning in 10.8.  I am going
-				// to continue using it until it actually goes away.
-				// BCH 19 May 2016: Added weak linking protection to this, just in case Apple actually removes it...
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-				if (UpdateSystemActivity != NULL)
-					UpdateSystemActivity(UsrActivity);
-#pragma clang diagnostic pop
-				
-				// BCH 19 May 2016: Adding the new IOKit call IOPMAssertionDeclareUserActivity(), which appears to be equivalent
-				// to UpdateSystemActivity(UsrActivity).  It may have slightly different effects, so I'm keeping the call to
-				// UpdateSystemActivity(UsrActivity) above as well, just to try to ensure the most complete coverage possible.
-				
+				// This is shared functionality across all jiggle styles; it implements the base "zen jiggle"
+				// functionality and the various bookkeeping activities needed when jiggling occurs.
 				[self declareUserActivity];
-
+				
 				[timeOfLastJiggle release];
 				timeOfLastJiggle = [[NSDate alloc] init];
 				
-				if (showIconWhenJiggling)
-					[self setJigglingActive:YES];
+				[self setJigglingActive:YES];
 			}
 			else
 			{
@@ -923,6 +752,10 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 }
 
 #if 0
+// BCH 12/9/2025: I think this got disabled because the GetDimmingTimeout() function disappeared on us...?  It was
+// actually a nice thing that Jiggler checked this and warned the user, because people would get confused when
+// their screensaver came on even though Jiggler was enabled (because their jiggle time was too long).  But I
+// don't know whether there's any way to get the screensaver/sleep time nowadays.
 - (void)checkJiggleTime
 {
 	double jiggleSeconds = [[PrefsController sharedPrefsController] jiggleTime] * 60.0;
@@ -957,7 +790,7 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 	jiggleConditionsLikelyToHaveChanged = YES;
 	
 	// Bump our jiggle code for immediate action if appropriate
-	[self jiggleMouse:nil];
+	[self periodicJiggleStatusCheck:nil];
 	
 	NSLog(@"iTunesChanged:");
 }
@@ -967,7 +800,7 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 	jiggleConditionsLikelyToHaveChanged = YES;
 	
 	// Bump our jiggle code for immediate action if appropriate
-	[self jiggleMouse:nil];
+	[self periodicJiggleStatusCheck:nil];
 	
 	NSLog(@"applicationListChanged:");
 }
@@ -977,7 +810,7 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 	jiggleConditionsLikelyToHaveChanged = YES;
 	
 	// Bump our jiggle code for immediate action if appropriate
-	[self jiggleMouse:nil];
+	[self periodicJiggleStatusCheck:nil];
 	
 	NSLog(@"mountedDevicesChanged:");
 }
@@ -1048,6 +881,12 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 	
 	[[NSUserDefaults standardUserDefaults] setBool:jiggleMasterSwitch forKey:JiggleMasterSwitchDefaultsKey];
 	[self fixMasterSwitchUI];
+	
+	// There's probably no need to call -setJigglingActive:NO here, or do any similar actions;
+	// the user can only turn off the jiggle master switch via the mouse or keyboard, so the
+	// jiggle state is probably already off due to that activity, or will turn off momentarily.
+	// Note that -jiggleConditionsMet checks jiggleMasterSwitch, so the next time it is called
+	// jiggling will turn off due to that flag being NO anyway, too.
 }
 
 
@@ -1057,7 +896,6 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 {
 	--minutesRemainingToTimedQuit;
 	
-	//[self fixAppIconForTimedQuit];
 	[self fixTimedQuitMenuItem];
 	
 	// If we're out of time, quit.  We do this with a slight delay so our icon shows 0:00 for a moment first.
@@ -1079,7 +917,6 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 		[runLoop addTimer:timedQuitTimer forMode:NSModalPanelRunLoopMode];		// not clear whether this is part of NSRunLoopCommonModes...
 		[runLoop addTimer:timedQuitTimer forMode:NSEventTrackingRunLoopMode];	// not clear whether this is part of NSRunLoopCommonModes...
 		
-		//[self fixAppIconForTimedQuit];
 		[self fixTimedQuitMenuItem];
 		[self fixStatusItemIcon];
 	}
@@ -1094,7 +931,6 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 		
 		minutesRemainingToTimedQuit = 0;
 		
-		//[self fixAppIconForTimedQuit];
 		[self fixTimedQuitMenuItem];
 		[self fixStatusItemIcon];
 	}
