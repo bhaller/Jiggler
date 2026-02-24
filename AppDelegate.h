@@ -17,6 +17,7 @@
 	// Jiggle timer
 	NSTimer *jiggleTimer;
 	NSDate *timeOfLastJiggle;
+	double currentJiggleInterval;	// Current interval in seconds (calculated once per jiggle cycle, may be random or fixed)
 	
 	// Jiggle mouse location management
 	BOOL haveSetMouseLocation;

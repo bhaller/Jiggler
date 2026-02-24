@@ -17,6 +17,10 @@ static NSString *JiggleSecondsDefaultsKey = @"JiggleSeconds";					// version 1.4
 static NSString *ShowIconWhenJigglingDefaultsKey = @"ShowIconWhenJiggling";
 static NSString *JiggleOnlyWhenIdleDefaultsKey = @"JiggleOnlyWhenIdle";
 
+static NSString *RandomizeJiggleTimesDefaultsKey = @"RandomizeJiggleTimes";
+static NSString *MinJiggleSecondsDefaultsKey = @"MinJiggleSeconds";
+static NSString *MaxJiggleSecondsDefaultsKey = @"MaxJiggleSeconds";
+
 static NSString *ZenJiggleDefaultsKey = @"ZenJiggle";							// version 1.7 and before, superseded by JiggleStyleDefaultsKey
 static NSString *JiggleStyleDefaultsKey = @"JiggleStyle";						// version 1.8 and later: 0 is standard, 1 is Zen jiggle, 2 is click jiggle
 static NSString *JiggleDistanceDefaultsKey = @"JiggleDistance";
@@ -60,6 +64,10 @@ static PrefsController *sharedPrefsController = nil;
                                             [NSNumber numberWithInt:-1], JiggleSecondsDefaultsKey,					// use -1 as a flag value for "no value set for the new key"
                                             @"YES", ShowIconWhenJigglingDefaultsKey,
 											@"YES", JiggleOnlyWhenIdleDefaultsKey,
+											
+											@"NO", RandomizeJiggleTimesDefaultsKey,
+											[NSNumber numberWithInt:5], MinJiggleSecondsDefaultsKey,
+											[NSNumber numberWithInt:60], MaxJiggleSecondsDefaultsKey,
 											
 											@"NO", ZenJiggleDefaultsKey,											// the default for the old key
 											[NSNumber numberWithInt:-1], JiggleStyleDefaultsKey,					// use -1 as a flag value for "no value set for the new key"
@@ -111,6 +119,21 @@ static PrefsController *sharedPrefsController = nil;
 			
 			showJigglerIconWhenJiggling = [userDefaults boolForKey:ShowIconWhenJigglingDefaultsKey];
 			jiggleOnlyWhenIdle = [userDefaults boolForKey:JiggleOnlyWhenIdleDefaultsKey];
+			
+			randomizeJiggleTimes = [userDefaults boolForKey:RandomizeJiggleTimesDefaultsKey];
+			minJiggleSeconds = (int)[userDefaults integerForKey:MinJiggleSecondsDefaultsKey];
+			maxJiggleSeconds = (int)[userDefaults integerForKey:MaxJiggleSecondsDefaultsKey];
+			
+			if (minJiggleSeconds < 5)
+				minJiggleSeconds = 5;
+			if (minJiggleSeconds > 60 * 60 * 24)
+				minJiggleSeconds = 60 * 60 * 24;
+			if (maxJiggleSeconds < 5)
+				maxJiggleSeconds = 5;
+			if (maxJiggleSeconds > 60 * 60 * 24)
+				maxJiggleSeconds = 60 * 60 * 24;
+			if (maxJiggleSeconds < minJiggleSeconds)
+				maxJiggleSeconds = minJiggleSeconds;
 			
 			jiggleStyle = (int)[userDefaults integerForKey:JiggleStyleDefaultsKey];
 			if (jiggleStyle == -1)
@@ -170,6 +193,42 @@ static PrefsController *sharedPrefsController = nil;
 		[jiggleTimeTextfield setStringValue:[NSString stringWithFormat:@"(Set to %.1f hours)", jiggleSeconds / (60.0 * 60.0)]];
 }
 
+- (void)setMinJiggleTimeTextfieldString
+{
+	if (minJiggleSeconds < 60)
+		[minJiggleTimeTextfield setStringValue:[NSString stringWithFormat:@"(Min: %d seconds)", minJiggleSeconds]];
+	else if (minJiggleSeconds == 60)
+		[minJiggleTimeTextfield setStringValue:@"(Min: 1 minute)"];
+	else if (minJiggleSeconds < 60 * 60)
+		[minJiggleTimeTextfield setStringValue:[NSString stringWithFormat:@"(Min: %.1f minutes)", minJiggleSeconds / 60.0]];
+	else if (minJiggleSeconds == 60 * 60)
+		[minJiggleTimeTextfield setStringValue:@"(Min: 1 hour)"];
+	else
+		[minJiggleTimeTextfield setStringValue:[NSString stringWithFormat:@"(Min: %.1f hours)", minJiggleSeconds / (60.0 * 60.0)]];
+}
+
+- (void)setMaxJiggleTimeTextfieldString
+{
+	if (maxJiggleSeconds < 60)
+		[maxJiggleTimeTextfield setStringValue:[NSString stringWithFormat:@"(Max: %d seconds)", maxJiggleSeconds]];
+	else if (maxJiggleSeconds == 60)
+		[maxJiggleTimeTextfield setStringValue:@"(Max: 1 minute)"];
+	else if (maxJiggleSeconds < 60 * 60)
+		[maxJiggleTimeTextfield setStringValue:[NSString stringWithFormat:@"(Max: %.1f minutes)", maxJiggleSeconds / 60.0]];
+	else if (maxJiggleSeconds == 60 * 60)
+		[maxJiggleTimeTextfield setStringValue:@"(Max: 1 hour)"];
+	else
+		[maxJiggleTimeTextfield setStringValue:[NSString stringWithFormat:@"(Max: %.1f hours)", maxJiggleSeconds / (60.0 * 60.0)]];
+}
+
+- (void)updateJiggleModeLabel
+{
+	if (randomizeJiggleTimes)
+		[jiggleModeLabel setStringValue:@"Randomized Jiggle"];
+	else
+		[jiggleModeLabel setStringValue:@"Standard Jiggle"];
+}
+
 - (void)showWindow
 {
     if (!preferencesWindow)
@@ -186,21 +245,28 @@ static PrefsController *sharedPrefsController = nil;
 		
 		// Set the jiggle time slider.  It has values from 0 to 5, with ticks at each integer, for 5 secs, 1 min, 5 min, 1 hour, 5 hours, and 24 hours.
 		// We treat each segment of that slider range as an independent linear scale, so it's a bit complicated...
-		if (jiggleSeconds < 60)
-			[jiggleTimeSlider setFloatValue:(jiggleSeconds - 5) / (60.0 - 5.0)];													// 5 seconds to 60 seconds
-		else if (jiggleSeconds < 60 * 5)
-			[jiggleTimeSlider setFloatValue:(jiggleSeconds - 60) / (60.0 * 5.0 - 60.0) + 1.0];										// 1 minute to 5 minutes
-		else if (jiggleSeconds < 60 * 60)
-			[jiggleTimeSlider setFloatValue:(jiggleSeconds - 60 * 5) / (60.0 * 60.0 - 60.0 * 5) + 2.0];								// 5 minutes to 1 hour
-		else if (jiggleSeconds < 60 * 60 * 5)
-			[jiggleTimeSlider setFloatValue:(jiggleSeconds - 60 * 60) / (60.0 * 60.0 * 5.0 - 60.0 * 60.0) + 3.0];					// 1 hour to 5 hours
-		else
-			[jiggleTimeSlider setFloatValue:(jiggleSeconds - 60 * 60 * 5.0) / (60.0 * 60.0 * 24.0 - 60.0 * 60.0 * 5.0) + 4.0];		// 5 hours to 24 hours
+		[jiggleTimeSlider setFloatValue:[self secondsToSliderValue:jiggleSeconds]];
 		
 		// Set other control states
 		[self setJiggleTimeTextfieldString];
 		[showJigglerIconWhenJigglingButton setState:showJigglerIconWhenJiggling];
 		[jiggleOnlyWhenIdleRadio selectCellWithTag:(jiggleOnlyWhenIdle ? 1 : 0)];
+		
+		// Set up randomize jiggle times controls
+		[randomizeJiggleTimesCheckbox setState:randomizeJiggleTimes];
+		[jiggleTimeSlider setEnabled:!randomizeJiggleTimes];
+		[minJiggleTimeSlider setEnabled:randomizeJiggleTimes];
+		[maxJiggleTimeSlider setEnabled:randomizeJiggleTimes];
+		
+		// Set min and max jiggle time sliders
+		[minJiggleTimeSlider setFloatValue:[self secondsToSliderValue:minJiggleSeconds]];
+		[maxJiggleTimeSlider setFloatValue:[self secondsToSliderValue:maxJiggleSeconds]];
+		
+		[self setMinJiggleTimeTextfieldString];
+		[self setMaxJiggleTimeTextfieldString];
+		
+		// Update the mode label
+		[self updateJiggleModeLabel];
 		
 		[jiggleStyleRadio selectCellWithTag:jiggleStyle];
         [jiggleDistanceSlider setEnabled:(jiggleStyle == 0)];
@@ -256,6 +322,21 @@ static PrefsController *sharedPrefsController = nil;
 - (BOOL)jiggleOnlyWhenIdle
 {
 	return jiggleOnlyWhenIdle;
+}
+
+- (BOOL)randomizeJiggleTimes
+{
+	return randomizeJiggleTimes;
+}
+
+- (int)minJiggleSeconds
+{
+	return minJiggleSeconds;
+}
+
+- (int)maxJiggleSeconds
+{
+	return maxJiggleSeconds;
 }
 
 - (int)jiggleStyle
@@ -361,24 +442,42 @@ static PrefsController *sharedPrefsController = nil;
 	return frontAppNameComponents;
 }
 
+// Helper method to convert slider value (0-5) to seconds
+- (int)sliderValueToSeconds:(float)sliderValue
+{
+	if (fabs(round(sliderValue) - sliderValue) < 0.006)
+		sliderValue = round(sliderValue);
+	
+	if (sliderValue < 1.0)
+		return round((sliderValue - 0.0) * 55.0 + 5.0);										// 0 to 1   ->   5 seconds to 60 seconds
+	else if (sliderValue < 2.0)
+		return round((sliderValue - 1.0) * 60.0 * 4.0 + 60.0);								// 1 to 2   ->   1 minute to 5 minutes
+	else if (sliderValue < 3.0)
+		return round((sliderValue - 2.0) * 60.0 * 55.0 + 60.0 * 5.0);						// 2 to 3   ->   5 minutes to 60 minutes
+	else if (sliderValue < 4.0)
+		return round((sliderValue - 3.0) * 60.0 * 60.0 * 4.0 + 60.0 * 60.0);				// 3 to 4   ->   1 hour to 5 hours
+	else
+		return round((sliderValue - 4.0) * 60.0 * 60.0 * 19.0 + 60.0 * 60.0 * 5.0);		// 4 to 5   ->   5 hours to 24 hours
+}
+
+// Helper method to convert seconds to slider value (0-5)
+- (float)secondsToSliderValue:(int)seconds
+{
+	if (seconds < 60)
+		return (seconds - 5) / (60.0 - 5.0);
+	else if (seconds < 60 * 5)
+		return (seconds - 60) / (60.0 * 5.0 - 60.0) + 1.0;
+	else if (seconds < 60 * 60)
+		return (seconds - 60 * 5) / (60.0 * 60.0 - 60.0 * 5) + 2.0;
+	else if (seconds < 60 * 60 * 5)
+		return (seconds - 60 * 60) / (60.0 * 60.0 * 5.0 - 60.0 * 60.0) + 3.0;
+	else
+		return (seconds - 60 * 60 * 5.0) / (60.0 * 60.0 * 24.0 - 60.0 * 60.0 * 5.0) + 4.0;
+}
+
 - (IBAction)jiggleTimeChanged:(id)sender
 {
-	float newValue = [sender floatValue];
-	int newSeconds;
-	
-	if (fabs(round(newValue) - newValue) < 0.006)
-		newValue = round(newValue);
-	
-	if (newValue < 1.0)
-		newSeconds = round((newValue - 0.0) * 55.0 + 5.0);										// 0 to 1   ->   5 seconds to 60 seconds
-	else if (newValue < 2.0)
-		newSeconds = round((newValue - 1.0) * 60.0 * 4.0 + 60.0);								// 1 to 2   ->   1 minute to 5 minutes
-	else if (newValue < 3.0)
-		newSeconds = round((newValue - 2.0) * 60.0 * 55.0 + 60.0 * 5.0);						// 2 to 3   ->   5 minutes to 60 minutes
-	else if (newValue < 4.0)
-		newSeconds = round((newValue - 3.0) * 60.0 * 60.0 * 4.0 + 60.0 * 60.0);					// 3 to 4   ->   1 hour to 5 hours
-	else
-		newSeconds = round((newValue - 4.0) * 60.0 * 60.0 * 19.0 + 60.0 * 60.0 * 5.0);			// 4 to 5   ->   5 hours to 24 hours
+	int newSeconds = [self sliderValueToSeconds:[sender floatValue]];
 	
 	if (newSeconds != jiggleSeconds)
 	{
@@ -408,6 +507,66 @@ static PrefsController *sharedPrefsController = nil;
 	{
 		jiggleOnlyWhenIdle = newState;
 		[[NSUserDefaults standardUserDefaults] setBool:newState forKey:JiggleOnlyWhenIdleDefaultsKey];
+	}
+}
+
+- (IBAction)randomizeJiggleTimesChanged:(id)sender
+{
+	BOOL newState = [sender state];
+	
+	if (newState != randomizeJiggleTimes)
+	{
+		randomizeJiggleTimes = newState;
+		[[NSUserDefaults standardUserDefaults] setBool:newState forKey:RandomizeJiggleTimesDefaultsKey];
+		
+		[jiggleTimeSlider setEnabled:!randomizeJiggleTimes];
+		[minJiggleTimeSlider setEnabled:randomizeJiggleTimes];
+		[maxJiggleTimeSlider setEnabled:randomizeJiggleTimes];
+		
+		[self updateJiggleModeLabel];
+	}
+}
+
+- (IBAction)minJiggleTimeChanged:(id)sender
+{
+	int newSeconds = [self sliderValueToSeconds:[sender floatValue]];
+	
+	if (newSeconds != minJiggleSeconds)
+	{
+		minJiggleSeconds = newSeconds;
+		
+		// Ensure max is at least as large as min
+		if (maxJiggleSeconds < minJiggleSeconds)
+		{
+			maxJiggleSeconds = minJiggleSeconds;
+			[[NSUserDefaults standardUserDefaults] setInteger:maxJiggleSeconds forKey:MaxJiggleSecondsDefaultsKey];
+			
+			// Update max slider to match
+			[maxJiggleTimeSlider setFloatValue:[self secondsToSliderValue:maxJiggleSeconds]];
+			[self setMaxJiggleTimeTextfieldString];
+		}
+		
+		[[NSUserDefaults standardUserDefaults] setInteger:minJiggleSeconds forKey:MinJiggleSecondsDefaultsKey];
+		[self setMinJiggleTimeTextfieldString];
+	}
+}
+
+- (IBAction)maxJiggleTimeChanged:(id)sender
+{
+	int newSeconds = [self sliderValueToSeconds:[sender floatValue]];
+	
+	if (newSeconds != maxJiggleSeconds)
+	{
+		maxJiggleSeconds = newSeconds;
+		
+		// Ensure max is at least as large as min
+		if (maxJiggleSeconds < minJiggleSeconds)
+		{
+			maxJiggleSeconds = minJiggleSeconds;
+		}
+		
+		[[NSUserDefaults standardUserDefaults] setInteger:maxJiggleSeconds forKey:MaxJiggleSecondsDefaultsKey];
+		[self setMaxJiggleTimeTextfieldString];
 	}
 }
 

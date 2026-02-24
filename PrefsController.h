@@ -20,7 +20,14 @@
 	
 	IBOutlet NSSlider *jiggleTimeSlider;
 	IBOutlet NSTextField *jiggleTimeTextfield;
+	IBOutlet NSTextField *jiggleModeLabel;
 	IBOutlet NSButton *showJigglerIconWhenJigglingButton;
+	
+	IBOutlet NSButton *randomizeJiggleTimesCheckbox;
+	IBOutlet NSSlider *minJiggleTimeSlider;
+	IBOutlet NSTextField *minJiggleTimeTextfield;
+	IBOutlet NSSlider *maxJiggleTimeSlider;
+	IBOutlet NSTextField *maxJiggleTimeTextfield;
 	IBOutlet NSMatrix *jiggleOnlyWhenIdleRadio;
 	
 	IBOutlet NSMatrix *jiggleStyleRadio;
@@ -49,6 +56,10 @@
 	int jiggleSeconds;
 	BOOL showJigglerIconWhenJiggling;
 	BOOL jiggleOnlyWhenIdle;
+	
+	BOOL randomizeJiggleTimes;
+	int minJiggleSeconds;
+	int maxJiggleSeconds;
 	
 	int jiggleStyle;
 	float jiggleDistance;	// 0 to 20; returned to the client transformed, jiggleDistance * jiggleDistance + 10
@@ -84,6 +95,10 @@
 - (BOOL)showJigglerIconWhenJiggling;
 - (BOOL)jiggleOnlyWhenIdle;
 
+- (BOOL)randomizeJiggleTimes;
+- (int)minJiggleSeconds;
+- (int)maxJiggleSeconds;
+
 - (int)jiggleStyle;							// 0 == standard, 1 == "Zen", 2 == "click jiggle"
 - (int)jiggleDistance;
 
@@ -109,6 +124,10 @@
 - (IBAction)jiggleTimeChanged:(id)sender;
 - (IBAction)showJigglerIconWhenJigglingChanged:(id)sender;
 - (IBAction)jiggleOnlyWhenIdleChanged:(id)sender;
+
+- (IBAction)randomizeJiggleTimesChanged:(id)sender;
+- (IBAction)minJiggleTimeChanged:(id)sender;
+- (IBAction)maxJiggleTimeChanged:(id)sender;
 
 - (IBAction)jiggleStyleChanged:(id)sender;
 - (IBAction)jiggleDistanceSliderChanged:(id)sender;

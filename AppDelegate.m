@@ -84,6 +84,9 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 	
 	//[self checkJiggleTime];
 	
+	// Initialize the jiggle interval
+	currentJiggleInterval = 0;  // Will be calculated on first check
+	
 	// We check with a repeating timer, to avoid issues with rescheduling and such.
 	// We do it this frequently because we need to notice activity to fade out our overlay.
 	jiggleTimer = [NSTimer timerWithTimeInterval:0.25 target:self selector:@selector(periodicJiggleStatusCheck:) userInfo:nil repeats:YES];
@@ -359,13 +362,16 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
         
         // move the mouse
         CGEventRef eventMoved = CGEventCreateMouseEvent(sourceRef, kCGEventMouseMoved, newLocation, kCGMouseButtonLeft);
-        CGEventPost(kCGHIDEventTap, eventMoved);    // kCGHIDEventTap ensures that everybody sees our posted event, no matter how low-level they are
+        
+        if (eventMoved) {
+            CGEventPost(kCGHIDEventTap, eventMoved);    // kCGHIDEventTap ensures that everybody sees our posted event, no matter how low-level they are
+            CFRelease(eventMoved);
+        }
         
         // restore the old local event suppression period
         CGEventSourceSetLocalEventsSuppressionInterval(sourceRef, oldSuppressionInterval);
         
         // clean up
-        CFRelease(eventMoved);
         CFRelease(sourceRef);
         
         // Remember where we set the mouse to, so we can tell if the user moves it on us
@@ -386,8 +392,6 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 		NSString *processName = [app localizedName];
 		NSApplicationActivationPolicy activationPolicy = [app activationPolicy];
         BOOL isActive = [app isActive];
-        
-        NSLog(@"process name: %@, is dock app == %@, is active == %@", processName, (activationPolicy == NSApplicationActivationPolicyRegular) ? @"YES" : @"NO", isActive ? @"YES" : @"NO");
         
         if (mustBeDockApp && (activationPolicy != NSApplicationActivationPolicyRegular))
             continue;
@@ -435,8 +439,6 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 {
 	int cpuBusyIndex = [SSCPU busyIndex];
 	
-    NSLog(@"busy index %d", cpuBusyIndex);
-    
 	if (cpuBusyIndex >= cpuUsageThreshold)
 		return YES;
 	else
@@ -455,8 +457,6 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 		NSRunningApplication *runningApp = [runningApps objectAtIndex:i];
 		NSString *runningAppLocalizedName = [runningApp localizedName];
 		NSString *runningAppBundleIdentifier = [runningApp bundleIdentifier];
-		
-		NSLog(@"index %d: name %@ bundle id %@", i, runningAppLocalizedName, runningAppBundleIdentifier);
 		
 		if ([runningAppLocalizedName isEqualToString:@"iTunes"] || [runningAppBundleIdentifier isEqualToString:@"com.apple.iTunes"])
 		{
@@ -541,28 +541,15 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
     
 	// If we have conditions, check them; if any one is met, we return YES
 	if (onlyWithApplicationsNamedX && [self checkRunningAppsForAppNameContaining:applicationNameComponents mustBeDockApp:mustBeDockApp mustBeFront:NO])
-    {
-        NSLog(@"jiggleConditionsMet: app matching name is running");
 		return YES;
-	}
 	if (onlyWithRemovableWritableDisks && [self checkMountedVolumesForCandidateDisks])
-    {
-        NSLog(@"jiggleConditionsMet: mounted removable writable disk present");
 		return YES;
-	}
 	if (onlyWithCPUUsage && [self cpuUsageOverThreshold:cpuUsageThreshold])
-    {
-        NSLog(@"jiggleConditionsMet: cpu usage is high");
 		return YES;
-	}
 	if (onlyWithITunesPlaying && ([self iTunesIsRunningNow] && iTunesIsPlaying))
-    {
-        NSLog(@"jiggleConditionsMet: iTunes is playing");
 		return YES;
-	}
 	
 	// If we have conditions and none of them are met, then we return NO
-    NSLog(@"jiggleConditionsMet: NO");
 	return NO;
 }
 
@@ -572,7 +559,30 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 	int i;
 	PrefsController *prefs = [PrefsController sharedPrefsController];
 	double idleTime = -1.0;
-	double jiggleSeconds = [prefs jiggleSeconds];
+	double jiggleSeconds;
+	
+	// Randomization Logic:
+	// currentJiggleInterval stores the active interval for the current jiggle cycle.
+	// It's calculated once per cycle (either random or fixed) and remains constant
+	// until the jiggle occurs. This prevents the interval from changing on every
+	// 0.25-second check, which would make jiggling unpredictable.
+	if (currentJiggleInterval <= 0)
+	{
+		// First time or invalid - calculate initial interval
+		if ([prefs randomizeJiggleTimes])
+		{
+			int minSeconds = [prefs minJiggleSeconds];
+			int maxSeconds = [prefs maxJiggleSeconds];
+			currentJiggleInterval = minSeconds + (arc4random_uniform(maxSeconds - minSeconds + 1));
+		}
+		else
+		{
+			currentJiggleInterval = [prefs jiggleSeconds];
+		}
+	}
+	
+	jiggleSeconds = currentJiggleInterval;
+	
 	double timeSinceLastJiggle = (timeOfLastJiggle ? -[timeOfLastJiggle timeIntervalSinceNow] : 100000.0);
 	BOOL jiggleOnlyWhenIdle = [prefs jiggleOnlyWhenIdle];
 	BOOL notOnBattery = [prefs notOnBattery];
@@ -622,10 +632,7 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 		// The code below schedules mouse moves for up to 0.34 seconds beyond timeOfLastJiggle, so 0.4 gives us
 		// a little wiggle room so that our own jiggling activity doesn't cause us to stop jiggling
 		if (jiggleOnlyWhenIdle && (idleTime < timeSinceLastJiggle - 0.4))
-		{
-			NSLog(@"idleTime %f, timeSinceLastJiggle %f, delta = %f, deactivating", idleTime, timeSinceLastJiggle, timeSinceLastJiggle - idleTime);
 			[self setJigglingActive:NO];
-		}
 		else if (((callout_counter & 0x0F) == 0) || jiggleConditionsLikelyToHaveChanged)
 		{
 			if (!jiggleConditionsTested)
@@ -731,6 +738,21 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 				[timeOfLastJiggle release];
 				timeOfLastJiggle = [[NSDate alloc] init];
 				
+				// Calculate the next jiggle interval for the upcoming cycle.
+				// In randomize mode: pick a new random value between min and max.
+				// In standard mode: use the fixed jiggle seconds value.
+				// This interval will be used consistently until the next jiggle occurs.
+				if ([prefs randomizeJiggleTimes])
+				{
+					int minSeconds = [prefs minJiggleSeconds];
+					int maxSeconds = [prefs maxJiggleSeconds];
+					currentJiggleInterval = minSeconds + (arc4random_uniform(maxSeconds - minSeconds + 1));
+				}
+				else
+				{
+					currentJiggleInterval = [prefs jiggleSeconds];
+				}
+				
 				[self setJigglingActive:YES];
 			}
 			else
@@ -791,8 +813,6 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 	
 	// Bump our jiggle code for immediate action if appropriate
 	[self periodicJiggleStatusCheck:nil];
-	
-	NSLog(@"iTunesChanged:");
 }
 
 - (void)applicationListChanged:(NSNotification *)note
@@ -801,8 +821,6 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 	
 	// Bump our jiggle code for immediate action if appropriate
 	[self periodicJiggleStatusCheck:nil];
-	
-	NSLog(@"applicationListChanged:");
 }
 
 - (void)mountedDevicesChanged:(NSNotification *)note
@@ -811,8 +829,6 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 	
 	// Bump our jiggle code for immediate action if appropriate
 	[self periodicJiggleStatusCheck:nil];
-	
-	NSLog(@"mountedDevicesChanged:");
 }
 
 

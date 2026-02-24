@@ -155,7 +155,6 @@ static NSString *TimedQuitMinutesDefaultsKey = @"TimedQuitMinutes";
 	
 	if (object == hoursTextfield)
 	{
-		NSLog(@"controlTextDidChange: called for hoursTextfield");
 		hoursToQuit = [hoursTextfield intValue];
 		
 		if ((hoursToQuit < 0) || (hoursToQuit > 99) || ![self checkString:[hoursTextfield stringValue] againstValue:hoursToQuit])
@@ -169,7 +168,6 @@ static NSString *TimedQuitMinutesDefaultsKey = @"TimedQuitMinutes";
 	}
 	if (object == minutesTextfield)
 	{
-		NSLog(@"controlTextDidChange: called for minutesTextfield");
 		minutesToQuit = [minutesTextfield intValue];
 		
 		if ((minutesToQuit < 0) || (minutesToQuit > 59) || ![self checkString:[minutesTextfield stringValue] againstValue:minutesToQuit])
