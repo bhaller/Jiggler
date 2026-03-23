@@ -1,0 +1,94 @@
+name: PR Checks
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  validate:
+    name: Validate PR
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest-stable
+
+    - name: Validate Xcode project
+      run: |
+        xcodebuild -list -project Jiggler.xcodeproj
+
+    - name: Check for build issues
+      run: |
+        xcodebuild clean build \
+          -project Jiggler.xcodeproj \
+          -scheme Jiggler \
+          -configuration Debug \
+          -derivedDataPath ./build \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO \
+          CODE_SIGNING_ALLOWED=NO \
+          | tee build.log
+
+        # Check for warnings
+        if grep -q "warning:" build.log; then
+          echo "⚠️  Build completed with warnings"
+          grep "warning:" build.log
+        else
+          echo "✅ Build completed without warnings"
+        fi
+
+    - name: Check code style
+      run: |
+        echo "Checking for common style issues..."
+
+        # Check for tabs vs spaces consistency in modified files
+        changed_files=$(git diff --name-only origin/${{ github.base_ref }}...HEAD -- '*.m' '*.h' || echo "")
+
+        if [ -n "$changed_files" ]; then
+          echo "Modified Objective-C files:"
+          echo "$changed_files"
+
+          # Basic style checks
+          for file in $changed_files; do
+            if [ -f "$file" ]; then
+              echo "Checking $file..."
+
+              # Check for trailing whitespace
+              if grep -n '[[:space:]]$' "$file" > /dev/null; then
+                echo "  ⚠️  Contains trailing whitespace"
+              fi
+
+              # Check for very long lines (>200 chars)
+              long_lines=$(awk 'length > 200' "$file" | wc -l)
+              if [ "$long_lines" -gt 0 ]; then
+                echo "  ℹ️  Contains $long_lines lines over 200 characters"
+              fi
+            fi
+          done
+        else
+          echo "No Objective-C files modified"
+        fi
+
+  comment:
+    name: PR Comment
+    runs-on: ubuntu-latest
+    if: github.event.action == 'opened'
+
+    steps:
+    - name: Add welcome comment
+      uses: actions/github-script@v7
+      with:
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: '👋 Thanks for your contribution! The automated checks will run shortly. Please ensure:\n\n- ✅ Your code builds without errors\n- ✅ You\'ve tested the changes on macOS\n- ✅ Your changes follow the existing code style\n- ✅ You\'ve described what your PR does\n\nA maintainer will review your PR soon!'
+          })

@@ -7,6 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#include <IOKit/pwr_mgt/IOPMLib.h>
 
 
 @interface AppDelegate : NSObject
@@ -40,6 +41,10 @@
 	
 	// Prevent App Nap
 	id <NSObject> activityToken;
+
+	// Power management assertions for Zen jiggle
+	IOPMAssertionID _userActivityAssertion;
+	IOPMAssertionID _displaySleepAssertion;
 }
 
 @property (retain) IBOutlet NSMenu *statusItemMenu;

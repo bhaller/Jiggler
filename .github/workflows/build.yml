@@ -1,0 +1,71 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build Jiggler
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest-stable
+
+    - name: Show Xcode version
+      run: xcodebuild -version
+
+    - name: Build Jiggler
+      run: |
+        xcodebuild clean build \
+          -project Jiggler.xcodeproj \
+          -scheme Jiggler \
+          -configuration Release \
+          -derivedDataPath ./build \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO \
+          CODE_SIGNING_ALLOWED=NO
+
+    - name: Check build artifacts
+      run: |
+        echo "Build output:"
+        find ./build -name "*.app" -type d
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: Jiggler-app
+        path: build/Build/Products/Release/Jiggler.app
+        retention-days: 30
+        if-no-files-found: error
+
+  lint:
+    name: Code Quality Check
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Check for common issues
+      run: |
+        echo "Checking for obvious code issues..."
+
+        # Check for TODO/FIXME comments
+        echo "=== TODO/FIXME items ==="
+        grep -rn "TODO\|FIXME" --include="*.m" --include="*.h" . || echo "None found"
+
+        # Check for deprecated API usage
+        echo "=== Deprecated API usage ==="
+        grep -rn "deprecated" --include="*.m" --include="*.h" . || echo "None found"
+
+        echo "Code quality check complete"

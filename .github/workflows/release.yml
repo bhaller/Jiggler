@@ -1,0 +1,146 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number (e.g., 1.11)'
+        required: true
+        type: string
+
+jobs:
+  create-release:
+    name: Build and Create Release
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest-stable
+
+    - name: Build Release
+      run: |
+        xcodebuild clean archive \
+          -project Jiggler.xcodeproj \
+          -scheme Jiggler \
+          -configuration Release \
+          -archivePath ./build/Jiggler.xcarchive \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO \
+          CODE_SIGNING_ALLOWED=NO
+
+    - name: Export Application
+      run: |
+        # Create export options plist
+        cat > ExportOptions.plist << EOF
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <plist version="1.0">
+        <dict>
+            <key>method</key>
+            <string>mac-application</string>
+            <key>signingStyle</key>
+            <string>manual</string>
+        </dict>
+        </plist>
+        EOF
+
+        # Try to export, but if it fails, just copy the app directly
+        xcodebuild -exportArchive \
+          -archivePath ./build/Jiggler.xcarchive \
+          -exportPath ./build/Release \
+          -exportOptionsPlist ExportOptions.plist || \
+          cp -r ./build/Jiggler.xcarchive/Products/Applications/Jiggler.app ./build/Release/
+
+    - name: Create DMG
+      run: |
+        # Create a temporary directory for DMG contents
+        mkdir -p dmg_contents
+        cp -r ./build/Release/Jiggler.app dmg_contents/
+
+        # Create Applications symlink
+        ln -s /Applications dmg_contents/Applications
+
+        # Create DMG
+        hdiutil create -volname "Jiggler" \
+          -srcfolder dmg_contents \
+          -ov -format UDZO \
+          Jiggler.dmg
+
+    - name: Create ZIP archive
+      run: |
+        cd ./build/Release
+        zip -r ../../Jiggler.zip Jiggler.app
+        cd ../..
+
+    - name: Get version
+      id: version
+      run: |
+        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          echo "version=${{ inputs.version }}" >> $GITHUB_OUTPUT
+        else
+          echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: v${{ steps.version.outputs.version }}
+        name: Jiggler ${{ steps.version.outputs.version }}
+        draft: true
+        files: |
+          Jiggler.dmg
+          Jiggler.zip
+        body: |
+          ## Jiggler ${{ steps.version.outputs.version }}
+
+          ### What's New
+
+          ✅ See commit history for full details of changes in this release.
+
+          ### Installation
+
+          #### ⚠️ Important: First-Time Installation
+
+          This app is **unsigned**, so macOS Gatekeeper will block it on first launch. This is normal and safe - follow these steps:
+
+          **For DMG:**
+          1. Download `Jiggler.dmg`
+          2. Open the DMG and drag Jiggler to Applications
+          3. **Right-click** on Jiggler.app (in Applications folder)
+          4. Select **"Open"** from the menu
+          5. Click **"Open"** in the security dialog
+          6. After this first time, you can launch it normally
+
+          **For ZIP:**
+          1. Download and extract `Jiggler.zip`
+          2. Move Jiggler.app to Applications
+          3. **Right-click** on Jiggler.app
+          4. Select **"Open"** from the menu
+          5. Click **"Open"** in the security dialog
+
+          **Why do I need to do this?**
+          This build is not code-signed with an Apple Developer certificate. The app is safe and works perfectly - you just need to tell macOS you trust it on first launch by right-clicking instead of double-clicking.
+
+          ### System Requirements
+          - macOS 10.15 or later
+          - Apple Silicon and Intel Macs supported
+
+          ### Permissions
+
+          Jiggler requires **Accessibility permissions** to function:
+          - System Settings → Privacy & Security → Accessibility
+          - Enable Jiggler in the list
+
+          ### Feedback
+
+          Report issues at: https://github.com/${{ github.repository }}/issues
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

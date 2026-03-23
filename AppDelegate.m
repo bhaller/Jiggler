@@ -43,10 +43,6 @@ double JigglerIdleTime(void)
 }
 
 
-// Declare that we are weak-linking UpdateSystemActivity(); see its use below for comments
-extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
-
-
 @interface NSImage (JigglerTinting)
 
 - (NSImage *)imageTintedWithColor:(NSColor *)tint;
@@ -72,16 +68,18 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 @end
 
 
-@implementation AppDelegate {
-	IOPMAssertionID _userActivityAssertion;
-}
+@implementation AppDelegate
 
 #pragma mark Launch and Termination
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
 	NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
-	
+
+	// Initialize power management assertion IDs
+	_userActivityAssertion = kIOPMNullAssertionID;
+	_displaySleepAssertion = kIOPMNullAssertionID;
+
 	//[self checkJiggleTime];
 	
 	// We check with a repeating timer, to avoid issues with rescheduling and such.
@@ -215,41 +213,54 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 
 - (void)undeclareUserActivity
 {
-	// Release any previous assertion made by -declareUserActivity.
+	// Release any previous assertions made by -declareUserActivity.
 	if (_userActivityAssertion != kIOPMNullAssertionID) {
 		IOPMAssertionRelease(_userActivityAssertion);
 		_userActivityAssertion = kIOPMNullAssertionID;
+	}
+	if (_displaySleepAssertion != kIOPMNullAssertionID) {
+		IOPMAssertionRelease(_displaySleepAssertion);
+		_displaySleepAssertion = kIOPMNullAssertionID;
 	}
 }
 
 - (void)declareUserActivity
 {
-	// Release any previous assertion from this method before creating a new one
+	// Release any previous assertions from this method before creating new ones
 	[self undeclareUserActivity];
-	
-	// Bump the system activity timer, in case somebody is watching it.
+
 	// BCH 16 June 2013: This API is unofficially deprecated in favor of IOPMAssertionCreateWithName().
 	// BCH 8 February 2015: UpdateSystemActivity() is officially deprecated beginning in 10.8.
 	// BCH 19 May 2016: Added weak linking protection to this, just in case Apple actually removes it.
-	// I'm keeping this call to UpdateSystemActivity(UsrActivity), just to try to ensure the most complete
-	// coverage possible, but the new code using IOPMAssertionCreateWithName() is probably what matters now.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-	if (UpdateSystemActivity != NULL)
-		UpdateSystemActivity(UsrActivity);
-#pragma clang diagnostic pop
-	
+	// BCH 2025: UpdateSystemActivity() and the previous IOPMAssertionCreateWithName() approach stopped
+	// working properly on macOS 26 (Tahoe). IOPMAssertionDeclareUserActivity() with kIOPMUserActiveLocal
+	// is now the correct API to use for Zen jiggle mode.
+	// BCH 2026: On macOS 26, screen locking is now separate from system sleep. We need to create both
+	// a user activity assertion (to prevent system sleep) and a display sleep assertion (to prevent
+	// screen locking) to fully implement Zen jiggle mode.
+
     // Create a short-lived "user is active" assertion to reset the system idle timer
-    IOReturn result = IOPMAssertionCreateWithName(
-        kIOPMAssertionTypePreventUserIdleDisplaySleep,   // tells macOS "the user just did something"
-        kIOPMAssertionLevelOn,
+    IOReturn result = IOPMAssertionDeclareUserActivity(
         CFSTR("Jiggler Zen Jiggle Activity"),
+        kIOPMUserActiveLocal,
         &_userActivityAssertion
     );
-	
+
     if (result != kIOReturnSuccess) {
         NSLog(@"[Jiggler] Failed to declare user activity (IOReturn = 0x%x)", result);
     }
+
+	// Create a display sleep prevention assertion to prevent screen lock on macOS 26+
+	result = IOPMAssertionCreateWithName(
+		kIOPMAssertionTypePreventUserIdleDisplaySleep,
+		kIOPMAssertionLevelOn,
+		CFSTR("Jiggler Prevent Display Sleep"),
+		&_displaySleepAssertion
+	);
+
+	if (result != kIOReturnSuccess) {
+		NSLog(@"[Jiggler] Failed to create display sleep assertion (IOReturn = 0x%x)", result);
+	}
 }
 
 - (BOOL)isInAScreen:(NSPoint)point

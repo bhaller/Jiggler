@@ -1,28 +1,222 @@
-Jiggler
----------------------------------------------------------------------------------------------
-Home page: [http://www.sticksoftware.com/software/Jiggler.html](http://www.sticksoftware.com/software/Jiggler.html)
+# Jiggler
 
-GitHub page: [https://github.com/bhaller/Jiggler](https://github.com/bhaller/Jiggler)
+> A free macOS utility to keep your Mac awake
 
-Jiggler is a little freeware app with one purpose: to keep your Mac awake. When you have some lengthy task for your computer to do, it's annoying to have to turn off your screensaver and turn off the sleep timer, only to have to turn it all back on again when you're done. (The "never sleep" corner will keep your screensaver from kicking in, but still won't prevent your machine from falling asleep.) What you really want is a little helper who will bump your mouse every once in a while to keep your machine alert. That's Jiggler.
+[![Build Status](https://github.com/pjaol/Jiggler/actions/workflows/build.yml/badge.svg)](https://github.com/pjaol/Jiggler/actions)
+[![macOS](https://img.shields.io/badge/macOS-10.15%2B-blue)](https://github.com/pjaol/Jiggler/releases)
+[![License](https://img.shields.io/badge/license-GPL%20v3-green)](LICENSE)
 
-Jiggler is a [Stick Software](http://www.sticksoftware.com) product.  If you like it, please check out some of our shareware products at [www.sticksoftware.com](http://www.sticksoftware.com) – and pay for them if you use them!
+**Jiggler** is a simple menu bar application that prevents your Mac from going to sleep, activating the screensaver, or dimming the display. Perfect for presentations, long downloads, video rendering, or any task where you need your Mac to stay awake without changing system settings.
 
+## Features
 
-License
-----------
+### Three Jiggle Modes
 
-Copyright (c) 2021 Ben Haller.  All rights reserved.
+- **Standard Jiggle** - Moves the mouse cursor slightly every few seconds
+- **Zen Jiggle** - Keeps your Mac awake without moving the cursor (invisible to the user)
+- **Click Jiggle** - Simulates mouse clicks without cursor movement
 
-Jiggler is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+### Smart Conditional Jiggling
 
-Jiggler is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+Jiggler can automatically enable/disable based on:
 
-You should have received a copy of the GNU General Public License along with Jiggler.  If not, see [http://www.gnu.org/licenses/](http://www.gnu.org/licenses/).
+- **CPU Usage** - Only jiggle when CPU usage is above a threshold
+- **Music Playback** - Jiggle when iTunes/Music is playing
+- **Battery Status** - Only jiggle when on AC power
+- **Running Applications** - Jiggle when specific apps are running
+- **Screen Lock Status** - Respect screen lock settings
 
+### Additional Features
 
-Development & Feedback
------------------------------------
-Jiggler is not under active development, but we would welcome pull requests with useful features.  If you want us to take your pull request, please don't add features that only you are likely to want (no kitchen sink!), and please try to keep the user interface simple and comprehensible.  Jiggler is already quite complicated for such a simple concept!
+- **Timed Quit** - Automatically stop jiggling after a specified duration
+- **Menu Bar Icon** - Visual feedback with color-coded status
+  - Normal: Default icon
+  - Green: Actively jiggling
+  - Red: Timed quit active
+- **Overlay Window** - Optional visual indicator when jiggling is active
+- **Configurable Settings** - Adjust jiggle interval, distance, and conditions
 
-Jiggler's code is, well, not great.  Although Jiggler's code was open-sourced in 2016, much of its code was written as much as 15 years ago.  In addition, much of its code is chunks ripped out of other projects that have not been open-sourced, so there are doubtless vestigial relationships and pointless excursions.  If I were writing it today, I would do many things differently.  Be gentle.
+## Installation
+
+### Download
+
+**Latest Release:** [Jiggler v1.11](https://github.com/pjaol/Jiggler/releases/latest)
+
+Choose either:
+- **Jiggler.dmg** - Disk image installer
+- **Jiggler.zip** - Simple archive
+
+### Important: First-Time Launch
+
+**This app is unsigned**, so macOS Gatekeeper will block it on first launch.
+
+**For DMG:**
+1. Download and open `Jiggler.dmg`
+2. Drag Jiggler to Applications folder
+3. **Right-click** on Jiggler.app in Applications
+4. Select **"Open"** from the context menu
+5. Click **"Open"** in the security dialog
+6. After this first time, you can launch normally
+
+**For ZIP:**
+1. Download and extract `Jiggler.zip`
+2. Move Jiggler.app to Applications folder
+3. **Right-click** on Jiggler.app
+4. Select **"Open"** from the context menu
+5. Click **"Open"** in the security dialog
+
+**Why is this needed?**
+This build is not code-signed with an Apple Developer certificate (costs $99/year). The app is safe and open-source - you're just telling macOS you trust it by using right-click → Open instead of double-clicking.
+
+### Permissions Required
+
+Jiggler needs **Accessibility permissions** to control the mouse:
+
+1. Open **System Settings** → **Privacy & Security** → **Accessibility**
+2. Find **Jiggler** in the list
+3. Toggle it **ON**
+4. Restart Jiggler
+
+## Usage
+
+### Basic Usage
+
+1. **Launch Jiggler** - Look for the stick figure icon in your menu bar
+2. **Click the icon** - Access the menu
+3. **Enable "Master Switch"** - Start jiggling
+4. The icon turns **green** when actively jiggling
+
+### Configure Settings
+
+Click the menu bar icon → **Preferences** to access:
+
+- **Jiggle Style** - Standard, Zen, or Click mode
+- **Jiggle Timing** - How often to jiggle (5 seconds to 24 hours)
+- **Jiggle Distance** - How far to move the cursor
+- **Conditional Settings** - CPU, battery, apps, etc.
+- **Launch at Login** - Start automatically when you log in
+
+### Timed Quit
+
+Need Jiggler to run for a specific duration?
+
+1. Click menu bar icon → **Timed Quit**
+2. Set hours and minutes
+3. The icon turns **red** to indicate timed mode
+4. Jiggler will automatically quit when time expires
+
+## System Requirements
+
+- macOS 10.15 (Catalina) or later
+- Apple Silicon (M1/M2/M3) and Intel Macs supported
+- Tested on macOS 26 (Tahoe), 15 (Sequoia), and 14 (Sonoma)
+
+## Building from Source
+
+### Prerequisites
+
+- Xcode 12 or later
+- macOS 10.15+ SDK
+
+### Build Instructions
+
+```bash
+# Clone the repository
+git clone https://github.com/pjaol/Jiggler.git
+cd Jiggler
+
+# Build with Xcode
+open Jiggler.xcodeproj
+# Press ⌘+B to build, ⌘+R to run
+
+# Or build from command line
+xcodebuild -project Jiggler.xcodeproj \
+  -scheme Jiggler \
+  -configuration Release
+```
+
+The built app will be in:
+```
+~/Library/Developer/Xcode/DerivedData/Jiggler-*/Build/Products/Release/Jiggler.app
+```
+
+## Documentation
+
+- **[MODERNIZATION.md](MODERNIZATION.md)** - Recent changes and improvements
+- **[CODE_SIGNING.md](CODE_SIGNING.md)** - How to sign and notarize the app
+- **[CONTRIBUTING.md](.github/CONTRIBUTING.md)** - Guidelines for contributors
+- **[AUTOMATION_SUMMARY.md](AUTOMATION_SUMMARY.md)** - CI/CD automation details
+
+## Contributing
+
+Contributions are welcome! This project now has automated builds and PR validation.
+
+### How to Contribute
+
+1. **Fork** this repository
+2. **Create a branch** for your feature
+3. **Make your changes** with clear commit messages
+4. **Push** to your fork
+5. **Open a Pull Request**
+
+Our CI will automatically:
+- Build your changes
+- Run code quality checks
+- Report any issues
+
+See [CONTRIBUTING.md](.github/CONTRIBUTING.md) for detailed guidelines.
+
+## Known Issues & Limitations
+
+- **Unsigned Build:** Requires right-click → Open on first launch (Gatekeeper warning)
+- **Accessibility Required:** Needs accessibility permissions to function
+- **iTunes References:** Some UI still references "iTunes" instead of "Music.app"
+
+See the [issue tracker](https://github.com/pjaol/Jiggler/issues) for more details.
+
+## Changelog
+
+### Version 1.11 (March 2026)
+- **Fixed:** Zen jiggle mode compatibility with macOS 26 (Tahoe)
+- **Updated:** Power management API to modern `IOPMAssertionDeclareUserActivity()`
+- **Removed:** Deprecated `UpdateSystemActivity()` calls
+- **Added:** GitHub Actions CI/CD automation
+- **Improved:** Documentation and build processes
+
+### Version 1.10 (November 2025)
+- General code and logic cleanup
+- Bug fixes for macOS 15 compatibility
+
+[Full changelog](https://github.com/pjaol/Jiggler/releases)
+
+## License
+
+Copyright © 2025 Ben Haller. All rights reserved.
+
+Jiggler is free software licensed under the [GNU General Public License v3.0](LICENSE).
+
+You can redistribute it and/or modify it under the terms of the GPL v3 as published by the Free Software Foundation. See the [LICENSE](LICENSE) file for details.
+
+## Links
+
+- **Original Project:** [bhaller/Jiggler](https://github.com/bhaller/Jiggler)
+- **Home Page:** [sticksoftware.com/software/Jiggler.html](http://www.sticksoftware.com/software/Jiggler.html)
+- **Stick Software:** [www.sticksoftware.com](http://www.sticksoftware.com)
+
+## About
+
+Jiggler is a [Stick Software](http://www.sticksoftware.com) product. If you like it, please check out their other software!
+
+This fork includes modern CI/CD automation, macOS 26 compatibility fixes, and improved documentation. The core Jiggler functionality and user experience remain unchanged.
+
+## Show Your Support
+
+If Jiggler helps you, consider:
+- Starring this repository
+- Contributing bug fixes or features
+- Reporting issues to help improve it
+- Sharing it with others who might find it useful
+
+---
+
+**Note:** This is a community-maintained fork with modern build automation and macOS 26 support. The original project by Ben Haller can be found at [bhaller/Jiggler](https://github.com/bhaller/Jiggler).
