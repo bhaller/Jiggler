@@ -246,10 +246,20 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
         CFSTR("Jiggler Zen Jiggle Activity"),
         &_userActivityAssertion
     );
-	
+
     if (result != kIOReturnSuccess) {
         NSLog(@"[Jiggler] Failed to declare user activity (IOReturn = 0x%x)", result);
     }
+
+	// Also call IOPMAssertionDeclareUserActivity().  This is a separate, self-managing API
+	// from IOPMAssertionCreateWithName(); each one signals activity to different layers of
+	// the system, so we call both to maximise coverage (see issue #44 / #43).  The assertion
+	// ID is reused across calls; Apple's API refreshes the timestamp internally.
+	static IOPMAssertionID userActivityDeclaration = kIOPMNullAssertionID;
+	IOReturn declareResult = IOPMAssertionDeclareUserActivity(CFSTR("Jiggler"), kIOPMUserActiveLocal, &userActivityDeclaration);
+	if (declareResult != kIOReturnSuccess) {
+		NSLog(@"[Jiggler] IOPMAssertionDeclareUserActivity failed (IOReturn = 0x%x)", declareResult);
+	}
 }
 
 - (BOOL)isInAScreen:(NSPoint)point
@@ -677,6 +687,34 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 				{
 					// Zen jiggle: skip actually moving the mouse.  Of course some apps watch the cursor position rather
 					// than looking at the system idle time, so Zen jiggle may fail to jiggle some apps; caveat jigglor...
+
+					// On macOS 15 and later, also post a no-move mouse event to reset idle time without visible motion.
+					// This is one of several activity signals we emit in parallel; see issue #44.
+					if (@available(macOS 15.0, *))
+					{
+						NSPoint mouseLocation = [NSEvent mouseLocation];
+						NSScreen *primaryScreen = [NSScreen primaryScreen];
+						NSRect screenFrame = [primaryScreen frame];
+						CGPoint cgMouseLocation;
+
+						cgMouseLocation.x = mouseLocation.x;
+						cgMouseLocation.y = screenFrame.size.height - mouseLocation.y;
+
+						CGEventSourceRef sourceRef = CGEventSourceCreate(kCGEventSourceStateHIDSystemState);
+						if (sourceRef)
+						{
+							CFTimeInterval oldSuppressionInterval = CGEventSourceGetLocalEventsSuppressionInterval(sourceRef);
+							CGEventSourceSetLocalEventsSuppressionInterval(sourceRef, 0.0);
+							CGEventRef eventMoved = CGEventCreateMouseEvent(sourceRef, kCGEventMouseMoved, cgMouseLocation, kCGMouseButtonLeft);
+							if (eventMoved)
+							{
+								CGEventPost(kCGHIDEventTap, eventMoved);
+								CFRelease(eventMoved);
+							}
+							CGEventSourceSetLocalEventsSuppressionInterval(sourceRef, oldSuppressionInterval);
+							CFRelease(sourceRef);
+						}
+					}
 				}
 				else if (jiggleStyle == 2)
 				{
