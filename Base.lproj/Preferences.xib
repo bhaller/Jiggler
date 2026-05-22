@@ -24,7 +24,7 @@
                 <outlet property="notWithFrontAppsNamedXCheckbox" destination="713" id="744"/>
                 <outlet property="onlyWithApplicationsNamedXCheckbox" destination="686" id="722"/>
                 <outlet property="onlyWithCPUUsageCheckbox" destination="682" id="723"/>
-                <outlet property="onlyWithITunesPlayingCheckbox" destination="692" id="724"/>
+                <outlet property="onlyWithMusicPlayingCheckbox" destination="692" id="724"/>
                 <outlet property="onlyWithIdentityPopUp" destination="700" id="725"/>
                 <outlet property="onlyWithRemovableWritableDisksCheckbox" destination="684" id="726"/>
                 <outlet property="preferencesWindow" destination="654" id="727"/>
@@ -299,12 +299,12 @@
                     <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="692">
                         <rect key="frame" x="40" y="276" width="390" height="18"/>
                         <autoresizingMask key="autoresizingMask"/>
-                        <buttonCell key="cell" type="check" title="iTunes is currently playing music (not paused or stopped)" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="693">
+                        <buttonCell key="cell" type="check" title="Music is currently playing (not paused or stopped)" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="693">
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
                         <connections>
-                            <action selector="onlyWithITunesPlayingChanged:" target="-2" id="738"/>
+                            <action selector="onlyWithMusicPlayingChanged:" target="-2" id="738"/>
                         </connections>
                     </button>
                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="694">

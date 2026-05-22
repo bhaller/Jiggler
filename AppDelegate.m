@@ -93,9 +93,9 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 	[runLoop addTimer:jiggleTimer forMode:NSModalPanelRunLoopMode];
 	[runLoop addTimer:jiggleTimer forMode:NSEventTrackingRunLoopMode];
 	
-	// Watch iTunes
-	[[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(iTunesChanged:) name:@"com.apple.iTunes.playerInfo" object:nil];
-	iTunesIsPlaying = [self iTunesIsPlayingNow];
+	// Watch Music
+	[[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(musicChanged:) name:@"com.apple.Music.playerInfo" object:nil];
+	musicIsPlaying = [self musicIsPlayingNow];
 	
 	// Watch Workspace
 	[[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(applicationListChanged:) name:NSWorkspaceDidLaunchApplicationNotification object:nil];
@@ -443,12 +443,12 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 		return NO;
 }
 
-- (BOOL)iTunesIsRunningNow
+- (BOOL)musicIsRunningNow
 {
 	NSWorkspace *ws = [NSWorkspace sharedWorkspace];
 	NSArray *runningApps = [ws runningApplications];
 	int i, c;
-	BOOL iTunesIsRunning = NO;
+	BOOL musicIsRunning = NO;
 	
 	for (i = 0, c = (int)[runningApps count]; i < c; ++i)
 	{
@@ -458,26 +458,26 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 		
 		NSLog(@"index %d: name %@ bundle id %@", i, runningAppLocalizedName, runningAppBundleIdentifier);
 		
-		if ([runningAppLocalizedName isEqualToString:@"iTunes"] || [runningAppBundleIdentifier isEqualToString:@"com.apple.iTunes"])
+		if ([runningAppLocalizedName isEqualToString:@"Music"] || [runningAppBundleIdentifier isEqualToString:@"com.apple.Music"])
 		{
-			iTunesIsRunning = YES;
+			musicIsRunning = YES;
 			break;
 		}
 	}
 	
-	return iTunesIsRunning;
+	return musicIsRunning;
 }
 
-- (BOOL)iTunesIsPlayingNow
+- (BOOL)musicIsPlayingNow
 {
-	if ([self iTunesIsRunningNow])
+	if ([self musicIsRunningNow])
 	{
-		NSAppleScript *iTunesScript = [[NSAppleScript alloc] initWithSource:@"tell application \"iTunes\"\nget player state\nend tell"];
+		NSAppleScript *musicScript = [[NSAppleScript alloc] initWithSource:@"tell application \"Music\"\nget player state\nend tell"];
 		NSDictionary *errorDict = nil;
 		NSAppleEventDescriptor *returnDesc = nil;
 		
-		returnDesc = [iTunesScript executeAndReturnError:&errorDict];
-		[iTunesScript autorelease];
+		returnDesc = [musicScript executeAndReturnError:&errorDict];
+		[musicScript autorelease];
 		
 		return [[returnDesc stringValue] isEqualToString:@"kPSP"];
 	}
@@ -531,10 +531,10 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 	NSArray *applicationNameComponents = [prefs applicationNameComponents];
     BOOL mustBeDockApp = ([prefs onlyWithIdentityTag] == 0);    // 0 means the user wants apps only, 1 means any process
 	BOOL onlyWithApplicationsNamedX = ([prefs onlyWithApplicationsNamedX] && [applicationNameComponents count]);
-	BOOL onlyWithITunesPlaying = [prefs onlyWithITunesPlaying];
+	BOOL onlyWithMusicPlaying = [prefs onlyWithMusicPlaying];
 	
 	// If no conditions are set, then the conditions are met
-	if (!onlyWithCPUUsage && !onlyWithRemovableWritableDisks && !onlyWithApplicationsNamedX && !onlyWithITunesPlaying)
+	if (!onlyWithCPUUsage && !onlyWithRemovableWritableDisks && !onlyWithApplicationsNamedX && !onlyWithMusicPlaying)
     {
 		return YES;
 	}
@@ -555,9 +555,9 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
         NSLog(@"jiggleConditionsMet: cpu usage is high");
 		return YES;
 	}
-	if (onlyWithITunesPlaying && ([self iTunesIsRunningNow] && iTunesIsPlaying))
+	if (onlyWithMusicPlaying && ([self musicIsRunningNow] && musicIsPlaying))
     {
-        NSLog(@"jiggleConditionsMet: iTunes is playing");
+        NSLog(@"jiggleConditionsMet: Music is playing");
 		return YES;
 	}
 	
@@ -781,18 +781,18 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 
 #endif
 
-- (void)iTunesChanged:(NSNotification *)note
+- (void)musicChanged:(NSNotification *)note
 {
 	NSDictionary *ui = [note userInfo];
 	NSString *playerState = [ui objectForKey:@"Player State"];
 	
-	iTunesIsPlaying = (playerState && [playerState isEqualToString:@"Playing"]);
+	musicIsPlaying = (playerState && [playerState isEqualToString:@"Playing"]);
 	jiggleConditionsLikelyToHaveChanged = YES;
 	
 	// Bump our jiggle code for immediate action if appropriate
 	[self periodicJiggleStatusCheck:nil];
 	
-	NSLog(@"iTunesChanged:");
+	NSLog(@"musicChanged:");
 }
 
 - (void)applicationListChanged:(NSNotification *)note

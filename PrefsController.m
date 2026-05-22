@@ -24,7 +24,7 @@ static NSString *JiggleDistanceDefaultsKey = @"JiggleDistance";
 static NSString *OnlyWithCPUUsageDefaultsKey = @"OnlyWithCPUUsage";
 static NSString *CPUUsageThresholdDefaultsKey = @"CPUUsageThreshold";
 static NSString *OnlyWithRemovableWritableDisksDefaultsKey = @"OnlyWithRemovableWritableDisks";
-static NSString *OnlyWithITunesPlayingDefaultsKey = @"OnlyWithITunesPlaying";
+static NSString *OnlyWithMusicPlayingDefaultsKey = @"OnlyWithITunesPlaying";	// historical key name retained for backwards compatibility with stored prefs
 static NSString *OnlyWithApplicationsNamedXDefaultsKey = @"OnlyWithApplicationsNamedX";
 static NSString *OnlyWithIdentityDefaultsKey = @"OnlyWithIdentity";
 static NSString *ApplicationNameComponentDefaultsKey = @"ApplicationNameComponent";
@@ -70,7 +70,7 @@ static PrefsController *sharedPrefsController = nil;
                                             
                                             @"NO", OnlyWithRemovableWritableDisksDefaultsKey,
                                             
-                                            @"NO", OnlyWithITunesPlayingDefaultsKey,
+                                            @"NO", OnlyWithMusicPlayingDefaultsKey,
                                             
                                             @"NO", OnlyWithApplicationsNamedXDefaultsKey,
                                             [NSNumber numberWithInt:0], OnlyWithIdentityDefaultsKey,
@@ -128,7 +128,7 @@ static PrefsController *sharedPrefsController = nil;
             
 			onlyWithRemovableWritableDisks = [userDefaults boolForKey:OnlyWithRemovableWritableDisksDefaultsKey];
             
-			onlyWithITunesPlaying = [userDefaults boolForKey:OnlyWithITunesPlayingDefaultsKey];
+			onlyWithMusicPlaying = [userDefaults boolForKey:OnlyWithMusicPlayingDefaultsKey];
             
 			onlyWithApplicationsNamedX = [userDefaults boolForKey:OnlyWithApplicationsNamedXDefaultsKey];
             onlyWithIdentityTag = (int)[userDefaults integerForKey:OnlyWithIdentityDefaultsKey];
@@ -213,7 +213,7 @@ static PrefsController *sharedPrefsController = nil;
 		
 		[onlyWithRemovableWritableDisksCheckbox setState:onlyWithRemovableWritableDisks];
         
-		[onlyWithITunesPlayingCheckbox setState:onlyWithITunesPlaying];
+		[onlyWithMusicPlayingCheckbox setState:onlyWithMusicPlaying];
         
 		[onlyWithApplicationsNamedXCheckbox setState:(onlyWithApplicationsNamedX && [applicationNameComponent length])];
         [onlyWithIdentityPopUp selectItemWithTag:onlyWithIdentityTag];
@@ -283,9 +283,9 @@ static PrefsController *sharedPrefsController = nil;
 	return onlyWithRemovableWritableDisks;
 }
 
-- (BOOL)onlyWithITunesPlaying
+- (BOOL)onlyWithMusicPlaying
 {
-	return onlyWithITunesPlaying;
+	return onlyWithMusicPlaying;
 }
 
 - (BOOL)onlyWithApplicationsNamedX
@@ -472,14 +472,14 @@ static PrefsController *sharedPrefsController = nil;
 	}
 }
 
-- (IBAction)onlyWithITunesPlayingChanged:(id)sender
+- (IBAction)onlyWithMusicPlayingChanged:(id)sender
 {
 	BOOL newState = [sender state];
 	
-	if (newState != onlyWithITunesPlaying)
+	if (newState != onlyWithMusicPlaying)
 	{
-		onlyWithITunesPlaying = newState;
-		[[NSUserDefaults standardUserDefaults] setBool:newState forKey:OnlyWithITunesPlayingDefaultsKey];
+		onlyWithMusicPlaying = newState;
+		[[NSUserDefaults standardUserDefaults] setBool:newState forKey:OnlyWithMusicPlayingDefaultsKey];
 	}
 }
 

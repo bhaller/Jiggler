@@ -32,7 +32,7 @@
     
 	IBOutlet NSButton *onlyWithRemovableWritableDisksCheckbox;
     
-	IBOutlet NSButton *onlyWithITunesPlayingCheckbox;
+	IBOutlet NSButton *onlyWithMusicPlayingCheckbox;
     
 	IBOutlet NSButton *onlyWithApplicationsNamedXCheckbox;
     IBOutlet NSPopUpButton *onlyWithIdentityPopUp;
@@ -58,7 +58,7 @@
     
     BOOL onlyWithRemovableWritableDisks;
     
-    BOOL onlyWithITunesPlaying;
+    BOOL onlyWithMusicPlaying;
     
     BOOL onlyWithApplicationsNamedX;
     int onlyWithIdentityTag;
@@ -92,7 +92,7 @@
 
 - (BOOL)onlyWithRemovableWritableDisks;
 
-- (BOOL)onlyWithITunesPlaying;
+- (BOOL)onlyWithMusicPlaying;
 
 - (BOOL)onlyWithApplicationsNamedX;
 - (int)onlyWithIdentityTag;                 // 0 == app, 1 == process
@@ -118,7 +118,7 @@
 
 - (IBAction)onlyWithRemovableWritableDisksChanged:(id)sender;
 
-- (IBAction)onlyWithITunesPlayingChanged:(id)sender;
+- (IBAction)onlyWithMusicPlayingChanged:(id)sender;
 
 - (IBAction)onlyWithIdentityPopUpChanged:(id)sender;
 - (IBAction)onlyWithApplicationsNamedXChanged:(id)sender;

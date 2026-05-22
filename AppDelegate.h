@@ -29,8 +29,8 @@
 	NSTimer *timedQuitTimer;
 	int minutesRemainingToTimedQuit;
 	
-	// Spying on iTunes
-	BOOL iTunesIsPlaying;
+	// Spying on Music
+	BOOL musicIsPlaying;
 	BOOL jiggleConditionsLikelyToHaveChanged;
 	
 	// Status bar icon variants
