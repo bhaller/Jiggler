@@ -115,7 +115,7 @@ static PrefsController *sharedPrefsController = nil;
 			jiggleStyle = (int)[userDefaults integerForKey:JiggleStyleDefaultsKey];
 			if (jiggleStyle == -1)
 				jiggleStyle = ([userDefaults boolForKey:ZenJiggleDefaultsKey] ? 1 : 0);
-			if ((jiggleStyle < 0) || (jiggleStyle > 2)) jiggleStyle = 0;
+			if ((jiggleStyle < 0) || (jiggleStyle > 3)) jiggleStyle = 0;	// 3 = keystroke jiggle, hidden (issue #28)
             
             jiggleDistance = [userDefaults floatForKey:JiggleDistanceDefaultsKey];
 			if (jiggleDistance < 0.0f)

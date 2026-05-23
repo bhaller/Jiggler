@@ -153,6 +153,38 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 	// Prevent app nap; see https://lapcatsoftware.com/articles/prevent-app-nap.html
     activityToken = [[NSProcessInfo processInfo] beginActivityWithOptions:NSActivityUserInitiatedAllowingIdleSystemSleep reason:@"No napping on the job!"];
 	[activityToken retain];
+
+	// Issue #19: hidden opt-in to start Timed Quit automatically on launch.
+	// Enable with:  defaults write com.stick.app.jiggler TimedQuitAtLaunchMinutes -int 240
+	// (240 = 4 hours; any positive integer in minutes works.)  Set to 0 or remove
+	// the key to disable.  No Preferences UI exposed — power-user knob.
+	NSInteger launchMinutes = [userDefaults integerForKey:@"TimedQuitAtLaunchMinutes"];
+	if (launchMinutes > 0)
+		[self startTimedQuitWithMinutes:(int)launchMinutes];
+
+	// Issue #2 (sub-bullet "after time has passed"): hidden opt-in to flip the
+	// master switch OFF after N minutes from launch, without quitting the app.
+	// Useful as a "stop jiggling at the end of the work day" knob.  Different
+	// from TimedQuitAtLaunchMinutes above in that the app keeps running and the
+	// user can re-enable from the menu.
+	//
+	//   defaults write com.stick.app.jiggler DisableAfterMinutes -int 480   # 8h
+	NSInteger disableAfter = [userDefaults integerForKey:@"DisableAfterMinutes"];
+	if (disableAfter > 0)
+	{
+		__block __weak typeof(self) weakSelf = self;
+		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(disableAfter * 60.0 * NSEC_PER_SEC)),
+					   dispatch_get_main_queue(), ^{
+			__strong typeof(self) strongSelf = weakSelf;
+			if (!strongSelf || !strongSelf->jiggleMasterSwitch)
+				return;	// gone, or already off
+
+			strongSelf->jiggleMasterSwitch = NO;
+			[[NSUserDefaults standardUserDefaults] setBool:NO forKey:JiggleMasterSwitchDefaultsKey];
+			[strongSelf fixMasterSwitchUI];
+			[strongSelf fixStatusItemIcon];
+		});
+	}
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification
@@ -685,33 +717,77 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 					NSScreen *primaryScreen = [NSScreen primaryScreen];
 					NSRect screenFrame = [primaryScreen frame];
 					CGPoint cgMouseLocation;
-					
+
 					cgMouseLocation.x = mouseLocation.x;
 					cgMouseLocation.y = screenFrame.size.height - mouseLocation.y;
-					
+
 					// Create and post the mouse-down and mouse-up events
 					CGEventRef click_down = CGEventCreateMouseEvent(NULL, kCGEventLeftMouseDown, cgMouseLocation, kCGMouseButtonLeft);
 					CGEventRef click_up = CGEventCreateMouseEvent(NULL, kCGEventLeftMouseUp, cgMouseLocation, kCGMouseButtonLeft);
-					
+
                     if (click_down && click_up)
                     {
                         CGEventPost(kCGHIDEventTap, click_down);
                         usleep(10000);
                         CGEventPost(kCGHIDEventTap, click_up);
-                        
+
                         CFRelease(click_down);
                         CFRelease(click_up);
                     }
                     else
                     {
                         static bool beenHere = false;
-                        
+
                         if (!beenHere)
                         {
                             NSLog(@"Jiggler was unable to create mouse click events.");
                             beenHere = true;
                         }
                     }
+				}
+				else if (jiggleStyle == 3)
+				{
+					// Keystroke jiggle (issue #28): post a no-op keystroke instead of moving
+					// or clicking the mouse.  Useful for remote-desktop sessions, where mouse
+					// activity on the local machine does not register at the remote side, and
+					// for users who don't want click-jiggle's "click wherever the cursor is"
+					// behaviour.  Hidden feature, no Preferences UI; enable with:
+					//
+					//   defaults write com.stick.app.jiggler JiggleStyle -int 3
+					//
+					// Default key is F2 (key code 120), chosen because virtually nothing reacts
+					// to it.  Override with:
+					//
+					//   defaults write com.stick.app.jiggler JiggleKeystrokeKeyCode -int <code>
+					NSInteger keyCode = [[NSUserDefaults standardUserDefaults] integerForKey:@"JiggleKeystrokeKeyCode"];
+					if (keyCode <= 0) keyCode = 120;	// F2
+
+					CGEventSourceRef sourceRef = CGEventSourceCreate(kCGEventSourceStateHIDSystemState);
+					if (sourceRef)
+					{
+						CGEventRef keyDown = CGEventCreateKeyboardEvent(sourceRef, (CGKeyCode)keyCode, true);
+						CGEventRef keyUp   = CGEventCreateKeyboardEvent(sourceRef, (CGKeyCode)keyCode, false);
+
+						if (keyDown && keyUp)
+						{
+							CGEventPost(kCGHIDEventTap, keyDown);
+							usleep(10000);
+							CGEventPost(kCGHIDEventTap, keyUp);
+						}
+						else
+						{
+							static bool beenHere = false;
+							if (!beenHere)
+							{
+								NSLog(@"Jiggler was unable to create keystroke events.");
+								beenHere = true;
+							}
+						}
+
+						if (keyDown) CFRelease(keyDown);
+						if (keyUp)   CFRelease(keyUp);
+						CFRelease(sourceRef);
+					}
 				}
 				else	// jiggleStyle == 0, and bad values
 				{
@@ -904,22 +980,27 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 		[NSApp performSelector:@selector(terminate:) withObject:nil afterDelay:0.5 inModes:@[NSDefaultRunLoopMode]];
 }
 
+- (void)startTimedQuitWithMinutes:(int)minutes
+{
+	if (minutes <= 0)
+		return;
+
+	minutesRemainingToTimedQuit = minutes;
+
+	NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
+
+	timedQuitTimer = [NSTimer timerWithTimeInterval:60.0 target:self selector:@selector(_timedQuitTimer:) userInfo:nil repeats:YES];
+	[runLoop addTimer:timedQuitTimer forMode:NSRunLoopCommonModes];
+	[runLoop addTimer:timedQuitTimer forMode:NSModalPanelRunLoopMode];		// not clear whether this is part of NSRunLoopCommonModes...
+	[runLoop addTimer:timedQuitTimer forMode:NSEventTrackingRunLoopMode];	// not clear whether this is part of NSRunLoopCommonModes...
+
+	[self fixTimedQuitMenuItem];
+	[self fixStatusItemIcon];
+}
+
 - (IBAction)timedQuit:(id)sender
 {
-	minutesRemainingToTimedQuit = [TimedQuitController runPanelForMinutesUntilQuit];
-	
-	if (minutesRemainingToTimedQuit)
-	{
-		NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
-		
-		timedQuitTimer = [NSTimer timerWithTimeInterval:60.0 target:self selector:@selector(_timedQuitTimer:) userInfo:nil repeats:YES];
-		[runLoop addTimer:timedQuitTimer forMode:NSRunLoopCommonModes];
-		[runLoop addTimer:timedQuitTimer forMode:NSModalPanelRunLoopMode];		// not clear whether this is part of NSRunLoopCommonModes...
-		[runLoop addTimer:timedQuitTimer forMode:NSEventTrackingRunLoopMode];	// not clear whether this is part of NSRunLoopCommonModes...
-		
-		[self fixTimedQuitMenuItem];
-		[self fixStatusItemIcon];
-	}
+	[self startTimedQuitWithMinutes:[TimedQuitController runPanelForMinutesUntilQuit]];
 }
 
 - (IBAction)cancelTimedQuit:(id)sender
