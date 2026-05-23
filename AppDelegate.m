@@ -111,16 +111,39 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 	[statusItem setMenu:[self statusItemMenu]];
 	[self setStatusItem:statusItem];
 	
-	// Prepare our status item icon variants
-	NSImage *jigglerImage = [NSImage imageNamed:NSImageNameApplicationIcon];
-	
-	scaledJigglerImage = [jigglerImage copy];
-	
-	[scaledJigglerImage setSize:NSMakeSize(barThickness - 2, barThickness - 2)];
-	
-	scaledJigglerImageRed = [[scaledJigglerImage imageTintedWithColor:[NSColor colorWithCalibratedRed:1.0 green:0.0 blue:0.0 alpha:0.4]] retain];
-	scaledJigglerImageGreen = [[scaledJigglerImage imageTintedWithColor:[NSColor colorWithCalibratedRed:0.0 green:1.0 blue:0.0 alpha:0.3]] retain];
-	
+	// Status-item icon: issue #27 asks for a simpler, non-photo-realistic icon
+	// that fits the macOS menu bar visually.  On 11+ we use the SF Symbol
+	// "cursorarrow.motionlines" as a template image and switch state through
+	// the button's contentTintColor.  On 10.15 (or when the user opted into
+	// the classic icon via "defaults write … UseClassicMenuBarIcon -bool YES")
+	// we keep the original photo-realistic icon with three pre-tinted variants.
+	BOOL useClassicIcon = [[NSUserDefaults standardUserDefaults] boolForKey:@"UseClassicMenuBarIcon"];
+	BOOL haveSymbolAPI = NO;
+
+	if (@available(macOS 11.0, *))
+		haveSymbolAPI = YES;
+
+	if (haveSymbolAPI && !useClassicIcon)
+	{
+		if (@available(macOS 11.0, *))
+		{
+			NSImage *symbolImage = [NSImage imageWithSystemSymbolName:@"cursorarrow.motionlines"
+											accessibilityDescription:@"Jiggler"];
+			[symbolImage setTemplate:YES];
+			[statusItem.button setImage:symbolImage];
+		}
+	}
+	else
+	{
+		NSImage *jigglerImage = [NSImage imageNamed:NSImageNameApplicationIcon];
+
+		scaledJigglerImage = [jigglerImage copy];
+		[scaledJigglerImage setSize:NSMakeSize(barThickness - 2, barThickness - 2)];
+
+		scaledJigglerImageRed = [[scaledJigglerImage imageTintedWithColor:[NSColor colorWithCalibratedRed:1.0 green:0.0 blue:0.0 alpha:0.4]] retain];
+		scaledJigglerImageGreen = [[scaledJigglerImage imageTintedWithColor:[NSColor colorWithCalibratedRed:0.0 green:1.0 blue:0.0 alpha:0.3]] retain];
+	}
+
 	[self fixStatusItemIcon];
 	
 	// Set up our master switch, which remembers its last setting
@@ -185,13 +208,31 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 - (void)fixStatusItemIcon
 {
 	NSStatusBarButton *statusButton = [[self statusItem] button];
-	
-	if (timedQuitTimer)
-		[statusButton setImage:scaledJigglerImageRed];
-	else if (jigglingActive)
-		[statusButton setImage:scaledJigglerImageGreen];
+
+	if (scaledJigglerImage)
+	{
+		// Classic photo-realistic icon: swap among the three pre-tinted variants.
+		if (timedQuitTimer)
+			[statusButton setImage:scaledJigglerImageRed];
+		else if (jigglingActive)
+			[statusButton setImage:scaledJigglerImageGreen];
+		else
+			[statusButton setImage:scaledJigglerImage];
+	}
 	else
-		[statusButton setImage:scaledJigglerImage];
+	{
+		// SF-Symbol mode (10.15 was filtered out above, so we are guaranteed 11+ here):
+		// keep the template image fixed and change state via the button's tint colour.
+		if (@available(macOS 11.0, *))
+		{
+			if (timedQuitTimer)
+				statusButton.contentTintColor = [NSColor systemRedColor];
+			else if (jigglingActive)
+				statusButton.contentTintColor = [NSColor systemGreenColor];
+			else
+				statusButton.contentTintColor = nil;	// default appearance follows the menu bar
+		}
+	}
 }
 
 // Now that we use NSStatusItem, we show our timed quit timer in the Timed Quit menu item
