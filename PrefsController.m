@@ -265,7 +265,12 @@ static PrefsController *sharedPrefsController = nil;
 
 - (int)jiggleDistance
 {
-	return (int)(jiggleDistance * jiggleDistance + 10);
+	// Slider is 0..20 (float); we return a pixel tolerance that grows quadratically.
+	// The "+ 2" floor used to be "+ 10", but users running activity-sensitive apps
+	// (Teams, Slack) asked for a smaller minimum so the cursor barely moves while
+	// still registering as motion (issue #43).  Quadratic shape keeps fine control
+	// at low slider values and large reach at high values.
+	return (int)(jiggleDistance * jiggleDistance + 2);
 }
 
 - (BOOL)onlyWithCPUUsage

@@ -312,7 +312,10 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 	// Figure out the distance scale we want to move over
 	int baseTolerance = [[PrefsController sharedPrefsController] jiggleDistance];
 	
-	if (baseTolerance < 10) baseTolerance = 10;
+	// Floor matches the "+ 2" in -[PrefsController jiggleDistance] (issue #43); the
+	// ceiling is the upper end of the quadratic (20² + 2 == 402, rounded to 410 for
+	// headroom against any future tweaks to the curve).
+	if (baseTolerance < 2) baseTolerance = 2;
 	if (baseTolerance > 410) baseTolerance = 410;
 	
 	// Find a suitable new mouse location.  A suitable location is sufficiently close to the last seen user-set mouse
