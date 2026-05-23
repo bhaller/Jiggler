@@ -695,10 +695,20 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 					
                     if (click_down && click_up)
                     {
+                        // Issue #18: if the user has parked the cursor on the overlay window, our
+                        // synthetic click would otherwise be absorbed by the overlay (which is
+                        // interactive so it can be drag-repositioned).  Make it click-through for
+                        // the duration of the click, then restore.  No-op if the overlay does not
+                        // exist (user has the on-screen icon disabled).
+                        BOOL overlayWasInteractive = ![JigglerOverlayWindow setOverlayIgnoresMouseEvents:YES];
+
                         CGEventPost(kCGHIDEventTap, click_down);
                         usleep(10000);
                         CGEventPost(kCGHIDEventTap, click_up);
-                        
+
+                        if (overlayWasInteractive)
+                            [JigglerOverlayWindow setOverlayIgnoresMouseEvents:NO];
+
                         CFRelease(click_down);
                         CFRelease(click_up);
                     }

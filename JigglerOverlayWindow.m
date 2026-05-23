@@ -50,8 +50,21 @@ static NSString *JigglerOverlayVerticalPositionDefaultsKey = @"OverlayVerticalPo
 + (BOOL)isActivated
 {
 	JigglerOverlayWindow *sharedOverlay = [JigglerOverlayWindow sharedOverlayWindow];
-	
+
 	return [sharedOverlay isActivated];
+}
+
++ (BOOL)setOverlayIgnoresMouseEvents:(BOOL)flag
+{
+	JigglerOverlayWindow *sharedOverlay = [JigglerOverlayWindow sharedOverlayWindow];
+	NSWindow *win = sharedOverlay->overlayWindow;
+
+	if (!win)
+		return NO;
+
+	BOOL previous = [win ignoresMouseEvents];
+	[win setIgnoresMouseEvents:flag];
+	return previous;
 }
 
 + (JigglerOverlayWindow *)sharedOverlayWindow
