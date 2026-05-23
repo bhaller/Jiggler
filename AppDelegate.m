@@ -130,23 +130,42 @@ extern OSErr UpdateSystemActivity(UInt8 activity) __attribute__((weak_import));
 	jiggleMasterSwitch = [userDefaults boolForKey:JiggleMasterSwitchDefaultsKey];
 	[self fixMasterSwitchUI];
 	
-	// Check that we have the Accessibility access we need; see https://stackoverflow.com/a/53617674/2752221
+	// Check that we have the Accessibility access we need.
+	//
+	// Why this matters: without Accessibility, CGEventPost silently becomes a no-op
+	// on modern macOS.  Jiggler then launches normally, shows its menu-bar icon,
+	// marks itself as actively jiggling, and yet every synthetic mouse-move / click
+	// vanishes into the void — the system still goes to sleep.  Exactly the
+	// regression reported on Tahoe 26.5 (issue #48): the OS upgrade re-prompts
+	// for TCC permissions, and Jiggler, never having surfaced the resulting denial,
+	// looks like it is working but isn't.
+	//
+	// On macOS 15+ we register with TCC via the no-prompt check (so we appear in
+	// System Settings without an annoying prompt on every launch), then verify the
+	// result and run the same alert + open-settings + quit flow as the legacy path.
+	BOOL accessibilityTrusted;
+
 	if (@available(macOS 15.0, *))
 	{
 		NSDictionary *opts = [NSDictionary dictionaryWithObjectsAndKeys:(id)kCFBooleanFalse, (id)kAXTrustedCheckOptionPrompt, nil];
-		(void)AXIsProcessTrustedWithOptions((CFDictionaryRef)opts);
+		accessibilityTrusted = AXIsProcessTrustedWithOptions((CFDictionaryRef)opts);
 	}
-	else if (!AXIsProcessTrusted())
+	else
 	{
-		NSModalResponse retval = SSRunCriticalAlertPanel(@"Turn on accessibility", @"Jiggler needs to control the mouse cursor to function.  To enable this capability, please select the Jiggler checkbox in Security & Privacy > Accessibility, and then restart Jiggler (which will quit now).", @"Turn On Accessibility", @"Quit", nil);
-		
+		accessibilityTrusted = AXIsProcessTrusted();
+	}
+
+	if (!accessibilityTrusted)
+	{
+		NSModalResponse retval = SSRunCriticalAlertPanel(@"Turn on accessibility", @"Jiggler needs to control the mouse and keyboard to function.  To enable this capability, please select the Jiggler checkbox in System Settings > Privacy & Security > Accessibility, and then restart Jiggler (which will quit now).", @"Turn On Accessibility", @"Quit", nil);
+
 		if (retval == NSAlertFirstButtonReturn)
 		{
 			NSString *prefPage = @"x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility";
-			
+
 			[[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:prefPage]];
 		}
-		
+
 		[NSApp terminate:nil];
 	}
 	
